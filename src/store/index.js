@@ -10,6 +10,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import authSlice from "./slices/auth";
 
 const persistConfig = {
   key: "twaddle",
@@ -17,7 +18,10 @@ const persistConfig = {
   storage,
 };
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  auth: authSlice.reducer,
+});
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
