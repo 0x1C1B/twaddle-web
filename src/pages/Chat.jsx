@@ -6,5 +6,9 @@ export default function Chat() {
     document.title = "Twaddle Web | Chat";
   }, []);
 
-  return <StackTemplate></StackTemplate>;
+  return (
+    <StackTemplate>
+      <div className="h-full bg-white dark:bg-gray-600"></div>
+    </StackTemplate>
+  );
 }

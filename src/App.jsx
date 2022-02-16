@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import RouteProtector from "./components/organisms/RouteProtector";
 import Chat from "./pages/Chat";
-import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 
@@ -14,14 +13,6 @@ export default function App() {
         element={
           <RouteProtector>
             <Chat />
-          </RouteProtector>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <RouteProtector>
-            <Profile />
           </RouteProtector>
         }
       />

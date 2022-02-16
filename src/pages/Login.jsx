@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import StackTemplate from "../components/templates/StackTemplate";
+import FullTemplate from "../components/templates/FullTemplate";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
 import { login } from "../store/slices/auth";
@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   return (
-    <StackTemplate>
+    <FullTemplate>
       <div className="h-full bg-lime-500 flex items-center justify-center p-2">
         <div className="w-full max-w-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-md rounded-md p-8 space-y-6">
           <div>
@@ -110,6 +110,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </StackTemplate>
+    </FullTemplate>
   );
 }
