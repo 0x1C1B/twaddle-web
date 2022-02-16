@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
 import StackTemplate from "../components/templates/StackTemplate";
+import TextField from "../components/atoms/TextField";
+import Button from "../components/atoms/Button";
 import { login } from "../store/slices/auth";
 
 import Logo from "../assets/images/logo.svg";
@@ -65,56 +67,36 @@ export default function Login() {
                 onSubmit={props.handleSubmit}
                 noValidate
               >
-                <div>
-                  <input
-                    name="username"
-                    type="text"
-                    className={`relative bg-white dark:bg-gray-600 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border ${
-                      props.errors.username && props.touched.username
-                        ? "border-red-500"
-                        : "border-gray-300 dark:border-gray-500"
-                    } block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-lime-500`}
-                    placeholder="Username"
-                    onChange={props.handleChange}
-                    onBlur={props.handleBlur}
-                    value={props.values.username}
-                  />
-                  {props.errors.username && props.touched.username && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {props.errors.username}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <input
-                    name="password"
-                    type="password"
-                    className={`relative bg-white dark:bg-gray-600 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border ${
-                      props.errors.password && props.touched.password
-                        ? "border-red-500"
-                        : "border-gray-300 dark:border-gray-500"
-                    } block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-lime-500`}
-                    placeholder="Password"
-                    onChange={props.handleChange}
-                    onBlur={props.handleBlur}
-                    value={props.values.password}
-                  />
-                  {props.errors.password && props.touched.password && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {props.errors.password}
-                    </p>
-                  )}
-                </div>
-                <button
+                <TextField
+                  name="username"
+                  type="text"
+                  placeholder="Username"
+                  onChange={props.handleChange}
+                  onBlur={props.handleBlur}
+                  value={props.values.username}
+                  error={props.errors.username}
+                  touched={props.errors.username && props.touched.username}
+                />
+                <TextField
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  onChange={props.handleChange}
+                  onBlur={props.handleBlur}
+                  value={props.values.password}
+                  error={props.errors.password}
+                  touched={props.errors.password && props.touched.password}
+                />
+                <Button
                   type="submit"
                   disabled={!(props.isValid && props.dirty) || loading}
-                  className="flex items-center justify-center group relative w-full py-2 px-3 border border-transparent text-sm font-medium rounded-md text-white bg-lime-500 hover:brightness-110 disabled:opacity-50 focus:outline-none focus:outline-lime-500"
+                  className="w-full flex justify-center"
                 >
                   {!loading && <span>Login</span>}
                   {loading && (
                     <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />
                   )}
-                </button>
+                </Button>
               </form>
             )}
           </Formik>
