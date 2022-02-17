@@ -3,14 +3,15 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
   token: null,
-  subject: null,
+  expiration: null,
+  user: null,
 };
 
 export const login = createAsyncThunk(
   "auth/login",
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(
+      const tokenRes = await axios.post(
         "/tokens",
         {
           username,
@@ -19,7 +20,18 @@ export const login = createAsyncThunk(
         { baseURL: process.env.REACT_APP_TWADDLE_REST_URI }
       );
 
-      return res.data;
+      const tokenData = tokenRes.data;
+
+      const userRes = await axios.get(`/users/${tokenData.subject}`, {
+        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
+        headers: {
+          Authorization: `${tokenData.type} ${tokenData.token}`,
+        },
+      });
+
+      const userData = userRes.data;
+
+      return { ...tokenData, user: userData };
     } catch (err) {
       if (err.response) {
         return rejectWithValue(err.response.data);
@@ -40,17 +52,21 @@ const authSlice = createSlice({
   },
   extraReducers: {
     [login.fulfilled]: (state, action) => {
+      const expiration = new Date(Date.now() + action.payload.expires * 1000);
+
       return {
         ...state,
         token: action.payload.token,
-        subject: action.payload.subject,
+        expiration: expiration.getTime(),
+        user: action.payload.user,
       };
     },
     [login.rejected]: (state) => {
       return {
         ...state,
         token: null,
-        subject: null,
+        expiration: null,
+        user: null,
       };
     },
   },

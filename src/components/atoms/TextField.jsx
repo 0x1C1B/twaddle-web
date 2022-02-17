@@ -26,7 +26,7 @@ export default function TextField({
   return (
     <div>
       <input
-        className={`relative bg-white dark:bg-gray-600 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border ${
+        className={`relative bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border ${
           error && touched
             ? "border-red-500"
             : "border-gray-300 dark:border-gray-500"

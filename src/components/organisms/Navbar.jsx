@@ -12,7 +12,7 @@ import LogoTextDark from "../../assets/images/logo-text-dark.svg";
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const subject = useSelector((state) => state.auth.subject);
+  const user = useSelector((state) => state.auth.user);
 
   const onLogout = () => {
     dispatch(authSlice.actions.logout());
@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <div className="bg-gray-100 dark:bg-gray-800">
-      <div className="container-xl mx-auto px-2 sm:px-6 lg:px-8">
+      <div className="xl:container mx-auto px-2 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex-shrink-0 flex items-center">
@@ -64,7 +64,7 @@ export default function Navbar() {
                           <UserIcon className="h-6 w-6" aria-hidden="true" />
                         </div>
                         <div>
-                          <div>{subject}</div>
+                          <div>{user.username}</div>
                           <button
                             onClick={onLogout}
                             className="text-xs text-amber-500 hover:text-amber-400 p-0"

@@ -3,5 +3,6 @@ import { useSelector } from "react-redux";
 
 export default function RouteProtector({ children }) {
   const token = useSelector((state) => state.auth.token);
-  return token ? children : <Navigate to="/login" />;
+  const expiration = useSelector((state) => state.auth.expiration);
+  return token && Date.now() < expiration ? children : <Navigate to="/login" />;
 }
