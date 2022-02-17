@@ -67,26 +67,30 @@ export default function Login() {
                 onSubmit={props.handleSubmit}
                 noValidate
               >
-                <TextField
-                  name="username"
-                  type="text"
-                  placeholder="Username"
-                  onChange={props.handleChange}
-                  onBlur={props.handleBlur}
-                  value={props.values.username}
-                  error={props.errors.username}
-                  touched={props.errors.username && props.touched.username}
-                />
-                <TextField
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  onChange={props.handleChange}
-                  onBlur={props.handleBlur}
-                  value={props.values.password}
-                  error={props.errors.password}
-                  touched={props.errors.password && props.touched.password}
-                />
+                <div>
+                  <TextField
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    onChange={props.handleChange}
+                    onBlur={props.handleBlur}
+                    value={props.values.username}
+                    error={props.errors.username}
+                    touched={props.errors.username && props.touched.username}
+                  />
+                </div>
+                <div>
+                  <TextField
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={props.handleChange}
+                    onBlur={props.handleBlur}
+                    value={props.values.password}
+                    error={props.errors.password}
+                    touched={props.errors.password && props.touched.password}
+                  />
+                </div>
                 <Button
                   type="submit"
                   disabled={!(props.isValid && props.dirty) || loading}

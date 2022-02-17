@@ -24,7 +24,7 @@ export default function TextField({
   ...props
 }) {
   return (
-    <div>
+    <>
       <input
         className={`relative bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border ${
           error && touched
@@ -37,6 +37,6 @@ export default function TextField({
         {...props}
       />
       {error && touched && <p className="mt-1 text-sm text-red-500">{error}</p>}
-    </div>
+    </>
   );
 }

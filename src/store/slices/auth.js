@@ -25,7 +25,7 @@ export const login = createAsyncThunk(
       const userRes = await axios.get(`/users/${tokenData.subject}`, {
         baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
         headers: {
-          Authorization: `${tokenData.type} ${tokenData.token}`,
+          Authorization: `Bearer ${tokenData.token}`,
         },
       });
 
