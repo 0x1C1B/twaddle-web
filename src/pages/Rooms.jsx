@@ -13,7 +13,7 @@ import Button from "../components/atoms/Button";
 import Avatar from "../components/atoms/Avatar";
 import authSlice from "../store/slices/auth";
 
-export default function Chat() {
+export default function Rooms() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -67,9 +67,9 @@ export default function Chat() {
                 <TextField
                   type="text"
                   placeholder="Room name"
-                  className="rounded-none rounded-l-md grow"
+                  className="rounded-r-none grow"
                 />
-                <Button className="border-l-0 rounded-none rounded-r-md">
+                <Button className="border-l-0 rounded-l-none">
                   <SearchIcon className="h-6 w-6" aria-hidden="true" />
                 </Button>
               </div>
@@ -136,7 +136,7 @@ export default function Chat() {
                   <Button
                     variant="primary"
                     disabled={pageable.page * pageable.perPage + 1 <= 1}
-                    className="border-r-0 rounded-none rounded-l-md inline-flex"
+                    className="border-r-0 rounded-r-none inline-flex"
                     onClick={() => onFetchPage(pageable.page - 1)}
                   >
                     <ArrowLeftIcon
@@ -153,7 +153,7 @@ export default function Chat() {
                         pageable.totalElements
                       ) >= pageable.totalElements
                     }
-                    className="border-l-0 rounded-none rounded-r-md inline-flex"
+                    className="border-l-0 rounded-l-none inline-flex"
                     onClick={() => onFetchPage(pageable.page + 1)}
                   >
                     Next
