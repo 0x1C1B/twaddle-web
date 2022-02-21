@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import RouteProtector from "./components/organisms/RouteProtector";
 import Rooms from "./pages/Rooms";
+import Room from "./pages/Room";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -15,6 +16,14 @@ export default function App() {
         element={
           <RouteProtector>
             <Rooms />
+          </RouteProtector>
+        }
+      />
+      <Route
+        path="/rooms/:roomId"
+        element={
+          <RouteProtector>
+            <Room />
           </RouteProtector>
         }
       />

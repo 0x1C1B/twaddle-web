@@ -92,8 +92,9 @@ export default function Rooms() {
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 {rooms.map((room) => (
                   <div
-                    key={room.name}
+                    key={room.id}
                     className="shadow rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:brightness-110 hover:cursor-pointer p-4 max-h-36 flex space-x-4"
+                    onClick={() => navigate(`/rooms/${room.id}`)}
                   >
                     <div className="h-28 aspect-square">
                       <Avatar value={room.name} />

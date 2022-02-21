@@ -30,7 +30,7 @@ export default function TextField({
           error && touched
             ? "border-red-500"
             : "border-gray-300 dark:border-gray-500"
-        } block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-lime-500 ${className}`}
+        } block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-lime-500 disabled:opacity-50 ${className}`}
         onChange={onChange}
         onBlur={onBlur}
         value={value}
