@@ -5,6 +5,7 @@ import Room from "./pages/Room";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import { SocketProvider } from "./contexts/socket";
 
 export default function App() {
   return (
@@ -23,7 +24,9 @@ export default function App() {
         path="/rooms/:roomId"
         element={
           <RouteProtector>
-            <Room />
+            <SocketProvider>
+              <Room />
+            </SocketProvider>
           </RouteProtector>
         }
       />

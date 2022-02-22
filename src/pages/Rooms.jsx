@@ -23,7 +23,7 @@ export default function Rooms() {
   const [pageable, setPageable] = useState(null);
   const [rooms, setRooms] = useState([]);
 
-  const onFetchPage = (page = 0) => {
+  const fetchPage = (page = 0) => {
     setLoading(true);
     setError(null);
 
@@ -53,7 +53,7 @@ export default function Rooms() {
   }, []);
 
   useEffect(() => {
-    onFetchPage();
+    fetchPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, navigate, token]);
 
@@ -77,7 +77,7 @@ export default function Rooms() {
             <hr className="border-gray-300 dark:border-gray-400" />
             {loading && (
               <div className="flex justify-center">
-                <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />
+                <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />
               </div>
             )}
             {!loading && error && (
@@ -138,7 +138,7 @@ export default function Rooms() {
                     variant="primary"
                     disabled={pageable.page * pageable.perPage + 1 <= 1}
                     className="border-r-0 rounded-r-none inline-flex"
-                    onClick={() => onFetchPage(pageable.page - 1)}
+                    onClick={() => fetchPage(pageable.page - 1)}
                   >
                     <ArrowLeftIcon
                       className="h-6 w-6 mr-2"
@@ -155,7 +155,7 @@ export default function Rooms() {
                       ) >= pageable.totalElements
                     }
                     className="border-l-0 rounded-l-none inline-flex"
-                    onClick={() => onFetchPage(pageable.page + 1)}
+                    onClick={() => fetchPage(pageable.page + 1)}
                   >
                     Next
                     <ArrowRightIcon
