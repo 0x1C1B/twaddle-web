@@ -1,9 +1,10 @@
 import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
+import { Popover, Transition, Switch } from "@headlessui/react";
 import { DotsVerticalIcon, UserIcon } from "@heroicons/react/solid";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authSlice from "../../store/slices/auth";
+import themeSlice from "../../store/slices/theme";
 
 import Logo from "../../assets/images/logo.svg";
 import LogoTextLight from "../../assets/images/logo-text-light.svg";
@@ -15,10 +16,15 @@ export default function Navbar() {
   const token = useSelector((state) => state.auth.token);
   const expiration = useSelector((state) => state.auth.expiration);
   const user = useSelector((state) => state.auth.user);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   const onLogout = () => {
     dispatch(authSlice.actions.logout());
     navigate("/login");
+  };
+
+  const onThemeToggle = (value) => {
+    dispatch(themeSlice.actions.setDarkMode(value));
   };
 
   return (
@@ -77,6 +83,32 @@ export default function Navbar() {
                             >
                               Logout
                             </button>
+                          </div>
+                        </div>
+                        <div className="p-2 text-gray-800 dark:text-white">
+                          <div className="flex justify-between items-center">
+                            <div className="text-sm">Dark Mode</div>
+                            <div>
+                              <Switch
+                                checked={darkMode}
+                                onChange={onThemeToggle}
+                                className={`relative inline-flex flex-shrink-0 h-[24px] w-[44px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 ${
+                                  darkMode
+                                    ? "bg-lime-500"
+                                    : "bg-gray-100 dark:bg-gray-800"
+                                }`}
+                              >
+                                <span className="sr-only">Use setting</span>
+                                <span
+                                  aria-hidden="true"
+                                  className={`pointer-events-none inline-block h-[20px] w-[20px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200 ${
+                                    darkMode
+                                      ? "translate-x-[20px]"
+                                      : "translate-x-0"
+                                  }`}
+                                />
+                              </Switch>
+                            </div>
                           </div>
                         </div>
                       </Popover.Panel>

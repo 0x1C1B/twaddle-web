@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import RouteProtector from "./components/organisms/RouteProtector";
 import Rooms from "./pages/Rooms";
 import Room from "./pages/Room";
@@ -8,6 +10,16 @@ import NotFound from "./pages/NotFound";
 import { SocketProvider } from "./contexts/socket";
 
 export default function App() {
+  const darkMode = useSelector((state) => state.theme.darkMode);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/rooms" />} />
