@@ -122,20 +122,31 @@ export default function Room() {
 
   useEffect(() => {
     const initSocket = async (reqTicket) => {
-      setSocketLoading(true);
-      setSocketError(null);
+      const currentSocket = getInstance();
 
-      const newSocket = initInstance(process.env.REACT_APP_TWADDLE_WS_URI, {
-        autoConnect: false,
-        reconnection: true,
-        query: {
-          ticket: reqTicket,
-        },
-      });
+      const newSocket =
+        currentSocket && currentSocket.connected
+          ? currentSocket
+          : initInstance(process.env.REACT_APP_TWADDLE_WS_URI, {
+              autoConnect: false,
+              reconnection: false,
+              query: {
+                ticket: reqTicket,
+              },
+            });
 
       newSocket.on("connect", async () => {
         setSocketLoading(false);
         newSocket.emit("twaddle/room:join", { id: roomId });
+      });
+
+      newSocket.on("disconnect", async (reason) => {
+        setSocketLoading(false);
+        setSocketConnected(false);
+
+        if (reason === "ping timeout" || reason === "transport error") {
+          setSocketError("The connection was unexpectedly lost.");
+        }
       });
 
       newSocket.on("connect_error", (err) => {
@@ -172,7 +183,7 @@ export default function Room() {
     if (roomId && ticket) {
       initSocket(ticket.ticket);
     }
-  }, [initInstance, roomId, ticket]);
+  }, [initInstance, getInstance, roomId, ticket]);
 
   useEffect(() => {
     if (socketConnected) {
