@@ -12,29 +12,27 @@ import Button from "../atoms/Button";
 import authSlice from "../../store/slices/auth";
 
 const schema = yup.object().shape({
-  name: yup
-    .string()
-    .max(50, "Maximum 50 characters allowed")
-    .required("Is required"),
+  name: yup.string().max(50, "Maximum 50 characters allowed").optional(),
   description: yup
     .string()
     .max(200, "Maximum 200 characters allowed")
-    .required("Is required"),
+    .optional(),
 });
 
 /**
- * @typedef {object} RoomCreationModalProperties
+ * @typedef {object} RoomUpdateModalProperties
+ * @property {{id: string, name: string, description: string}} room
  * @property {JSX.Element=} children
  * @property {() => void} onSuccess
  */
 
 /**
- * Constructs a room creation modal component.
+ * Constructs a room update modal component.
  *
- * @param {RoomCreationModalProperties} properties The modal properties
+ * @param {RoomUpdateModalProperties} properties The modal properties
  * @returns {JSX.Element} Returns the modal component
  */
-export default function RoomCreationModal({ onSuccess, children }) {
+export default function RoomUpdateModal({ room, onSuccess, children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -58,18 +56,21 @@ export default function RoomCreationModal({ onSuccess, children }) {
     setLoading(true);
     setError(null);
 
+    const update = {};
+
+    if (values.name && values.name !== "") {
+      update.name = values.name;
+    }
+
+    if (values.description && values.description !== "") {
+      update.description = values.description;
+    }
+
     axios
-      .post(
-        "/rooms",
-        {
-          name: values.name,
-          description: values.description,
-        },
-        {
-          baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
+      .patch(`/rooms/${room.id}`, update, {
+        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then(() => {
         setOpen(false);
         onSuccess();
@@ -140,7 +141,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                     as="h3"
                     className="text-lg font-medium leading-6"
                   >
-                    Add room
+                    Update room
                   </Dialog.Title>
                   <button
                     onClick={() => closeModal()}
@@ -152,7 +153,10 @@ export default function RoomCreationModal({ onSuccess, children }) {
                 </div>
                 {error && <p className="text-center text-red-500">{error}</p>}
                 <Formik
-                  initialValues={{ name: "", description: "" }}
+                  initialValues={{
+                    name: "",
+                    description: "",
+                  }}
                   validationSchema={schema}
                   onSubmit={onSubmit}
                 >
@@ -166,7 +170,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                         <TextField
                           name="name"
                           type="text"
-                          placeholder="Name"
+                          placeholder={room.name}
                           disabled={loading}
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
@@ -180,7 +184,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                           name="description"
                           type="text"
                           rows="3"
-                          placeholder="Description"
+                          placeholder={room.description}
                           disabled={loading}
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
@@ -198,7 +202,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                         disabled={!(props.isValid && props.dirty) || loading}
                         className="w-full flex justify-center"
                       >
-                        {!loading && <span>Create</span>}
+                        {!loading && <span>Update</span>}
                         {loading && (
                           <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />
                         )}

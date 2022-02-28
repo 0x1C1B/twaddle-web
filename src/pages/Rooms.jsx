@@ -6,9 +6,14 @@ import {
   SearchIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  PlusIcon,
+  TrashIcon,
+  PencilIcon,
 } from "@heroicons/react/solid";
 import StackTemplate from "../components/templates/StackTemplate";
 import RoomCreationModal from "../components/organisms/RoomCreationModal";
+import RoomDeletionModal from "../components/organisms/RoomDeletionModal";
+import RoomUpdateModal from "../components/organisms/RoomUpdateModal";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
 import Avatar from "../components/atoms/Avatar";
@@ -83,7 +88,16 @@ export default function Rooms() {
                 </Button>
               </div>
               {user?.role === "ADMINISTRATOR" && (
-                <RoomCreationModal onSuccess={() => fetchPage()} />
+                <RoomCreationModal onSuccess={() => fetchPage()}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="inline-flex items-center justify-center"
+                  >
+                    <PlusIcon className="h-6 w-6" aria-hidden="true" />
+                    <div className="ml-2">Add room</div>
+                  </Button>
+                </RoomCreationModal>
               )}
             </div>
             <hr className="border-gray-300 dark:border-gray-400" />
@@ -103,24 +117,50 @@ export default function Rooms() {
             {!loading && !error && rooms.length > 0 && (
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 {rooms.map((room) => (
-                  <div
-                    key={room.id}
-                    className="shadow rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:brightness-110 hover:cursor-pointer p-4 max-h-36 flex space-x-4"
-                    onClick={() => navigate(`/rooms/${room.id}`)}
-                  >
-                    <div className="h-28 aspect-square">
-                      <Avatar value={room.name} />
-                    </div>
-                    <div className="flex flex-col space-y-2">
-                      <div className="overflow-hidden">
-                        <h2 className="text-lg font-bold truncate">
-                          {room.name}
-                        </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 text-ellipsis">
-                          {room.description}
-                        </p>
+                  <div key={room.id} className="flex">
+                    <div
+                      className={`shadow rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:brightness-110 hover:cursor-pointer p-4 max-h-36 grow flex space-x-4 ${
+                        user?.role === "ADMINISTRATOR" && "rounded-r-none"
+                      }`}
+                      onClick={() => navigate(`/rooms/${room.id}`)}
+                    >
+                      <div className="h-28 aspect-square">
+                        <Avatar value={room.name} />
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <div className="overflow-hidden">
+                          <h2 className="text-lg font-bold truncate">
+                            {room.name}
+                          </h2>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 text-ellipsis">
+                            {room.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
+                    {user?.role === "ADMINISTRATOR" && (
+                      <div className="flex flex-col py-3 px-1 bg-gray-200 dark:bg-gray-800 rounded-r-lg place-content-between">
+                        <RoomUpdateModal
+                          room={room}
+                          onSuccess={() => fetchPage()}
+                        >
+                          <button className="p-1 rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">
+                            <PencilIcon
+                              className="h-6 w-6"
+                              aria-hidden="true"
+                            />
+                          </button>
+                        </RoomUpdateModal>
+                        <RoomDeletionModal
+                          roomId={room.id}
+                          onSuccess={() => fetchPage()}
+                        >
+                          <button className="p-1 rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">
+                            <TrashIcon className="h-6 w-6" aria-hidden="true" />
+                          </button>
+                        </RoomDeletionModal>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
