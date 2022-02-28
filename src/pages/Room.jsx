@@ -195,7 +195,7 @@ export default function Room() {
 
       socket.on("twaddle/room:user-joined", ({ user: joinedUser }) => {
         setMessage({
-          message: `'${joinedUser}' joined the room`,
+          content: `'${joinedUser}' joined the room`,
           timestamp: new Date().toISOString(),
           type: "status",
         });
@@ -203,7 +203,7 @@ export default function Room() {
 
       socket.on("twaddle/room:user-left", ({ user: leftUser }) => {
         setMessage({
-          message: `'${leftUser}' left the room`,
+          content: `'${leftUser}' left the room`,
           timestamp: new Date().toISOString(),
           type: "status",
         });
@@ -220,6 +220,9 @@ export default function Room() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // TODO Implement infinity scroll pagination for chat messages
+  // TODO Implement sticky scrolling to bottom for the chat box
 
   return (
     <StackTemplate>
@@ -278,16 +281,16 @@ export default function Room() {
                   {!socketLoading && !socketError && (
                     <div className="space-y-2 flex flex-col">
                       {messages.map((message) =>
-                        message.type !== "status" ? (
+                        message.type === "message" ? (
                           <div
                             key={message.timestamp}
                             className={`w-fit min-w-[15rem] max-w-[100%] sm:max-w-[70%] flex items-end ${
-                              message.user === user.username && "self-end"
+                              message.username === user.username && "self-end"
                             }`}
                           >
                             <div
                               className={`grow p-2 bg-white dark:bg-gray-600 text-gray-800 dark:text-white rounded-md flex flex-col space-y-1 ${
-                                message.user === user.username
+                                message.username === user.username
                                   ? "bg-amber-500 dark:bg-amber-500 text-white rounded-br-none order-first"
                                   : "rounded-bl-none"
                               }`}
@@ -296,7 +299,7 @@ export default function Room() {
                                 {message.user}
                               </div>
                               <div className="w-full break-words">
-                                {message.message}
+                                {message.content}
                               </div>
                               <div className="w-fit text-xs self-end">
                                 {new Date(message.timestamp).toLocaleString()}
@@ -304,11 +307,11 @@ export default function Room() {
                             </div>
                             <div
                               className={`h-8 aspect-square rounded-md ml-2 ${
-                                message.user !== user.username &&
+                                message.username !== user.username &&
                                 "order-first mr-2 ml-0"
                               }`}
                             >
-                              <Avatar value={message.user} />
+                              <Avatar value={message.username} />
                             </div>
                           </div>
                         ) : (
@@ -316,7 +319,7 @@ export default function Room() {
                             key={message.timestamp}
                             className="p-2 text-xs bg-white dark:bg-gray-600 text-gray-800 dark:text-white w-fit rounded-md self-center"
                           >
-                            {message.message}
+                            {message.content}
                           </div>
                         )
                       )}
