@@ -92,6 +92,7 @@ export default function Register() {
                     name="username"
                     type="text"
                     placeholder="Username"
+                    disabled={loading}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
                     value={props.values.username}
@@ -104,6 +105,7 @@ export default function Register() {
                     name="email"
                     type="email"
                     placeholder="E-Mail"
+                    disabled={loading}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
                     value={props.values.email}
@@ -116,6 +118,7 @@ export default function Register() {
                     name="password"
                     type="password"
                     placeholder="Password"
+                    disabled={loading}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
                     value={props.values.password}

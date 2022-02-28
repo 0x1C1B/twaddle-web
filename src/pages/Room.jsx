@@ -12,6 +12,7 @@ import {
 import StackTemplate from "../components/templates/StackTemplate";
 import Avatar from "../components/atoms/Avatar";
 import Button from "../components/atoms/Button";
+import TextArea from "../components/atoms/TextArea";
 import authSlice from "../store/slices/auth";
 import { useSocket } from "../contexts/socket";
 
@@ -337,17 +338,19 @@ export default function Room() {
                       onSubmit={props.handleSubmit}
                       noValidate
                     >
-                      <textarea
-                        autoFocus
-                        rows="1"
-                        name="message"
-                        placeholder="Message"
-                        value={props.values.message}
-                        onChange={props.handleChange}
-                        onBlur={props.handleBlur}
-                        disabled={apiLoading || socketLoading || apiError}
-                        className="relative bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-300 placeholder-gray-400 border border-gray-300 dark:border-gray-500 block w-full px-3 py-2 rounded-b-md rounded-r-none grow focus:outline-none focus:outline-lime-500 disabled:opacity-50 resize-none"
-                      />
+                      <div className="w-full">
+                        <TextArea
+                          autoFocus
+                          rows="1"
+                          name="message"
+                          placeholder="Message"
+                          value={props.values.message}
+                          onChange={props.handleChange}
+                          onBlur={props.handleBlur}
+                          disabled={apiLoading || socketLoading || apiError}
+                          className="rounded-tl-none rounded-r-none resize-none"
+                        />
+                      </div>
                       <Button
                         type="submit"
                         className="border-l-0 rounded-l-none rounded-t-none"

@@ -8,6 +8,7 @@ import {
   ArrowRightIcon,
 } from "@heroicons/react/solid";
 import StackTemplate from "../components/templates/StackTemplate";
+import RoomCreationModal from "../components/organisms/RoomCreationModal";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
 import Avatar from "../components/atoms/Avatar";
@@ -18,6 +19,8 @@ export default function Rooms() {
   const navigate = useNavigate();
 
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageable, setPageable] = useState(null);
@@ -62,7 +65,13 @@ export default function Rooms() {
       <div className="h-full bg-white dark:bg-gray-600">
         <div className="xl:container mx-auto px-2 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col space-y-4">
-            <div className="flex flex-col md:flex-row justify-center">
+            <div
+              className={`flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center ${
+                user?.role === "ADMINISTRATOR"
+                  ? "md:justify-between"
+                  : "md:justify-center"
+              }`}
+            >
               <div className="flex w-full md:w-1/2">
                 <TextField
                   type="text"
@@ -73,6 +82,9 @@ export default function Rooms() {
                   <SearchIcon className="h-6 w-6" aria-hidden="true" />
                 </Button>
               </div>
+              {user?.role === "ADMINISTRATOR" && (
+                <RoomCreationModal onSuccess={() => fetchPage()} />
+              )}
             </div>
             <hr className="border-gray-300 dark:border-gray-400" />
             {loading && (

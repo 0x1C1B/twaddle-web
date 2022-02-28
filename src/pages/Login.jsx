@@ -72,6 +72,7 @@ export default function Login() {
                     name="username"
                     type="text"
                     placeholder="Username"
+                    disabled={loading}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
                     value={props.values.username}
@@ -84,6 +85,7 @@ export default function Login() {
                     name="password"
                     type="password"
                     placeholder="Password"
+                    disabled={loading}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
                     value={props.values.password}
