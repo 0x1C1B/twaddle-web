@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Formik } from "formik";
+import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -9,6 +11,7 @@ import {
   PlusIcon,
   TrashIcon,
   PencilIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 import StackTemplate from "../components/templates/StackTemplate";
 import RoomCreationModal from "../components/organisms/RoomCreationModal";
@@ -19,6 +22,10 @@ import Button from "../components/atoms/Button";
 import Avatar from "../components/atoms/Avatar";
 import authSlice from "../store/slices/auth";
 
+const schema = yup.object().shape({
+  search: yup.string().required("Is required"),
+});
+
 export default function Rooms() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,12 +33,15 @@ export default function Rooms() {
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
 
+  const [page, setPage] = useState(0);
+  const [search, setSearch] = useState(null);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageable, setPageable] = useState(null);
   const [rooms, setRooms] = useState([]);
 
-  const fetchPage = (page = 0) => {
+  const fetchPage = (index = 0, filter = undefined) => {
     setLoading(true);
     setError(null);
 
@@ -39,7 +49,7 @@ export default function Rooms() {
       .get("/rooms", {
         baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
         headers: { Authorization: `Bearer ${token}` },
-        params: { page },
+        params: { page: index, filter },
       })
       .then((res) => {
         setRooms(res.data.content);
@@ -61,9 +71,14 @@ export default function Rooms() {
   }, []);
 
   useEffect(() => {
-    fetchPage();
+    if (!loading) {
+      fetchPage(
+        page,
+        search ? `name=like=${search},description=like=${search}` : undefined
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, navigate, token]);
+  }, [token, page, search]);
 
   return (
     <StackTemplate>
@@ -78,14 +93,40 @@ export default function Rooms() {
               }`}
             >
               <div className="flex w-full md:w-1/2">
-                <TextField
-                  type="text"
-                  placeholder="Room name"
-                  className="rounded-r-none grow"
-                />
-                <Button className="border-l-0 rounded-l-none">
-                  <SearchIcon className="h-6 w-6" aria-hidden="true" />
-                </Button>
+                <Formik
+                  initialValues={{ search: "" }}
+                  onSubmit={(values, { resetForm }) => {
+                    setSearch(values.search);
+                    resetForm();
+                  }}
+                  validationSchema={schema}
+                >
+                  {(props) => (
+                    <form
+                      className="flex w-full"
+                      onSubmit={props.handleSubmit}
+                      noValidate
+                    >
+                      <TextField
+                        type="text"
+                        name="search"
+                        placeholder="Search room"
+                        value={props.values.search}
+                        onChange={props.handleChange}
+                        onBlur={props.handleBlur}
+                        disabled={loading}
+                        className="rounded-r-none grow"
+                      />
+                      <Button
+                        type="submit"
+                        disabled={loading}
+                        className="border-l-0 rounded-l-none"
+                      >
+                        <SearchIcon className="h-6 w-6" aria-hidden="true" />
+                      </Button>
+                    </form>
+                  )}
+                </Formik>
               </div>
               {user?.role === "ADMINISTRATOR" && (
                 <RoomCreationModal onSuccess={() => fetchPage()}>
@@ -108,6 +149,21 @@ export default function Rooms() {
             )}
             {!loading && error && (
               <p className="text-center text-red-500">{error}</p>
+            )}
+            {!loading && !error && search && search !== "" && (
+              <div className="flex max-w-full">
+                <div className="block max-w-full p-2 leading-none text-center whitespace-nowrap align-baseline font-bold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded flex items-center space-x-1">
+                  <button
+                    onClick={() => setSearch("")}
+                    className="rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white disabled:opacity-50"
+                  >
+                    <XIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  <div className="truncate p-1">
+                    <span className="font-normal">Filter:</span> {search}
+                  </div>
+                </div>
+              </div>
             )}
             {!loading && !error && rooms.length <= 0 && (
               <p className="text-center text-gray-800 dark:text-white">
@@ -190,7 +246,7 @@ export default function Rooms() {
                     variant="primary"
                     disabled={pageable.page * pageable.perPage + 1 <= 1}
                     className="border-r-0 rounded-r-none inline-flex"
-                    onClick={() => fetchPage(pageable.page - 1)}
+                    onClick={() => setPage(pageable.page - 1)}
                   >
                     <ArrowLeftIcon
                       className="h-6 w-6 mr-2"
@@ -207,7 +263,7 @@ export default function Rooms() {
                       ) >= pageable.totalElements
                     }
                     className="border-l-0 rounded-l-none inline-flex"
-                    onClick={() => fetchPage(pageable.page + 1)}
+                    onClick={() => setPage(pageable.page + 1)}
                   >
                     Next
                     <ArrowRightIcon
