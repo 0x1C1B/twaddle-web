@@ -42,6 +42,33 @@ export const login = createAsyncThunk(
   }
 );
 
+export const refreshUser = createAsyncThunk(
+  "auth/refresh-user",
+  async (payload, { rejectWithValue, getState }) => {
+    try {
+      const username = getState().auth?.user?.username;
+      const token = getState().auth?.token;
+
+      const res = await axios.get(`/users/${username}`, {
+        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const userData = res.data;
+
+      return { user: userData };
+    } catch (err) {
+      if (err.response) {
+        return rejectWithValue(err.response.data);
+      }
+
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -67,6 +94,17 @@ const authSlice = createSlice({
         token: null,
         expiration: null,
         user: null,
+      };
+    },
+    [refreshUser.fulfilled]: (state, action) => {
+      return {
+        ...state,
+        user: action.payload.user,
+      };
+    },
+    [refreshUser.rejected]: (state) => {
+      return {
+        ...state,
       };
     },
   },

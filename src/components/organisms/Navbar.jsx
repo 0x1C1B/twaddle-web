@@ -34,23 +34,25 @@ export default function Navbar() {
       <div className="xl:container mx-auto px-2 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex-shrink-0 flex items-center">
-              <img
-                className="block lg:hidden h-8 w-auto"
-                src={Logo}
-                alt="Logo"
-              />
-              <img
-                className="hidden lg:block lg:dark:hidden h-8 w-auto"
-                src={LogoTextDark}
-                alt="Logo"
-              />
-              <img
-                className="hidden lg:dark:block h-8 w-auto"
-                src={LogoTextLight}
-                alt="Logo"
-              />
-            </div>
+            <Link to="/">
+              <div className="flex-shrink-0 flex items-center">
+                <img
+                  className="block lg:hidden h-8 w-auto"
+                  src={Logo}
+                  alt="Logo"
+                />
+                <img
+                  className="hidden lg:block lg:dark:hidden h-8 w-auto"
+                  src={LogoTextDark}
+                  alt="Logo"
+                />
+                <img
+                  className="hidden lg:dark:block h-8 w-auto"
+                  src={LogoTextLight}
+                  alt="Logo"
+                />
+              </div>
+            </Link>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <Popover className="relative">
@@ -119,8 +121,15 @@ export default function Navbar() {
                           </Link>
                         </div>
                       )}
-                      <div className="p-2 text-gray-800 dark:text-white">
-                        <div className="flex justify-between items-center">
+                      <div className="p-2 text-gray-800 dark:text-white flex flex-col space-y-2">
+                        {token && Date.now() < expiration && (
+                          <Link to="/settings">
+                            <div className="flex justify-left items-center p-2 hover:bg-gray-100 hover:cursor-pointer hover:dark:bg-gray-700 rounded">
+                              <div className="text-sm">Settings</div>
+                            </div>
+                          </Link>
+                        )}
+                        <div className="flex justify-between items-center p-2 rounded">
                           <div className="text-sm">Dark Mode</div>
                           <div>
                             <Switch

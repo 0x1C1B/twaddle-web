@@ -228,7 +228,7 @@ export default function Room() {
   return (
     <StackTemplate>
       <div className="h-full bg-white dark:bg-gray-600">
-        <div className="xl:container mx-auto px-2 sm:px-6 lg:px-8 py-4 h-full">
+        <div className="xl:container mx-auto px-3 sm:px-6 lg:px-8 py-4 h-full">
           <div className="flex flex-col space-y-4 h-full">
             {apiLoading && (
               <div className="flex justify-center">

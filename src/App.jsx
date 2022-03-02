@@ -6,6 +6,7 @@ import Rooms from "./pages/Rooms";
 import Room from "./pages/Room";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import { SocketProvider } from "./contexts/socket";
 
@@ -39,6 +40,14 @@ export default function App() {
             <SocketProvider>
               <Room />
             </SocketProvider>
+          </RouteProtector>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <RouteProtector>
+            <Settings />
           </RouteProtector>
         }
       />
