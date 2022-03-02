@@ -31,7 +31,7 @@ export default function Navbar() {
 
   return (
     <div className="bg-gray-100 dark:bg-gray-800">
-      <div className="xl:container mx-auto px-2 sm:px-6 lg:px-8">
+      <div className="xl:container mx-auto px-4">
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
             <Link to="/">
@@ -84,12 +84,12 @@ export default function Navbar() {
                                 {user.username}
                               </span>
                               {user.role === "ADMINISTRATOR" && (
-                                <span class="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
+                                <span className="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
                                   Administrator
                                 </span>
                               )}
                               {user.role === "MODERATOR" && (
-                                <span class="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
+                                <span className="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
                                   Moderator
                                 </span>
                               )}

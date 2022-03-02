@@ -83,7 +83,7 @@ export default function Rooms() {
   return (
     <StackTemplate>
       <div className="h-full bg-white dark:bg-gray-600">
-        <div className="xl:container mx-auto px-3 sm:px-6 lg:px-8 py-4">
+        <div className="xl:container mx-auto p-4">
           <div className="flex flex-col space-y-4">
             <div
               className={`flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center ${

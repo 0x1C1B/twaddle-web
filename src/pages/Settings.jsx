@@ -16,7 +16,7 @@ export default function Settings() {
   return (
     <StackTemplate>
       <div className="h-full bg-white dark:bg-gray-600">
-        <div className="xl:container mx-auto px-3 sm:px-6 lg:px-8 py-4">
+        <div className="xl:container mx-auto p-4">
           <div className="flex flex-col space-y-4">
             <div className="w-full flex space-x-4 items-center max-w-full text-gray-800 dark:text-white">
               <div className="bg-gray-200 text-gray-800 dark:bg-gray-900 dark:text-white p-2 rounded-full">
@@ -33,7 +33,7 @@ export default function Settings() {
               as="div"
               className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8"
             >
-              <div className="w-full md:w-1/3 lg:1/5 space-y-4">
+              <div className="w-full md:w-1/3 lg:1/6 space-y-4">
                 <Tab.List className="rounded-xl w-full text-gray-700 dark:text-gray-200">
                   <Tab
                     className={({ selected }) =>
@@ -50,7 +50,7 @@ export default function Settings() {
                   </Tab>
                 </Tab.List>
               </div>
-              <Tab.Panels as="div" className="w-full md:w-2/3 lg:4/5">
+              <Tab.Panels as="div" className="w-full md:w-2/3 lg:5/6">
                 <Tab.Panel>
                   <AccountSettingsTab />
                 </Tab.Panel>

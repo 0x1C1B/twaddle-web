@@ -11,7 +11,7 @@ export default function NotFound() {
 
   return (
     <StackTemplate>
-      <div className="h-full bg-white dark:bg-gray-600 flex items-center justify-center p-3">
+      <div className="h-full bg-white dark:bg-gray-600 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
           <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 justify-center items-center text-gray-800 dark:text-white">
             <div className="w-1/2 sm:w-1/3 md:w-2/3">

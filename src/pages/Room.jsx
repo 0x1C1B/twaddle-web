@@ -228,7 +228,7 @@ export default function Room() {
   return (
     <StackTemplate>
       <div className="h-full bg-white dark:bg-gray-600">
-        <div className="xl:container mx-auto px-3 sm:px-6 lg:px-8 py-4 h-full">
+        <div className="xl:container mx-auto h-full">
           <div className="flex flex-col space-y-4 h-full">
             {apiLoading && (
               <div className="flex justify-center">
@@ -239,8 +239,8 @@ export default function Room() {
               <p className="text-center text-red-500">{apiError}</p>
             )}
             {!apiLoading && !apiError && (
-              <div className="flex flex-col grow bg-gray-100 dark:bg-gray-500 rounded-md">
-                <div className="bg-gray-200 dark:bg-gray-700 px-3 py-2 dark:text-white rounded-t-md flex justify-between">
+              <div className="flex flex-col grow bg-gray-100 dark:bg-gray-500">
+                <div className="bg-gray-200 dark:bg-gray-700 px-3 py-2 dark:text-white flex justify-between">
                   <nav className="rounded-md w-full">
                     <ol className="list-reset flex">
                       <li>
@@ -270,7 +270,7 @@ export default function Room() {
                     />
                   )}
                 </div>
-                <div className="grow h-0 overflow-y-scroll px-3 py-2">
+                <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-2">
                   {socketLoading && (
                     <div className="flex justify-center">
                       <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />
@@ -297,9 +297,9 @@ export default function Room() {
                               }`}
                             >
                               <div className="text-sm font-bold truncate">
-                                {message.user}
+                                {message.username}
                               </div>
-                              <div className="w-full break-words">
+                              <div className="w-full break-all whitespace-pre-wrap">
                                 {message.content}
                               </div>
                               <div className="w-fit text-xs self-end">
@@ -348,12 +348,12 @@ export default function Room() {
                           onChange={props.handleChange}
                           onBlur={props.handleBlur}
                           disabled={apiLoading || socketLoading || apiError}
-                          className="rounded-tl-none rounded-r-none resize-none"
+                          className="rounded-none resize-none"
                         />
                       </div>
                       <Button
                         type="submit"
-                        className="border-l-0 rounded-l-none rounded-t-none"
+                        className="border-l-0 rounded-none"
                         disabled={
                           !(props.isValid && props.dirty) ||
                           apiLoading ||
