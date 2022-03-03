@@ -8,7 +8,6 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import { SocketProvider } from "./contexts/socket";
 
 export default function App() {
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -37,9 +36,7 @@ export default function App() {
         path="/rooms/:roomId"
         element={
           <RouteProtector>
-            <SocketProvider>
-              <Room />
-            </SocketProvider>
+            <Room />
           </RouteProtector>
         }
       />
