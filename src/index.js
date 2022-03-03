@@ -8,6 +8,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import "./styles/index.css";
+import "emoji-mart/css/emoji-mart.css";
 
 ReactDOM.render(
   <React.StrictMode>

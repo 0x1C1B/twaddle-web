@@ -1,21 +1,10 @@
 import { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  PaperAirplaneIcon,
-  StatusOnlineIcon,
-  StatusOfflineIcon,
-} from "@heroicons/react/solid";
+import { StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/react/solid";
 import io from "socket.io-client";
-import { Formik } from "formik";
-import * as yup from "yup";
+import MessageInput from "../molecules/MessageInput";
 import Avatar from "../atoms/Avatar";
-import Button from "../atoms/Button";
-import TextArea from "../atoms/TextArea";
-
-const schema = yup.object().shape({
-  message: yup.string().required("Is required"),
-});
 
 export default function ChatBox({ room, ticket }) {
   const socketRef = useRef(null);
@@ -242,48 +231,7 @@ export default function ChatBox({ room, ticket }) {
           </div>
         )}
       </div>
-      <Formik
-        initialValues={{ message: "" }}
-        onSubmit={onSendMessage}
-        validationSchema={schema}
-      >
-        {(props) => (
-          <form
-            className="flex w-full shrink"
-            onSubmit={props.handleSubmit}
-            noValidate
-          >
-            <div className="w-full">
-              <TextArea
-                autoFocus
-                rows="1"
-                name="message"
-                placeholder="Message"
-                value={props.values.message}
-                onChange={props.handleChange}
-                onBlur={props.handleBlur}
-                disabled={connecting || joining || error}
-                className="rounded-none resize-none"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="border-l-0 rounded-none"
-              disabled={
-                !(props.isValid && props.dirty) ||
-                connecting ||
-                joining ||
-                error
-              }
-            >
-              <PaperAirplaneIcon
-                className="h-6 w-6 rotate-90"
-                aria-hidden="true"
-              />
-            </Button>
-          </form>
-        )}
-      </Formik>
+      <MessageInput onSubmit={onSendMessage} diabled={!connected || !joined} />
     </div>
   );
 }
