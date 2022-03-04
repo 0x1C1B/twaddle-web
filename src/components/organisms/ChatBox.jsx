@@ -36,6 +36,7 @@ export default function ChatBox({ room, ticket }) {
       socketRef.current = io(process.env.REACT_APP_TWADDLE_WS_URI, {
         autoConnect: false,
         reconnection: false,
+        transports: ["websocket"],
         query: {
           ticket,
         },
