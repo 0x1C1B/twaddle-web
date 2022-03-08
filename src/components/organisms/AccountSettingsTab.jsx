@@ -146,7 +146,7 @@ export default function AccountSettingsTab() {
               >
                 <div className="grow">
                   <TextField
-                    type="text"
+                    type="email"
                     name="email"
                     placeholder={user.email}
                     value={props.values.email}

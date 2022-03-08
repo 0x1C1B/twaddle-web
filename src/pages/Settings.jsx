@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Tab } from "@headlessui/react";
-import { CogIcon } from "@heroicons/react/solid";
+import { CogIcon, BanIcon } from "@heroicons/react/solid";
 import AccountSettingsTab from "../components/organisms/AccountSettingsTab";
+import BlockedUsersSettingsTab from "../components/organisms/BlockedUsersSettingsTab";
 import Avatar from "../components/atoms/Avatar";
 import StackTemplate from "../components/templates/StackTemplate";
 
@@ -48,11 +49,34 @@ export default function Settings() {
                     <CogIcon className="h-6 w-6" aria-hidden="true" />
                     <div>Account</div>
                   </Tab>
+                  {(user.role === "ADMINISTRATOR" ||
+                    user.role === "MODERATOR") && (
+                    <>
+                      <hr className="border-gray-300 dark:border-gray-400 mt-2 mb-4" />
+                      <h3 className="px-2 text-xs mb-2">Moderation</h3>
+                      <Tab
+                        className={({ selected }) =>
+                          `w-full flex items-center space-x-2 p-2 text-sm leading-5 font-medium rounded-lg
+                      ${
+                        selected
+                          ? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
+                          : "hover:bg-gray-100 hover:dark:bg-gray-700"
+                      }`
+                        }
+                      >
+                        <BanIcon className="h-6 w-6" aria-hidden="true" />
+                        <div>Manage blocked accounts</div>
+                      </Tab>
+                    </>
+                  )}
                 </Tab.List>
               </div>
               <Tab.Panels as="div" className="w-full md:w-2/3 lg:5/6">
                 <Tab.Panel>
                   <AccountSettingsTab />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <BlockedUsersSettingsTab />
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>

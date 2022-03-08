@@ -58,7 +58,17 @@ export default function ChatBox({ room, ticket }) {
       socketRef.current.on("connect_error", (err) => {
         // eslint-disable-next-line no-console
         console.error("Socket connection error occurred", err);
-        setError("An unexpected error occurred, please retry!");
+
+        if (err.data && err.data.code === "AccountBlockedError") {
+          setError("Your account is blocked, you can't participate in chats!");
+        } else if (err.data && err.data.code === "AlreadyConnectedError") {
+          setError(
+            "It seems that there is already a connection, only one connection to the chat is allowed at a time!"
+          );
+        } else {
+          setError("An unexpected error occurred, please retry!");
+        }
+
         setConnecting(false);
       });
 
