@@ -36,7 +36,7 @@ export default function MessageInput({ onSubmit, disabled }) {
     >
       {(props) => (
         <form
-          className="flex w-full p-2 space-x-2 bg-gray-200 dark:bg-gray-600"
+          className="flex w-full p-2 space-x-2 bg-gray-200 dark:bg-gray-500"
           onSubmit={props.handleSubmit}
           noValidate
         >

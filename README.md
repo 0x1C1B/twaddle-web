@@ -23,6 +23,9 @@ a fully browser-based interface based on a Single Page Application (SPA).
 
 ![User Interface](docs/images/ui.png)
 
+In addition to the classic features for users, the interface also supports numerous
+administrative features and those used to moderate the chats.
+
 ## Architecture
 
 Architecturally, it is a JavaScript-based browser application. The application runs

@@ -187,7 +187,7 @@ export default function ChatBox({ room, ticket }) {
           />
         )}
       </div>
-      <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-4">
+      <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-4 wallpaper-light dark:wallpaper-dark">
         {(connecting || joining) && !error && (
           <div className="flex justify-center">
             <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />

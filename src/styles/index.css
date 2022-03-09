@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .wallpaper-dark {
+    background-image: url("../assets/images/wallpaper-dark.svg");
+    background-repeat: repeat;
+  }
+
+  .wallpaper-light {
+    background-image: url("../assets/images/wallpaper-light.svg");
+    background-repeat: repeat;
+  }
+}
