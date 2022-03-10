@@ -15,9 +15,10 @@ import LogoTextDark from "../../assets/images/logo-text-dark.svg";
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const token = useSelector((state) => state.auth.token);
   const expiration = useSelector((state) => state.auth.expiration);
-  const user = useSelector((state) => state.auth.user);
+  const principal = useSelector((state) => state.auth.principal);
   const darkMode = useSelector((state) => state.theme.darkMode);
 
   const onLogout = () => {
@@ -71,24 +72,24 @@ export default function Navbar() {
                     leaveTo="opacity-0 translate-y-1"
                   >
                     <Popover.Panel className="absolute shadow-md border dark:border-gray-900 rounded-md z-10 mt-3 w-screen max-w-xs sm:max-w-sm right-0 bg-white dark:bg-gray-600 text-gray-800 dark:text-white">
-                      {token && Date.now() < expiration ? (
+                      {token && Date.now() < expiration && principal ? (
                         <div className="p-4 bg-gray-100 dark:bg-gray-800 flex space-x-4 items-center justify-between">
                           <div className="flex space-x-4 items-center">
                             <div className="bg-gray-200 text-gray-800 dark:bg-gray-900 dark:text-white p-2 rounded-full">
                               <div className="h-10 aspect-square rounded-md">
-                                <Avatar value={user.username} />
+                                <Avatar value={principal.username} />
                               </div>
                             </div>
                             <div className="space-y-1">
                               <span className="block text-lg">
-                                {user.username}
+                                {principal.username}
                               </span>
-                              {user.role === "ADMINISTRATOR" && (
+                              {principal.role === "ADMINISTRATOR" && (
                                 <span className="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
                                   Administrator
                                 </span>
                               )}
-                              {user.role === "MODERATOR" && (
+                              {principal.role === "MODERATOR" && (
                                 <span className="block p-1 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-amber-500 text-white rounded">
                                   Moderator
                                 </span>

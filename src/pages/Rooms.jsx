@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   SearchIcon,
   ArrowLeftIcon,
@@ -20,18 +19,16 @@ import RoomUpdateModal from "../components/organisms/RoomUpdateModal";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
 import Avatar from "../components/atoms/Avatar";
-import authSlice from "../store/slices/auth";
+import { fetchRooms } from "../api/rooms";
 
 const schema = yup.object().shape({
   search: yup.string().required("Is required"),
 });
 
 export default function Rooms() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token = useSelector((state) => state.auth.token);
-  const user = useSelector((state) => state.auth.user);
+  const principal = useSelector((state) => state.auth.principal);
 
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState(null);
@@ -41,29 +38,26 @@ export default function Rooms() {
   const [pageable, setPageable] = useState(null);
   const [rooms, setRooms] = useState([]);
 
-  const fetchPage = (index = 0, filter = undefined) => {
+  const onFetchPage = async (_page, _filter) => {
     setLoading(true);
     setError(null);
 
-    axios
-      .get("/rooms", {
-        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-        headers: { Authorization: `Bearer ${token}` },
-        params: { page: index, filter },
-      })
-      .then((res) => {
-        setRooms(res.data.content);
-        setPageable(res.data.info);
-      })
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "InvalidTokenError") {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await fetchRooms(_page, _filter);
+
+      setRooms(res.data.content);
+      setPageable(res.data.info);
+    } catch (err) {
+      if (err.response && err.response.data?.code === "InvalidTokenError") {
+        navigate("/login");
+      } else {
+        setError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -72,13 +66,13 @@ export default function Rooms() {
 
   useEffect(() => {
     if (!loading) {
-      fetchPage(
+      onFetchPage(
         page,
         search ? `name=like=${search},description=like=${search}` : undefined
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, page, search]);
+  }, [page, search]);
 
   return (
     <StackTemplate>
@@ -87,7 +81,7 @@ export default function Rooms() {
           <div className="flex flex-col space-y-4">
             <div
               className={`flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center ${
-                user?.role === "ADMINISTRATOR"
+                principal?.role === "ADMINISTRATOR"
                   ? "md:justify-between"
                   : "md:justify-center"
               }`}
@@ -128,8 +122,8 @@ export default function Rooms() {
                   )}
                 </Formik>
               </div>
-              {user?.role === "ADMINISTRATOR" && (
-                <RoomCreationModal onSuccess={() => fetchPage()}>
+              {principal?.role === "ADMINISTRATOR" && (
+                <RoomCreationModal onSuccess={() => onFetchPage()}>
                   <Button
                     type="button"
                     variant="secondary"
@@ -176,7 +170,7 @@ export default function Rooms() {
                   <div key={room.id} className="flex">
                     <div
                       className={`shadow rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:brightness-110 hover:cursor-pointer p-4 max-h-36 grow flex space-x-4 ${
-                        user?.role === "ADMINISTRATOR" && "rounded-r-none"
+                        principal?.role === "ADMINISTRATOR" && "rounded-r-none"
                       }`}
                       onClick={() => navigate(`/rooms/${room.id}`)}
                     >
@@ -194,11 +188,11 @@ export default function Rooms() {
                         </div>
                       </div>
                     </div>
-                    {user?.role === "ADMINISTRATOR" && (
+                    {principal?.role === "ADMINISTRATOR" && (
                       <div className="flex flex-col py-3 px-1 bg-gray-200 dark:bg-gray-800 rounded-r-lg place-content-between">
                         <RoomUpdateModal
                           room={room}
-                          onSuccess={() => fetchPage()}
+                          onSuccess={() => onFetchPage()}
                         >
                           <button className="p-1 rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">
                             <PencilIcon
@@ -209,7 +203,7 @@ export default function Rooms() {
                         </RoomUpdateModal>
                         <RoomDeletionModal
                           roomId={room.id}
-                          onSuccess={() => fetchPage()}
+                          onSuccess={() => onFetchPage()}
                         >
                           <button className="p-1 rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">
                             <TrashIcon className="h-6 w-6" aria-hidden="true" />

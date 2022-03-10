@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import axios from "axios";
 import StackTemplate from "../components/templates/StackTemplate";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
+import { createUser } from "../api/users";
 
 import Logo from "../assets/images/logo.svg";
 
@@ -24,41 +24,41 @@ export default function Register() {
     document.title = "Twaddle Web | Register";
   }, []);
 
-  const onSubmit = (values, { setFieldError }) => {
+  const onCreate = async (values, { setFieldError }) => {
     setLoading(true);
     setError(null);
 
-    axios
-      .post(
-        "/users",
-        {
-          username: values.username,
-          email: values.email,
-          password: values.password,
-        },
-        { baseURL: process.env.REACT_APP_TWADDLE_REST_URI }
-      )
-      .then(() => navigate("/login"))
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "UsernameAlreadyInUseError"
-        ) {
-          setFieldError("username", "Is already in use");
-        } else if (
-          err.response &&
-          err.response.data?.code === "EmailAlreadyInUseError"
-        ) {
-          setFieldError("email", "Is already in use");
-        } else {
-          setError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setLoading(false));
+    try {
+      await createUser({
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      });
+
+      navigate("/login");
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (
+        err.response &&
+        err.response.data?.code === "UsernameAlreadyInUseError"
+      ) {
+        setFieldError("username", "Is already in use");
+      } else if (
+        err.response &&
+        err.response.data?.code === "EmailAlreadyInUseError"
+      ) {
+        setFieldError("email", "Is already in use");
+      } else {
+        setError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,7 +79,7 @@ export default function Register() {
           <Formik
             initialValues={{ username: "", email: "", password: "" }}
             validationSchema={schema}
-            onSubmit={onSubmit}
+            onSubmit={onCreate}
           >
             {(props) => (
               <form

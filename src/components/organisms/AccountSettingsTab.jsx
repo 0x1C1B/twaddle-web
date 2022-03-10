@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import TextField from "../atoms/TextField";
 import Button from "../atoms/Button";
-import authSlice, { refreshUser } from "../../store/slices/auth";
+import authSlice from "../../store/slices/auth";
+import { updateUser } from "../../api/users";
 import AccountDeletionModal from "./AccountDeletionModal";
 
 const emailSchema = yup.object().shape({
@@ -25,8 +25,7 @@ export default function AccountSettingsTab() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
+  const principal = useSelector((state) => state.auth.principal);
 
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailSuccess, setEmailSuccess] = useState(false);
@@ -36,7 +35,7 @@ export default function AccountSettingsTab() {
   const [passwordSuccess, setPaswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState(null);
 
-  const onUpdateEmail = (values, { setFieldError, resetForm }) => {
+  const onUpdateEmail = async (values, { setFieldError, resetForm }) => {
     setEmailLoading(true);
     setEmailSuccess(false);
     setEmailError(null);
@@ -47,71 +46,78 @@ export default function AccountSettingsTab() {
       update.email = values.email;
     }
 
-    axios
-      .patch(`/users/${user.username}`, update, {
-        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => dispatch(refreshUser()))
-      .then(() => setEmailSuccess(true))
-      .then(() => resetForm())
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "EmailAlreadyInUseError"
-        ) {
-          setFieldError("email", "Is already in use");
-        } else if (
-          err.response &&
-          err.response.data?.code === "InvalidTokenError"
-        ) {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setEmailError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setEmailLoading(false));
+    try {
+      const res = await updateUser(principal.username, update);
+
+      dispatch(
+        authSlice.actions.setPrincipal({
+          principal: res.data,
+        })
+      );
+
+      setEmailSuccess(true);
+      resetForm();
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (
+        err.response &&
+        err.response.data?.code === "EmailAlreadyInUseError"
+      ) {
+        setFieldError("email", "Is already in use");
+      } else if (
+        err.response &&
+        err.response.data?.code === "InvalidTokenError"
+      ) {
+        dispatch(authSlice.actions.logout());
+        navigate("/login");
+      } else {
+        setEmailError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setEmailLoading(false);
+    }
   };
 
-  const onUpdatePassword = (values, { setFieldError, resetForm }) => {
+  const onUpdatePassword = async (values, { setFieldError, resetForm }) => {
     setPasswordLoading(true);
     setPaswordSuccess(false);
     setPasswordError(null);
 
     const update = {};
 
-    if (values.password && values.password !== "") {
-      update.password = values.password;
+    if (values.email && values.email !== "") {
+      update.email = values.email;
     }
 
-    axios
-      .patch(`/users/${user.username}`, update, {
-        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => setPaswordSuccess(true))
-      .then(() => resetForm())
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "InvalidTokenError"
-        ) {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setPasswordError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setPasswordLoading(false));
+    try {
+      await updateUser(principal.username, update);
+
+      setPaswordSuccess(true);
+      resetForm();
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (
+        err.response &&
+        err.response.data?.code === "InvalidTokenError"
+      ) {
+        dispatch(authSlice.actions.logout());
+        navigate("/login");
+      } else {
+        setPasswordError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -148,7 +154,7 @@ export default function AccountSettingsTab() {
                   <TextField
                     type="email"
                     name="email"
-                    placeholder={user.email}
+                    placeholder={principal.email}
                     value={props.values.email}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
@@ -264,7 +270,7 @@ export default function AccountSettingsTab() {
         </p>
         <div className="w-full">
           <AccountDeletionModal
-            username={user.username}
+            username={principal.username}
             onSuccess={() => {
               dispatch(authSlice.actions.logout());
               navigate("/login");

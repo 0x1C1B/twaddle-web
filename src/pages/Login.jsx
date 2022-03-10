@@ -6,7 +6,9 @@ import { useDispatch } from "react-redux";
 import StackTemplate from "../components/templates/StackTemplate";
 import TextField from "../components/atoms/TextField";
 import Button from "../components/atoms/Button";
-import { login } from "../store/slices/auth";
+import authSlice from "../store/slices/auth";
+import { fetchUser } from "../api/users";
+import { createToken } from "../api/tokens";
 
 import Logo from "../assets/images/logo.svg";
 
@@ -25,20 +27,43 @@ export default function Login() {
     document.title = "Twaddle Web | Login";
   }, []);
 
-  const onSubmit = (values) => {
+  const onLogin = async (values) => {
     setLoading(true);
+    setError(null);
 
-    dispatch(login({ username: values.username, password: values.password }))
-      .unwrap()
-      .then(() => navigate("/"))
-      .catch((err) => {
-        if (typeof err === "object" && err.code === "InvalidCredentialsError") {
-          return setError("Either username or password are wrong!");
-        }
+    try {
+      const tokenRes = await createToken(values.username, values.password);
 
-        return setError("An unexpected error occurred, please retry!");
-      })
-      .finally(() => setLoading(false));
+      dispatch(
+        authSlice.actions.login({
+          token: tokenRes.data.token,
+          expiration: new Date(
+            Date.now() + tokenRes.data.expires * 1000
+          ).getTime(),
+        })
+      );
+
+      const principalRes = await fetchUser(tokenRes.data.subject);
+
+      dispatch(
+        authSlice.actions.setPrincipal({ principal: principalRes.data })
+      );
+
+      navigate("/");
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.data?.code === "InvalidCredentialsError"
+      ) {
+        setError("Either username or password are wrong!");
+      } else {
+        setError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,7 +84,7 @@ export default function Login() {
           <Formik
             initialValues={{ username: "", password: "" }}
             validationSchema={schema}
-            onSubmit={onSubmit}
+            onSubmit={onLogin}
           >
             {(props) => (
               <form

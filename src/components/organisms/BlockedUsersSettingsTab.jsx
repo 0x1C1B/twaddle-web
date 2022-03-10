@@ -1,24 +1,19 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
 import { useNavigate } from "react-router-dom";
 import TextField from "../atoms/TextField";
 import Button from "../atoms/Button";
 import Avatar from "../atoms/Avatar";
-import authSlice from "../../store/slices/auth";
+import { updateUser, fetchUsers } from "../../api/users";
 
 const usernameSchema = yup.object().shape({
   username: yup.string().required("Is required"),
 });
 
 export default function BlockedUsersSettingsTab() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const token = useSelector((state) => state.auth.token);
 
   const [page, setPage] = useState(0);
 
@@ -35,109 +30,95 @@ export default function BlockedUsersSettingsTab() {
   const [unblockSuccess, setUnblockSuccess] = useState(false);
   const [unblockError, setUnblockError] = useState(null);
 
-  const fetchPage = (index = 0) => {
+  const onFetchPage = async (_page) => {
     setLoading(true);
     setError(null);
 
-    axios
-      .get("/users", {
-        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-        headers: { Authorization: `Bearer ${token}` },
-        params: { page: index, filter: "blocked==true" },
-      })
-      .then((res) => {
-        setUsers(res.data.content);
-        setPageable(res.data.info);
-      })
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "InvalidTokenError") {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await fetchUsers(_page, "blocked==true");
+
+      setUsers(res.data.content);
+      setPageable(res.data.info);
+    } catch (err) {
+      if (err.response && err.response.data?.code === "InvalidTokenError") {
+        navigate("/login");
+      } else {
+        setError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    if (!loading) {
-      fetchPage(page);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, page]);
-
-  const onBlockUser = (values, { setFieldError, resetForm }) => {
+  const onBlockUser = async (values, { setFieldError, resetForm }) => {
     setBlockLoading(true);
     setBlockSuccess(false);
     setBlockError(null);
 
-    axios
-      .patch(
-        `/users/${values.username}`,
-        { blocked: true },
-        {
-          baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then(() => setBlockSuccess(true))
-      .then(() => fetchPage(page))
-      .then(() => resetForm())
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "NotFoundError"
-        ) {
-          setFieldError("username", "User doesn't exist");
-        } else if (
-          err.response &&
-          err.response.data?.code === "MustBeAdministrableError"
-        ) {
-          setBlockError("Blocking the last administrator is not allowed!");
-        } else if (
-          err.response &&
-          err.response.data?.code === "InvalidTokenError"
-        ) {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setBlockError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setBlockLoading(false));
+    try {
+      await updateUser(values.username, { blocked: true });
+
+      setBlockSuccess(true);
+      onFetchPage(page);
+      resetForm();
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (err.response && err.response.data?.code === "NotFoundError") {
+        setFieldError("username", "User doesn't exist");
+      } else if (
+        err.response &&
+        err.response.data?.code === "MustBeAdministrableError"
+      ) {
+        setBlockError("Blocking the last administrator is not allowed!");
+      } else if (
+        err.response &&
+        err.response.data?.code === "InvalidTokenError"
+      ) {
+        navigate("/login");
+      } else {
+        setBlockError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setBlockLoading(false);
+    }
   };
 
-  const onUnblockUser = (username) => {
+  const onUnblockUser = async (username) => {
     setUnblockLoading(true);
     setUnblockSuccess(false);
     setUnblockError(null);
 
-    axios
-      .patch(
-        `/users/${username}`,
-        { blocked: false },
-        {
-          baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then(() => setUnblockSuccess(true))
-      .then(() => fetchPage(page))
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "InvalidTokenError") {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setUnblockError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setUnblockLoading(false));
+    try {
+      await updateUser(username, { blocked: false });
+
+      setUnblockSuccess(true);
+      onFetchPage(page);
+    } catch (err) {
+      if (err.response && err.response.data?.code === "InvalidTokenError") {
+        navigate("/login");
+      } else {
+        setUnblockError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setUnblockLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (!loading) {
+      onFetchPage(page);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   return (
     <div className="space-y-4">

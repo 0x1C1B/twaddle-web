@@ -18,7 +18,7 @@ export default function ChatBox({ room, ticket }) {
   const [error, setError] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  const user = useSelector((state) => state.auth.user);
+  const principal = useSelector((state) => state.auth.principal);
 
   const onSendMessage = (values, { resetForm }) => {
     socketRef.current.emit("twaddle/room:send", { message: values.message });
@@ -187,7 +187,7 @@ export default function ChatBox({ room, ticket }) {
           />
         )}
       </div>
-      <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-4 wallpaper-light dark:wallpaper-dark">
+      <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-4">
         {(connecting || joining) && !error && (
           <div className="flex justify-center">
             <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />
@@ -201,12 +201,12 @@ export default function ChatBox({ room, ticket }) {
                 <div
                   key={message.timestamp}
                   className={`w-fit min-w-[15rem] max-w-[100%] sm:max-w-[70%] flex items-end ${
-                    message.username === user.username && "self-end"
+                    message.username === principal.username && "self-end"
                   }`}
                 >
                   <div
                     className={`grow p-2 bg-white dark:bg-gray-600 text-gray-800 dark:text-white rounded-md flex flex-col space-y-1 ${
-                      message.username === user.username
+                      message.username === principal.username
                         ? "bg-amber-500 dark:bg-amber-500 text-white rounded-br-none order-first"
                         : "rounded-bl-none"
                     }`}
@@ -223,7 +223,7 @@ export default function ChatBox({ room, ticket }) {
                   </div>
                   <div
                     className={`h-8 aspect-square rounded-md ml-2 ${
-                      message.username !== user.username &&
+                      message.username !== principal.username &&
                       "order-first mr-2 ml-0"
                     }`}
                   >

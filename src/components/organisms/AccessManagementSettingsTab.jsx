@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Select from "../molecules/Select";
 import TextField from "../atoms/TextField";
 import Button from "../atoms/Button";
 import authSlice from "../../store/slices/auth";
+import { updateUser } from "../../api/users";
 
 const roles = ["MEMBER", "MODERATOR", "ADMINISTRATOR"];
 
@@ -20,13 +20,13 @@ export default function AccessManagementSettingsTab() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token = useSelector((state) => state.auth.token);
+  const principal = useSelector((state) => state.auth.principal);
 
   const [roleLoading, setRoleLoading] = useState(false);
   const [roleSuccess, setRoleSuccess] = useState(false);
   const [roleError, setRoleError] = useState(null);
 
-  const onChangeRole = (values, { setFieldError, resetForm }) => {
+  const onChangeRole = async (values, { setFieldError, resetForm }) => {
     setRoleLoading(true);
     setRoleSuccess(false);
     setRoleError(null);
@@ -37,41 +37,46 @@ export default function AccessManagementSettingsTab() {
       update.role = values.role;
     }
 
-    axios
-      .patch(`/users/${values.username}`, update, {
-        baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => setRoleSuccess(true))
-      .then(() => resetForm())
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "NotFoundError"
-        ) {
-          setFieldError("username", "User doesn't exist");
-        } else if (
-          err.response &&
-          err.response.data?.code === "MustBeAdministrableError"
-        ) {
-          setRoleError(
-            "Changing the role of the last administrator is not allowed!"
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "InvalidTokenError"
-        ) {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setRoleError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setRoleLoading(false));
+    try {
+      const res = await updateUser(values.username, update);
+
+      if (principal.username === values.username) {
+        dispatch(
+          authSlice.actions.setPrincipal({
+            principal: res.data,
+          })
+        );
+      }
+
+      setRoleSuccess(true);
+      resetForm();
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (err.response && err.response.data?.code === "NotFoundError") {
+        setFieldError("username", "User doesn't exist");
+      } else if (
+        err.response &&
+        err.response.data?.code === "MustBeAdministrableError"
+      ) {
+        setRoleError(
+          "Changing the role of the last administrator is not allowed!"
+        );
+      } else if (
+        err.response &&
+        err.response.data?.code === "InvalidTokenError"
+      ) {
+        navigate("/login");
+      } else {
+        setRoleError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setRoleLoading(false);
+    }
   };
 
   return (

@@ -9,7 +9,7 @@ import Avatar from "../components/atoms/Avatar";
 import StackTemplate from "../components/templates/StackTemplate";
 
 export default function Settings() {
-  const user = useSelector((state) => state.auth.user);
+  const principal = useSelector((state) => state.auth.principal);
 
   useEffect(() => {
     document.title = "Twaddle Web | Settings";
@@ -23,11 +23,13 @@ export default function Settings() {
             <div className="w-full flex space-x-4 items-center max-w-full text-gray-800 dark:text-white">
               <div className="bg-gray-200 text-gray-800 dark:bg-gray-900 dark:text-white p-2 rounded-full">
                 <div className="h-10 aspect-square rounded-md">
-                  <Avatar value={user.username} />
+                  <Avatar value={principal.username} />
                 </div>
               </div>
               <div className="space-y-1 max-w-full overflow-hidden">
-                <span className="block text-lg truncate">{user.username}</span>
+                <span className="block text-lg truncate">
+                  {principal.username}
+                </span>
                 <span className="block text-xs">Your personal account</span>
               </div>
             </div>
@@ -50,8 +52,8 @@ export default function Settings() {
                     <CogIcon className="h-6 w-6" aria-hidden="true" />
                     <div>Account</div>
                   </Tab>
-                  {(user.role === "ADMINISTRATOR" ||
-                    user.role === "MODERATOR") && (
+                  {(principal.role === "ADMINISTRATOR" ||
+                    principal.role === "MODERATOR") && (
                     <>
                       <hr className="border-gray-300 dark:border-gray-400 mt-2 mb-4" />
                       <h3 className="px-2 text-xs mb-2">Moderation</h3>
@@ -70,7 +72,7 @@ export default function Settings() {
                       </Tab>
                     </>
                   )}
-                  {user.role === "ADMINISTRATOR" && (
+                  {principal.role === "ADMINISTRATOR" && (
                     <>
                       <hr className="border-gray-300 dark:border-gray-400 mt-2 mb-4" />
                       <h3 className="px-2 text-xs mb-2">Administration</h3>

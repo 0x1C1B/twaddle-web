@@ -1,15 +1,13 @@
 import React, { Fragment, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
 import * as yup from "yup";
-import axios from "axios";
 import { Formik } from "formik";
 import TextField from "../atoms/TextField";
 import TextArea from "../atoms/TextArea";
 import Button from "../atoms/Button";
-import authSlice from "../../store/slices/auth";
+import { createRoom } from "../../api/rooms";
 
 const schema = yup.object().shape({
   name: yup
@@ -35,76 +33,67 @@ const schema = yup.object().shape({
  * @returns {JSX.Element} Returns the modal component
  */
 export default function RoomCreationModal({ onSuccess, children }) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const token = useSelector((state) => state.auth.token);
-
-  const closeModal = () => {
+  const onCloseModal = () => {
     if (!loading) {
       setOpen(false);
     }
   };
 
-  const openModal = () => {
+  const onOpenModal = () => {
     setOpen(true);
   };
 
-  const onSubmit = (values, { setFieldError }) => {
+  const onCreateRoom = async (values, { setFieldError }) => {
     setLoading(true);
     setError(null);
 
-    axios
-      .post(
-        "/rooms",
-        {
-          name: values.name,
-          description: values.description,
-        },
-        {
-          baseURL: process.env.REACT_APP_TWADDLE_REST_URI,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then(() => {
-        setOpen(false);
-        onSuccess();
-      })
-      .catch((err) => {
-        if (err.response && err.response.data?.code === "ValidationError") {
-          err.response.data.details?.forEach((detail) =>
-            setFieldError(detail.path, detail.message)
-          );
-        } else if (
-          err.response &&
-          err.response.data?.code === "RoomNameAlreadyInUseError"
-        ) {
-          setFieldError("name", "Is already in use");
-        } else if (
-          err.response &&
-          err.response.data?.code === "InvalidTokenError"
-        ) {
-          dispatch(authSlice.actions.logout());
-          navigate("/login");
-        } else {
-          setError("An unexpected error occurred, please retry!");
-        }
-      })
-      .finally(() => setLoading(false));
+    try {
+      await createRoom({
+        name: values.name,
+        description: values.description,
+      });
+
+      setOpen(false);
+      onSuccess();
+    } catch (err) {
+      if (err.response && err.response.data?.code === "ValidationError") {
+        err.response.data.details?.forEach((detail) =>
+          setFieldError(detail.path, detail.message)
+        );
+      } else if (
+        err.response &&
+        err.response.data?.code === "RoomNameAlreadyInUseError"
+      ) {
+        setFieldError("name", "Is already in use");
+      } else if (
+        err.response &&
+        err.response.data?.code === "InvalidTokenError"
+      ) {
+        navigate("/login");
+      } else {
+        setError("An unexpected error occurred, please retry!");
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      {React.cloneElement(children, { onClick: openModal })}
+      {React.cloneElement(children, { onClick: onOpenModal })}
 
       <Transition appear show={open} as={Fragment}>
         <Dialog
           as="div"
-          onClose={closeModal}
+          onClose={onCloseModal}
           className="fixed inset-0 z-10 overflow-y-auto"
         >
           <div className="min-h-screen px-4 text-center">
@@ -143,7 +132,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                     Add room
                   </Dialog.Title>
                   <button
-                    onClick={() => closeModal()}
+                    onClick={onCloseModal}
                     disabled={loading}
                     className="p-1 rounded-full text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white disabled:opacity-50"
                   >
@@ -154,7 +143,7 @@ export default function RoomCreationModal({ onSuccess, children }) {
                 <Formik
                   initialValues={{ name: "", description: "" }}
                   validationSchema={schema}
-                  onSubmit={onSubmit}
+                  onSubmit={onCreateRoom}
                 >
                   {(props) => (
                     <form
