@@ -6,8 +6,7 @@ import { Formik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import { PaperAirplaneIcon, EmojiHappyIcon } from "@heroicons/react/solid";
 import { Picker } from "emoji-mart";
-import Button from "../atoms/Button";
-import TextArea from "../atoms/TextArea";
+import TextField from "../atoms/TextField";
 
 const schema = yup.object().shape({
   message: yup.string().required("Is required"),
@@ -36,7 +35,7 @@ export default function MessageInput({ onSubmit, disabled }) {
     >
       {(props) => (
         <form
-          className="flex w-full p-2 space-x-2 bg-gray-200 dark:bg-gray-500"
+          className="flex w-full p-2 space-x-2"
           onSubmit={props.handleSubmit}
           noValidate
         >
@@ -45,7 +44,7 @@ export default function MessageInput({ onSubmit, disabled }) {
               <>
                 <Popover.Button
                   disabled={disabled}
-                  className="group h-full relative py-2 px-3 border border-transparent text-sm font-medium rounded-md focus:outline-none bg-white text-gray-800 dark:bg-gray-700 dark:text-white focus:outline-white dark:focus:outline-gray-700 hover:brightness-110 disabled:opacity-50"
+                  className="group h-full p-1 rounded-full text-gray-800 dark:text-white hover:brightness-110 disabled:opacity-50"
                 >
                   <EmojiHappyIcon className="h-6 w-6" aria-hidden="true" />
                 </Popover.Button>
@@ -78,7 +77,7 @@ export default function MessageInput({ onSubmit, disabled }) {
             )}
           </Popover>
           <div className="w-full">
-            <TextArea
+            <TextField
               autoFocus
               rows="1"
               name="message"
@@ -90,15 +89,16 @@ export default function MessageInput({ onSubmit, disabled }) {
               className="resize-none"
             />
           </div>
-          <Button
+          <button
             type="submit"
+            className="p-1 rounded-full text-lime-500 hover:brightness-110 disabled:opacity-50"
             disabled={!(props.isValid && props.dirty) || disabled}
           >
             <PaperAirplaneIcon
               className="h-6 w-6 rotate-90"
               aria-hidden="true"
             />
-          </Button>
+          </button>
         </form>
       )}
     </Formik>

@@ -1,10 +1,11 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useReducer } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/react/solid";
 import io from "socket.io-client";
 import MessageInput from "../molecules/MessageInput";
-import Avatar from "../atoms/Avatar";
+import Message from "../molecules/Message";
+import StatusInfo from "../molecules/StatusInfo";
 
 export default function ChatBox({ room, ticket }) {
   const socketRef = useRef(null);
@@ -16,7 +17,17 @@ export default function ChatBox({ room, ticket }) {
   const [joined, setJoined] = useState(false);
 
   const [error, setError] = useState(null);
-  const [messages, setMessages] = useState([]);
+
+  const [componentState, dispatchComponent] = useReducer(
+    (state, action) => {
+      if (action.type === "ADD_MESSAGE") {
+        return { ...state, messages: [...state.messages, action.message] };
+      }
+
+      return state;
+    },
+    { messages: [] }
+  );
 
   const principal = useSelector((state) => state.auth.principal);
 
@@ -118,35 +129,38 @@ export default function ChatBox({ room, ticket }) {
   useEffect(() => {
     if (joined) {
       socketRef.current.on("twaddle/room:message", (message) => {
-        setMessages([...messages, { ...message, type: "message" }]);
+        dispatchComponent({
+          type: "ADD_MESSAGE",
+          message: { ...message, type: "message" },
+        });
       });
 
       socketRef.current.on(
         "twaddle/room:user-joined",
         ({ user: joinedUser }) => {
-          setMessages([
-            ...messages,
-            {
+          dispatchComponent({
+            type: "ADD_MESSAGE",
+            message: {
               content: `'${joinedUser}' joined the room`,
               timestamp: new Date().toISOString(),
               type: "status",
             },
-          ]);
+          });
         }
       );
 
       socketRef.current.on("twaddle/room:user-left", ({ user: leftUser }) => {
-        setMessages([
-          ...messages,
-          {
+        dispatchComponent({
+          type: "ADD_MESSAGE",
+          message: {
             content: `'${leftUser}' left the room`,
             timestamp: new Date().toISOString(),
             type: "status",
           },
-        ]);
+        });
       });
     }
-  }, [joined, messages]);
+  }, [joined]);
 
   // Responsible for closing the connection on leave
   useEffect(() => {
@@ -187,7 +201,7 @@ export default function ChatBox({ room, ticket }) {
           />
         )}
       </div>
-      <div className="grow h-0 overflow-hidden overflow-y-scroll px-3 py-4">
+      <div className="grow h-0 overflow-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent dark:scrollbar-track-transparent px-3 py-4">
         {(connecting || joining) && !error && (
           <div className="flex justify-center">
             <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />
@@ -196,47 +210,15 @@ export default function ChatBox({ room, ticket }) {
         {error && <p className="text-center text-red-500">{error}</p>}
         {connected && joined && (
           <div className="space-y-2 flex flex-col">
-            {messages.map((message) =>
+            {componentState.messages.map((message) =>
               message.type === "message" ? (
-                <div
+                <Message
                   key={message.timestamp}
-                  className={`w-fit min-w-[15rem] max-w-[100%] sm:max-w-[70%] flex items-end ${
-                    message.username === principal.username && "self-end"
-                  }`}
-                >
-                  <div
-                    className={`grow p-2 bg-white dark:bg-gray-600 text-gray-800 dark:text-white rounded-md flex flex-col space-y-1 ${
-                      message.username === principal.username
-                        ? "bg-amber-500 dark:bg-amber-500 text-white rounded-br-none order-first"
-                        : "rounded-bl-none"
-                    }`}
-                  >
-                    <div className="text-sm font-bold truncate">
-                      {message.username}
-                    </div>
-                    <div className="w-full break-all whitespace-pre-wrap">
-                      {message.content}
-                    </div>
-                    <div className="w-fit text-xs self-end">
-                      {new Date(message.timestamp).toLocaleString()}
-                    </div>
-                  </div>
-                  <div
-                    className={`h-8 aspect-square rounded-md ml-2 ${
-                      message.username !== principal.username &&
-                      "order-first mr-2 ml-0"
-                    }`}
-                  >
-                    <Avatar value={message.username} />
-                  </div>
-                </div>
+                  message={message}
+                  principal={principal.username}
+                />
               ) : (
-                <div
-                  key={message.timestamp}
-                  className="p-2 text-xs bg-white dark:bg-gray-600 text-gray-800 dark:text-white w-fit rounded-md self-center"
-                >
-                  {message.content}
-                </div>
+                <StatusInfo key={message.timestamp} message={message} />
               )
             )}
           </div>

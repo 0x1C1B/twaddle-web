@@ -1,8 +1,15 @@
+const scrollbarPlugin = require("tailwind-scrollbar");
+
 module.exports = {
   darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {},
   },
-  plugins: [],
+  variants: {
+    extends: {
+      scrollbar: ["dark"],
+    },
+  },
+  plugins: [scrollbarPlugin],
 };
