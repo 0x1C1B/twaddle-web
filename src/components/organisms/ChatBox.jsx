@@ -10,6 +10,8 @@ import StatusInfo from "../molecules/StatusInfo";
 export default function ChatBox({ room, ticket }) {
   const socketRef = useRef(null);
 
+  const chatBox = useRef();
+
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
 
@@ -34,6 +36,21 @@ export default function ChatBox({ room, ticket }) {
   const onSendMessage = (values, { resetForm }) => {
     socketRef.current.emit("twaddle/room:send", { message: values.message });
     resetForm();
+  };
+
+  const onNewMessage = (message) => {
+    const isAtBottom =
+      chatBox.current.scrollTop >=
+      chatBox.current.scrollHeight - chatBox.current.offsetHeight;
+
+    dispatchComponent({
+      type: "ADD_MESSAGE",
+      message,
+    });
+
+    if (isAtBottom) {
+      chatBox.current.scrollTo(0, chatBox.current.scrollHeight);
+    }
   };
 
   // Responsible for establishing the connection on startup
@@ -129,34 +146,25 @@ export default function ChatBox({ room, ticket }) {
   useEffect(() => {
     if (joined) {
       socketRef.current.on("twaddle/room:message", (message) => {
-        dispatchComponent({
-          type: "ADD_MESSAGE",
-          message: { ...message, type: "message" },
-        });
+        onNewMessage({ ...message, type: "message" });
       });
 
       socketRef.current.on(
         "twaddle/room:user-joined",
         ({ user: joinedUser }) => {
-          dispatchComponent({
-            type: "ADD_MESSAGE",
-            message: {
-              content: `'${joinedUser}' joined the room`,
-              timestamp: new Date().toISOString(),
-              type: "status",
-            },
+          onNewMessage({
+            content: `'${joinedUser}' joined the room`,
+            timestamp: new Date().toISOString(),
+            type: "status",
           });
         }
       );
 
       socketRef.current.on("twaddle/room:user-left", ({ user: leftUser }) => {
-        dispatchComponent({
-          type: "ADD_MESSAGE",
-          message: {
-            content: `'${leftUser}' left the room`,
-            timestamp: new Date().toISOString(),
-            type: "status",
-          },
+        onNewMessage({
+          content: `'${leftUser}' left the room`,
+          timestamp: new Date().toISOString(),
+          type: "status",
         });
       });
     }
@@ -201,7 +209,10 @@ export default function ChatBox({ room, ticket }) {
           />
         )}
       </div>
-      <div className="grow h-0 overflow-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent dark:scrollbar-track-transparent px-3 py-4">
+      <div
+        ref={chatBox}
+        className="grow h-0 overflow-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent dark:scrollbar-track-transparent px-3 py-4"
+      >
         {(connecting || joining) && !error && (
           <div className="flex justify-center">
             <div className="w-6 h-6 border-b-2 border-lime-500 rounded-full animate-spin" />
@@ -213,7 +224,7 @@ export default function ChatBox({ room, ticket }) {
             {componentState.messages.map((message) =>
               message.type === "message" ? (
                 <Message
-                  key={message.timestamp}
+                  key={message.id}
                   message={message}
                   principal={principal.username}
                 />
