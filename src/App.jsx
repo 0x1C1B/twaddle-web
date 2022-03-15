@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { TwaddleChatProvider } from "./contexts/twaddle-chat";
 
 export default function App() {
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -36,7 +37,9 @@ export default function App() {
         path="/rooms/:roomId"
         element={
           <RouteProtector>
-            <Room />
+            <TwaddleChatProvider>
+              <Room />
+            </TwaddleChatProvider>
           </RouteProtector>
         }
       />
