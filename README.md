@@ -19,12 +19,11 @@ This is the UI of the Twaddle messenger, a messenger with user management
 for mutual communication exchange in real time. This project does not serve
 to replace existing messengers from production, but rather to understand
 communication processes in the area of messaging. However, the application offers
-a fully browser-based interface based on a Single Page Application (SPA).
+a fully browser-based interface based on a Single Page Application (SPA). By the
+way, the backend used by this application can be found here:
+[Twaddle API](https://github.com/0x1C1B/twaddle-api).
 
 ![User Interface](docs/images/ui.png)
-
-In addition to the classic features for users, the interface also supports numerous
-administrative features and those used to moderate the chats.
 
 ## Architecture
 
@@ -32,6 +31,14 @@ Architecturally, it is a JavaScript-based browser application. The application r
 on a single page application basis and is therefore highly reactive. To be clear,
 this is a monolithic architecture and therefore not a micro front end. Both HTTP-based
 communication and WebSocket-based communication are used to communicate with the backend.
+
+In relation to the overall architecture, there is a classic distributed system, so the
+front end and back end are completely separate from one another and are deployed
+independently of one another. The client, usually a web browser, first loads the front
+end in the form of static HTML, CSS and JavaScript and then loads the data from the API
+via AJAX. The UI and data are then assembled and rendered on the client side.
+
+![Architecture](docs/images/architecture.png)
 
 ## Deployment
 
