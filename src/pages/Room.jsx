@@ -5,6 +5,7 @@ import MessageBox from "../components/molecules/MessageBox";
 import { useTwaddleChat } from "../contexts/twaddle-chat";
 import { fetchRoom } from "../api/rooms";
 import { createTicket } from "../api/tickets";
+import { fetchMessages } from "../api/messages";
 
 export default function Room() {
   const { roomId } = useParams();
@@ -28,6 +29,7 @@ export default function Room() {
 
   const [room, setRoom] = useState(null);
   const [ticket, setTicket] = useState(null);
+  const [messageHistory, setMessageHistory] = useState(null);
 
   const onOpenRoom = async (id) => {
     setApiLoading(true);
@@ -35,9 +37,11 @@ export default function Room() {
 
     try {
       const roomRes = await fetchRoom(id);
+      const messagesRes = await fetchMessages(id, 0, "createdAt,desc");
       const ticketRes = await createTicket();
 
       setRoom(roomRes.data);
+      setMessageHistory(messagesRes.data.content.reverse());
       setTicket(ticketRes.data.ticket);
     } catch (err) {
       if (err.response && err.response.data?.code === "InvalidTokenError") {
@@ -100,7 +104,7 @@ export default function Room() {
                 connecting={connecting || joining}
                 connected={connected && joined}
                 error={error}
-                messages={messages}
+                messages={[...messageHistory, ...messages]}
                 onNewMessage={(message) => send(message)}
               />
             )}
