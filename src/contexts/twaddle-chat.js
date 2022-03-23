@@ -30,7 +30,7 @@ import io from "socket.io-client";
  * @property {() => void} disconnect
  * @property {(room: string) => void} join
  * @property {() => void} leave
- * @property {(message: string) => void} send
+ * @property {(content: string, type: string) => void} send
  */
 
 const TwaddleChatContext = React.createContext(null);
@@ -260,8 +260,8 @@ export function TwaddleChatProvider({ children }) {
     _leave();
   };
 
-  const send = (message) => {
-    socketRef.current.emit("twaddle/room:send", { message });
+  const send = (content, type = "text/plain") => {
+    socketRef.current.emit("twaddle/room:send", { content, type });
   };
 
   return (

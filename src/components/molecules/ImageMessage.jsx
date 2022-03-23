@@ -1,18 +1,18 @@
 import Avatar from "../atoms/Avatar";
 
 /**
- * @typedef {object} MessageProperties
- * @property {{type: "message", id: string, content: string, username: string, room: string, timestamp: string}} message
+ * @typedef {object} ImageMessageProperties
+ * @property {{type: "IMAGE", id: string, content: string, username: string, room: string, timestamp: string}} message
  * @property {string} principal
  */
 
 /**
- * Constructs a message component.
+ * Constructs a image message component.
  *
- * @param {MessageProperties} properties The message properties
+ * @param {ImageMessageProperties} properties The message properties
  * @returns Returns the message component
  */
-export default function Message({ message, principal }) {
+export default function ImageMessage({ message, principal }) {
   return (
     <div
       key={message.timestamp}
@@ -29,7 +29,7 @@ export default function Message({ message, principal }) {
       >
         <div className="text-sm font-bold truncate">{message.username}</div>
         <div className="w-full break-all whitespace-pre-wrap">
-          {message.content}
+          <img alt="Message" src={message.content} />
         </div>
         <div className="w-fit text-xs self-end">
           {new Date(message.timestamp).toLocaleString()}

@@ -105,7 +105,8 @@ export default function Room() {
                 connected={connected && joined}
                 error={error}
                 messages={[...messageHistory, ...messages]}
-                onNewMessage={(message) => send(message)}
+                onSendTextMessage={(content, type) => send(content, type)}
+                onSendImageMessage={(content, type) => send(content, type)}
               />
             )}
           </div>

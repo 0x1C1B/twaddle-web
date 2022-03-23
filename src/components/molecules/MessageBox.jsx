@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/react/solid";
 import MessageInput from "./MessageInput";
-import Message from "./Message";
+import TextMessage from "./TextMessage";
+import ImageMessage from "./ImageMessage";
 
 /**
  * @typedef {object} MessageBoxProperties
@@ -11,8 +12,9 @@ import Message from "./Message";
  * @property {boolean} connecting
  * @property {boolean} connected
  * @property {string} error
- * @property {[{id: string, content: string, username: string, room: string, timestamp: string}]} messages
- * @property {(message: string) => void} onNewMessage
+ * @property {[{id: string, type: "TEXT"|"IMAGE"|"AUDIO", content: string, username: string, room: string, timestamp: string}]} messages
+ * @property {(content: string, type: string) => void} onSendTextMessage
+ * @property {(content: string, type: string) => void} onSendImageMessage
  */
 
 /**
@@ -27,16 +29,12 @@ export default function MessageBox({
   connected,
   error,
   messages,
-  onNewMessage,
+  onSendTextMessage,
+  onSendImageMessage,
 }) {
   const chatBox = useRef();
   const [chatBoxStickyBottom, setChatBoxStickyBottom] = useState(true);
   const principal = useSelector((state) => state.auth.principal);
-
-  const onSendMessage = (values, { resetForm }) => {
-    onNewMessage(values.message);
-    resetForm();
-  };
 
   const onChatBoxScroll = () => {
     if (chatBox.current) {
@@ -101,17 +99,37 @@ export default function MessageBox({
         {error && <p className="text-center text-red-500">{error}</p>}
         {connected && (
           <div className="space-y-2 flex flex-col">
-            {messages.map((message) => (
-              <Message
-                key={message.id}
-                message={message}
-                principal={principal.username}
-              />
-            ))}
+            {messages.map((message) => {
+              switch (true) {
+                case /^image\/.+$/.test(message.type): {
+                  return (
+                    <ImageMessage
+                      key={message.id}
+                      message={message}
+                      principal={principal.username}
+                    />
+                  );
+                }
+                case /^text\/plain$/.test(message.type):
+                default: {
+                  return (
+                    <TextMessage
+                      key={message.id}
+                      message={message}
+                      principal={principal.username}
+                    />
+                  );
+                }
+              }
+            })}
           </div>
         )}
       </div>
-      <MessageInput onSubmit={onSendMessage} diabled={!connected} />
+      <MessageInput
+        onSendImageMessage={onSendImageMessage}
+        onSendTextMessage={onSendTextMessage}
+        diabled={!connected}
+      />
     </div>
   );
 }
