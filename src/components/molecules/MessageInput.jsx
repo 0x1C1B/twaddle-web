@@ -12,6 +12,7 @@ import {
 import { Picker } from "emoji-mart";
 import TextField from "../atoms/TextField";
 import FileButton from "../atoms/FileButton";
+import { uploadAttachment } from "../../api/attachments";
 
 const schema = yup.object().shape({
   message: yup.string().required("Is required"),
@@ -19,8 +20,8 @@ const schema = yup.object().shape({
 
 /**
  * @typedef {object} MessageInputProperties
- * @property {(content: string, type: string) => void} onSendTextMessage
- * @property {(content: string, type: string) => void} onSendImageMessage
+ * @property {(content: string) => void} onSendTextMessage
+ * @property {(attachment: string) => void} onSendImageMessage
  * @property {boolean} disabled
  */
 
@@ -38,20 +39,16 @@ export default function MessageInput({
   const darkMode = useSelector((state) => state.theme.darkMode);
 
   const onSubmitTextMessage = (values, { resetForm }) => {
-    onSendTextMessage(values.message, "text/plain");
+    onSendTextMessage(values.message);
     resetForm();
   };
 
-  const onSubmitImageMessage = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+  const onSubmitImageMessage = async (event) => {
+    const data = new FormData();
+    data.append("file", event.target.files[0]);
 
-    reader.onload = () => {
-      const mimeType = reader.result.split(",")[0].split(":")[1].split(";")[0];
-      onSendImageMessage(reader.result, mimeType);
-    };
-
-    reader.readAsDataURL(file);
+    const attachmentRes = await uploadAttachment(data);
+    onSendImageMessage(attachmentRes.data.id);
   };
 
   return (

@@ -30,7 +30,10 @@ import io from "socket.io-client";
  * @property {() => void} disconnect
  * @property {(room: string) => void} join
  * @property {() => void} leave
- * @property {(content: string, type: string) => void} send
+ * @property {(content: string) => void} sendText
+ * @property {(attachment: string) => void} sendImage
+ * @property {(attachment: string) => void} sendVideo
+ * @property {(attachment: string) => void} sendAudio
  */
 
 const TwaddleChatContext = React.createContext(null);
@@ -260,8 +263,20 @@ export function TwaddleChatProvider({ children }) {
     _leave();
   };
 
-  const send = (content, type = "text/plain") => {
-    socketRef.current.emit("twaddle/room:send", { content, type });
+  const sendText = (content) => {
+    socketRef.current.emit("twaddle/room:send", { type: "TEXT", content });
+  };
+
+  const sendImage = (attachment) => {
+    socketRef.current.emit("twaddle/room:send", { type: "IMAGE", attachment });
+  };
+
+  const sendVideo = (attachment) => {
+    socketRef.current.emit("twaddle/room:send", { type: "VIDEO", attachment });
+  };
+
+  const sendAudio = (attachment) => {
+    socketRef.current.emit("twaddle/room:send", { type: "AUDIO", attachment });
   };
 
   return (
@@ -278,7 +293,10 @@ export function TwaddleChatProvider({ children }) {
         disconnect,
         join,
         leave,
-        send,
+        sendText,
+        sendImage,
+        sendVideo,
+        sendAudio,
       }}
     >
       {children}

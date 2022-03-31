@@ -7,14 +7,24 @@ import TextMessage from "./TextMessage";
 import ImageMessage from "./ImageMessage";
 
 /**
+ * @typedef {object} Message
+ * @property {"AUDIO"|"VIDEO"|"IMAGE"|"TEXT"} type
+ * @property {string=} content
+ * @property {string=} attachment
+ * @property {string} user
+ * @property {string} room
+ * @property {string} timestamp
+ */
+
+/**
  * @typedef {object} MessageBoxProperties
  * @property {{id: string, name: string, description: string, createdAt: string}} room
  * @property {boolean} connecting
  * @property {boolean} connected
  * @property {string} error
- * @property {[{id: string, type: "TEXT"|"IMAGE"|"AUDIO", content: string, username: string, room: string, timestamp: string}]} messages
- * @property {(content: string, type: string) => void} onSendTextMessage
- * @property {(content: string, type: string) => void} onSendImageMessage
+ * @property {[Message]} messages
+ * @property {(content: string) => void} onSendTextMessage
+ * @property {(attachment: string) => void} onSendImageMessage
  */
 
 /**
@@ -100,8 +110,8 @@ export default function MessageBox({
         {connected && (
           <div className="space-y-2 flex flex-col">
             {messages.map((message) => {
-              switch (true) {
-                case /^image\/.+$/.test(message.type): {
+              switch (message.type) {
+                case "IMAGE": {
                   return (
                     <ImageMessage
                       key={message.id}
@@ -110,7 +120,7 @@ export default function MessageBox({
                     />
                   );
                 }
-                case /^text\/plain$/.test(message.type):
+                case "TEXT":
                 default: {
                   return (
                     <TextMessage
