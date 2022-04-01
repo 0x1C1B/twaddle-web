@@ -17,7 +17,10 @@ import instance from "./instance";
  * @returns {Promise<AxiosResponse<any>>} Returns the API response
  */
 export const fetchAttachmentRaw = (id) => {
-  return instance.get(`/attachments/${id}/raw`, { responseType: "blob" });
+  return instance.get(`/attachments/${id}/raw`, {
+    responseType: "blob",
+    timeout: 10000,
+  });
 };
 
 /**

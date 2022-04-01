@@ -5,6 +5,8 @@ import { StatusOnlineIcon, StatusOfflineIcon } from "@heroicons/react/solid";
 import MessageInput from "./MessageInput";
 import TextMessage from "./TextMessage";
 import ImageMessage from "./ImageMessage";
+import VideoMessage from "./VideoMessage";
+import UnsupportedMessage from "./UnsupportedMessage";
 
 /**
  * @typedef {object} Message
@@ -25,6 +27,7 @@ import ImageMessage from "./ImageMessage";
  * @property {[Message]} messages
  * @property {(content: string) => void} onSendTextMessage
  * @property {(attachment: string) => void} onSendImageMessage
+ * @property {(attachment: string) => void} onSendVideoMessage
  */
 
 /**
@@ -41,6 +44,7 @@ export default function MessageBox({
   messages,
   onSendTextMessage,
   onSendImageMessage,
+  onSendVideoMessage,
 }) {
   const chatBox = useRef();
   const [chatBoxStickyBottom, setChatBoxStickyBottom] = useState(true);
@@ -120,10 +124,27 @@ export default function MessageBox({
                     />
                   );
                 }
-                case "TEXT":
-                default: {
+                case "VIDEO": {
+                  return (
+                    <VideoMessage
+                      key={message.id}
+                      message={message}
+                      principal={principal.username}
+                    />
+                  );
+                }
+                case "TEXT": {
                   return (
                     <TextMessage
+                      key={message.id}
+                      message={message}
+                      principal={principal.username}
+                    />
+                  );
+                }
+                default: {
+                  return (
+                    <UnsupportedMessage
                       key={message.id}
                       message={message}
                       principal={principal.username}
@@ -138,6 +159,7 @@ export default function MessageBox({
       <MessageInput
         onSendImageMessage={onSendImageMessage}
         onSendTextMessage={onSendTextMessage}
+        onSendVideoMessage={onSendVideoMessage}
         diabled={!connected}
       />
     </div>

@@ -7,6 +7,7 @@ import {
   PaperAirplaneIcon,
   EmojiHappyIcon,
   PhotographIcon,
+  VideoCameraIcon,
   PaperClipIcon,
 } from "@heroicons/react/solid";
 import { Picker } from "emoji-mart";
@@ -22,6 +23,7 @@ const schema = yup.object().shape({
  * @typedef {object} MessageInputProperties
  * @property {(content: string) => void} onSendTextMessage
  * @property {(attachment: string) => void} onSendImageMessage
+ * @property {(attachment: string) => void} onSendVideoMessage
  * @property {boolean} disabled
  */
 
@@ -34,6 +36,7 @@ const schema = yup.object().shape({
 export default function MessageInput({
   onSendTextMessage,
   onSendImageMessage,
+  onSendVideoMessage,
   disabled,
 }) {
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -49,6 +52,14 @@ export default function MessageInput({
 
     const attachmentRes = await uploadAttachment(data);
     onSendImageMessage(attachmentRes.data.id);
+  };
+
+  const onSubmitVideoMessage = async (event) => {
+    const data = new FormData();
+    data.append("file", event.target.files[0]);
+
+    const attachmentRes = await uploadAttachment(data);
+    onSendVideoMessage(attachmentRes.data.id);
   };
 
   return (
@@ -134,6 +145,27 @@ export default function MessageInput({
                           aria-hidden="true"
                         />
                         Image
+                      </FileButton>
+                    )}
+                  </Menu.Item>
+                </div>
+                <div className="px-1 py-1 ">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <FileButton
+                        onChange={onSubmitVideoMessage}
+                        accept="video/*"
+                        className={`!group focus:outline-transparent flex rounded-md items-center w-full !px-2 !py-2 text-sm ${
+                          active
+                            ? "!bg-lime-500 !text-white"
+                            : "!bg-transparent !text-gray-800 dark:!text-white"
+                        }`}
+                      >
+                        <VideoCameraIcon
+                          className="h-6 w-6 mr-2"
+                          aria-hidden="true"
+                        />
+                        Video
                       </FileButton>
                     )}
                   </Menu.Item>

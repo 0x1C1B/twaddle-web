@@ -23,6 +23,7 @@ export default function Room() {
     join,
     sendText,
     sendImage,
+    sendVideo,
   } = useTwaddleChat();
 
   const [apiError, setApiError] = useState(null);
@@ -108,6 +109,7 @@ export default function Room() {
                 messages={[...messageHistory, ...messages]}
                 onSendTextMessage={(content) => sendText(content)}
                 onSendImageMessage={(attachment) => sendImage(attachment)}
+                onSendVideoMessage={(attachment) => sendVideo(attachment)}
               />
             )}
           </div>

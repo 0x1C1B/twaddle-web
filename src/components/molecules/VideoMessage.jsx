@@ -5,25 +5,25 @@ import Avatar from "../atoms/Avatar";
 import { fetchAttachmentRaw } from "../../api/attachments";
 
 /**
- * @typedef {object} ImageMessageProperties
- * @property {{type: "IMAGE", id: string, attachment: string, user: string, room: string, timestamp: string}} message
+ * @typedef {object} VideoMessageProperties
+ * @property {{type: "VIDEO", id: string, attachment: string, user: string, room: string, timestamp: string}} message
  * @property {string} principal
  */
 
 /**
- * Constructs a image message component.
+ * Constructs a video message component.
  *
- * @param {ImageMessageProperties} properties The message properties
+ * @param {VideoMessageProperties} properties The message properties
  * @returns Returns the message component
  */
-export default function ImageMessage({ message, principal }) {
+export default function VideoMessage({ message, principal }) {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [attachment, setAttachment] = useState(null);
 
-  const onFetchImage = async (id) => {
+  const onFetchVideo = async (id) => {
     setLoading(true);
     setError(null);
 
@@ -49,7 +49,7 @@ export default function ImageMessage({ message, principal }) {
 
   useEffect(() => {
     if (message) {
-      onFetchImage(message.attachment);
+      onFetchVideo(message.attachment);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
@@ -78,18 +78,20 @@ export default function ImageMessage({ message, principal }) {
           {!loading && error && (
             <div className="flex flex-col justify-center items-center bg-gray-200 dark:bg-gray-700 w-64 h-64 max-w-full">
               <div className="text-gray-800 dark:text-white text-center">
-                Image could not be loaded.
+                Video could not be loaded.
               </div>
               <button
                 type="submit"
                 className="p-1 mt-2 rounded-full text-amber-500 hover:brightness-110 disabled:opacity-50"
-                onClick={() => onFetchImage(message.attachment)}
+                onClick={() => onFetchVideo(message.attachment)}
               >
                 <RefreshIcon className="h-8 w-8" aria-hidden="true" />
               </button>
             </div>
           )}
-          {!loading && !error && <img alt="Message" src={attachment} />}
+          {!loading && !error && (
+            <video alt="Message" controls src={attachment} />
+          )}
         </div>
         <div className="w-fit text-xs self-end">
           {new Date(message.timestamp).toLocaleString()}
