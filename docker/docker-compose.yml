@@ -16,7 +16,7 @@ services:
   frontend:
     image: twaddle/web:latest
     build:
-      context: .
+      context: ../
     restart: always
     expose:
       - 80
