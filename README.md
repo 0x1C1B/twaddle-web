@@ -1,6 +1,6 @@
 # Twaddle Web
 
-> UI of the Twaddle real time messenger and communication platform.
+> 1st party web client of the real time messenger Twaddle.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ communication processes in the area of messaging.
 
 ## License
 
-Copyright (c) 2022 0x1C1B
+Copyright (c) 2023 0x1C1B
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

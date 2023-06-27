@@ -1,23 +1,19 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import {configureStore, combineReducers} from '@reduxjs/toolkit';
+import {persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import privacySlice from './slices/privacy';
 
 const persistConfig = {
-  key: "twaddle",
+  key: 'twaddle',
   version: 1,
   storage,
+  whitelist: ['privacy'],
 };
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  privacy: privacySlice.reducer,
+});
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
@@ -31,5 +27,8 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+// Required to prevent persistence in browser memory without user permissions by default
+persistor.pause();
 
 export default store;
