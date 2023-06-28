@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import StackTemplate from '../components/templates/StackTemplate';
 
 /**
@@ -7,5 +7,9 @@ import StackTemplate from '../components/templates/StackTemplate';
  * @return {JSX.Element} Application's landing page component
  */
 export default function Home() {
+  useEffect(() => {
+    document.title = 'Twaddle Web | Home';
+  }, []);
+
   return <StackTemplate />;
 }

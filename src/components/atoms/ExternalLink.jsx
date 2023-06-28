@@ -30,7 +30,7 @@ export default function ExternalLink({children, type, className, ...props}) {
 }
 
 ExternalLink.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
   type: PropTypes.oneOf(['link', 'button']),
   className: PropTypes.string,
 };

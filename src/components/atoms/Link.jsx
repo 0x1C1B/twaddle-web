@@ -34,7 +34,7 @@ export default function Link({children, type, className, ...props}) {
 }
 
 Link.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
   type: PropTypes.oneOf(['link', 'button']),
   className: PropTypes.string,
 };
