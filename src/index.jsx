@@ -1,27 +1,22 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import reportWebVitals from './reportWebVitals';
 import store, {persistor} from './store';
 import PrivacyCompliantPersistGate from './components/organisms/PrivacyCompliantPersistGate';
-import Home from './pages/Home';
+import App from './App';
 
 import './styles/index.css';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home />,
-  },
-]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <PrivacyCompliantPersistGate persistor={persistor}>
-        <RouterProvider router={router} />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </PrivacyCompliantPersistGate>
     </Provider>
   </React.StrictMode>,
