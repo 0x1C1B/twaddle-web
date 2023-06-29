@@ -3,6 +3,7 @@ import {NavLink, useLocation} from 'react-router-dom';
 import {Disclosure} from '@headlessui/react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBars, faX} from '@fortawesome/free-solid-svg-icons';
+import NavbarMenu from './NavbarMenu';
 
 import Logo from '../../assets/images/logo.png';
 import LogoTextLight from '../../assets/images/logo-text-light.png';
@@ -80,7 +81,9 @@ export default function Navbar() {
                   'absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 ' +
                   'sm:pr-0 space-x-2'
                 }
-              />
+              >
+                <NavbarMenu />
+              </div>
             </div>
           </div>
           <Disclosure.Panel className="sm:hidden">
