@@ -1,6 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+import {useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {generateToken} from '../api/auth';
+import authSlice from '../store/slices/auth';
 import StackTemplate from '../components/templates/StackTemplate';
 import TextField from '../components/atoms/TextField';
 import Button from '../components/atoms/Button';
@@ -14,8 +18,11 @@ import Logo from '../assets/images/logo.png';
  * @return {JSX.Element} Application's login page component
  */
 export default function Login() {
-  const [error] = useState(null);
-  const [loading] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const schema = yup.object().shape({
     email: yup.string().email('Must be a valid email').required('Is required'),
@@ -26,7 +33,37 @@ export default function Login() {
     document.title = 'Twaddle Web | Login';
   }, []);
 
-  const onLogin = useCallback(async (values) => {}, []);
+  const onLogin = useCallback(async (values) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const tokenRes = await generateToken(values.email, values.password);
+
+      dispatch(
+        authSlice.actions.setToken({
+          accessToken: tokenRes.data.accessToken,
+          accessExpiresIn: tokenRes.data.accessExpiresIn,
+          refreshToken: tokenRes.data.refreshToken,
+          refreshExpiresIn: tokenRes.data.refreshExpiresIn,
+        }),
+      );
+
+      dispatch(authSlice.actions.setPrincipal(tokenRes.data.principal));
+
+      navigate('/home');
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        setError('Either username or password are wrong.');
+      } else {
+        setError('An unexpected error occurred, please retry.');
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   return (
     <StackTemplate>

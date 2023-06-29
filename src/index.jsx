@@ -4,10 +4,13 @@ import {BrowserRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import reportWebVitals from './reportWebVitals';
 import store, {persistor} from './store';
+import {injectStore} from './api';
 import PrivacyCompliantPersistGate from './components/organisms/PrivacyCompliantPersistGate';
 import App from './App';
 
 import './styles/index.css';
+
+injectStore(store);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
