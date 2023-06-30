@@ -4,6 +4,7 @@ import RouteProtector from './components/organisms/RouteProtector';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
+import Register from './pages/Register';
 
 /**
  * The application's root component.
@@ -24,6 +25,7 @@ export default function App() {
       />
       <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<Logout />} />
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }
