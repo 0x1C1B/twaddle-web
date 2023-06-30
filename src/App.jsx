@@ -1,5 +1,6 @@
 import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
+import RouteProtector from './components/organisms/RouteProtector';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
@@ -13,7 +14,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/home" />} />
-      <Route path="/home" element={<Home />} />
+      <Route
+        path="/home"
+        element={
+          <RouteProtector>
+            <Home />
+          </RouteProtector>
+        }
+      />
       <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<Logout />} />
     </Routes>

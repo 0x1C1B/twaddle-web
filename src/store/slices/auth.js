@@ -17,8 +17,8 @@ const authSlice = createSlice({
         ...state,
         accessToken: action.payload.accessToken,
         refreshToken: action.payload.refreshToken,
-        accessExpiresAt: new Date(new Date().getTime() + action.payload.accessExpiresIn).getTime(),
-        refreshExpiresAt: new Date(new Date().getTime() + action.payload.refreshExpiresIn).getTime(),
+        accessExpiresAt: new Date(new Date().getTime() + action.payload.accessExpiresIn * 1000).getTime(),
+        refreshExpiresAt: new Date(new Date().getTime() + action.payload.refreshExpiresIn * 1000).getTime(),
       };
     },
     clearToken: (state) => {
