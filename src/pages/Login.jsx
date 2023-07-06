@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {generateToken} from '../api/auth';
+import {getCurrentUser} from '../api/users';
 import authSlice from '../store/slices/auth';
 import StackTemplate from '../components/templates/StackTemplate';
 import TextField from '../components/atoms/TextField';
@@ -49,7 +50,9 @@ export default function Login() {
         }),
       );
 
-      dispatch(authSlice.actions.setPrincipal(tokenRes.data.principal));
+      const userRes = await getCurrentUser();
+
+      dispatch(authSlice.actions.setPrincipal(userRes.data));
 
       navigate('/home');
     } catch (err) {
