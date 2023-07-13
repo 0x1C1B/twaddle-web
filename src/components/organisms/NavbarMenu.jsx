@@ -2,7 +2,12 @@ import React, {useState} from 'react';
 import {useSelector} from 'react-redux';
 import {Popover} from '@headlessui/react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEllipsisVertical, faArrowRightFromBracket, faTriangleExclamation} from '@fortawesome/free-solid-svg-icons';
+import {
+  faEllipsisVertical,
+  faArrowRightFromBracket,
+  faTriangleExclamation,
+  faGear,
+} from '@fortawesome/free-solid-svg-icons';
 import {usePopper} from 'react-popper';
 import Avatar from '../atoms/Avatar';
 import Link from '../atoms/Link';
@@ -54,12 +59,8 @@ export default function NavbarMenu() {
             {...attributes.popper}
           >
             {principal ? (
-              <div className="rounded-md">
-                <div
-                  className={`p-4 ${
-                    principal.verified === false ? 'rounded-t-md' : 'rounded-md'
-                  } bg-white flex space-x-4 items-center justify-between`}
-                >
+              <div className="rounded-md bg-slate-50">
+                <div className="p-4 rounded-t-md bg-white flex space-x-4 items-center justify-between">
                   <div className="flex space-x-4 items-center overflow-hidden">
                     <div className="bg-gray-200 text-gray-800 p-2 rounded-full">
                       <div className="h-10 aspect-square rounded-md">
@@ -77,7 +78,7 @@ export default function NavbarMenu() {
                   </div>
                 </div>
                 {principal.verified === false && (
-                  <div className="py-2 px-4 rounded-b-md bg-amber-500 text-white flex space-x-2 items-center">
+                  <div className="py-2 px-4 bg-amber-500 text-white flex space-x-2 items-center">
                     <FontAwesomeIcon icon={faTriangleExclamation} className="h-4 w-4 mr-2" aria-hidden="true" />
                     <p className="text-sm">
                       Your account is not verified. Verify it by clicking{' '}
@@ -88,6 +89,18 @@ export default function NavbarMenu() {
                     </p>
                   </div>
                 )}
+                <div className="p-4 rounded-b-md flex space-x-4 items-center justify-between">
+                  <Link
+                    to="/settings"
+                    className={
+                      'flex justify-left bg-slate-50 items-center p-2 hover:!no-underline !text-slate-800 ' +
+                      'hover:bg-slate-200 hover:!brightness-100 !rounded w-full space-x-2'
+                    }
+                  >
+                    <FontAwesomeIcon icon={faGear} className="block h-4 w-4" aria-hidden="true" />
+                    <span className="text-sm">Settings</span>
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col">

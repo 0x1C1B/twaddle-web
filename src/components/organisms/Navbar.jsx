@@ -37,7 +37,7 @@ export default function Navbar() {
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 <Disclosure.Button
                   className={
-                    'inline-flex items-center justify-center rounded-md p-2 text-gray-200 ' +
+                    'inline-flex items-center justify-center rounded-md p-2 text-slate-200 ' +
                     'hover:text-white focus:outline-none'
                   }
                 >

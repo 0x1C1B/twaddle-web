@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
+import Settings from './pages/Settings';
 
 /**
  * The application's root component.
@@ -28,6 +29,14 @@ export default function App() {
       <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/settings"
+        element={
+          <RouteProtector>
+            <Settings />
+          </RouteProtector>
+        }
+      />
     </Routes>
   );
 }
