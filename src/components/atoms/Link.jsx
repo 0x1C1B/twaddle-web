@@ -12,9 +12,9 @@ export default function Link({children, type, className, ...props}) {
     return (
       <RouterLink
         className={
-          'block text-center group relative py-2 px-3 text-sm font-medium rounded-md text-white ' +
-          'outline-none bg-sky-500 focus:outline-sky-500 hover:brightness-110 disabled:brightness-75 ' +
-          `hover:cursor-pointer ${className}`
+          'block text-center group relative py-2 px-3 text-sm font-medium rounded-md text-slate-800 ' +
+          'outline-none bg-slate-100 focus:outline-slate-100 hover:brightness-95 disabled:brightness-75 ' +
+          `hover:cursor-pointer border border-slate-300 ${className}`
         }
         {...props}
       >

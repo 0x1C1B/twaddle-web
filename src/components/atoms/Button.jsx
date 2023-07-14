@@ -11,8 +11,9 @@ export default function Button({children, className, ...props}) {
     <button
       type="button"
       className={
-        'group relative py-2 px-3 text-sm font-medium rounded-md text-white outline-none bg-sky-500 ' +
-        `focus:outline-sky-500 hover:brightness-110 disabled:brightness-75 hover:cursor-pointer ${className}`
+        'group relative py-2 px-3 text-sm font-medium rounded-md outline-none bg-slate-100 ' +
+        'border border-slate-300 text-slate-800' +
+        `focus:outline-slate-100 hover:brightness-95 disabled:brightness-75 hover:cursor-pointer ${className}`
       }
       {...props}
     >

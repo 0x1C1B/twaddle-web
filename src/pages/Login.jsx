@@ -133,7 +133,7 @@ export default function Login() {
                   <Button
                     type="submit"
                     disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                    className="w-full flex justify-center"
+                    className="w-full flex justify-center !bg-sky-500 focus:!outline-sky-500 !text-white"
                   >
                     {!loading && <span>Login</span>}
                     {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}

@@ -94,7 +94,7 @@ export default function Register() {
             </div>
           </div>
           <div className="p-8 space-y-6">
-            {success && <p className="text-center text-green-500">{success}</p>}
+            {success && <p className="text-center text-green-600">{success}</p>}
             {error && <p className="text-center text-red-500">{error}</p>}
             <Formik
               initialValues={{
@@ -166,7 +166,7 @@ export default function Register() {
                   <Button
                     type="submit"
                     disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                    className="w-full flex justify-center"
+                    className="w-full flex justify-center !bg-sky-500 focus:!outline-sky-500 !text-white"
                   >
                     {!loading && <span>Register</span>}
                     {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}

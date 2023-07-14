@@ -82,7 +82,7 @@ export default function NavbarMenu() {
                     <FontAwesomeIcon icon={faTriangleExclamation} className="h-4 w-4 mr-2" aria-hidden="true" />
                     <p className="text-sm">
                       Your account is not verified. Verify it by clicking{' '}
-                      <Link className="!text-white font-semibold" to="/verify-user">
+                      <Link className="!text-white font-semibold" to="/settings">
                         here
                       </Link>
                       .

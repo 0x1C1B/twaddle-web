@@ -105,7 +105,7 @@ export default function ResetPassword() {
             </div>
           </div>
           <div className="p-8 space-y-6">
-            {success && <p className="text-center text-green-500">{success}</p>}
+            {success && <p className="text-center text-green-600">{success}</p>}
             {error && <p className="text-center text-red-500">{error}</p>}
             {searchParams.get('token') ? (
               <div className="space-y-6">
@@ -157,7 +157,7 @@ export default function ResetPassword() {
                       <Button
                         type="submit"
                         disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                        className="w-full flex justify-center"
+                        className="w-full flex justify-center !bg-sky-500 focus:!outline-sky-500 !text-white"
                       >
                         {!loading && <span>Reset Pasword</span>}
                         {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
@@ -202,7 +202,7 @@ export default function ResetPassword() {
                       <Button
                         type="submit"
                         disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                        className="w-full flex justify-center"
+                        className="w-full flex justify-center !bg-sky-500 focus:!outline-sky-500 !text-white"
                       >
                         {!loading && <span>Send E-Mail</span>}
                         {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
