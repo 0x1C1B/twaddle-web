@@ -9,6 +9,7 @@ import Button from '../components/atoms/Button';
 import Link from '../components/atoms/Link';
 
 import Logo from '../assets/images/logo.png';
+import ForgotPasswordImage from '../assets/images/forgot-password.png';
 
 /**
  * Page component for resetting a user's password.
@@ -83,122 +84,138 @@ export default function ResetPassword() {
 
   return (
     <StackTemplate>
-      <div className={'h-full bg-gray-50 text-gray-800 flex flex-col items-center px-4 py-12 space-y-4'}>
-        <div className="w-full max-w-xl bg-white text-gray-800 shadow-md rounded-md p-8 space-y-6">
-          <div>
-            <img className="mx-auto h-10 md:h-12 lg:h-14 w-auto" src={Logo} alt="Logo" />
-            <h1 className="mt-4 text-center lg:text-3xl text-2xl font-bold">Reset your password</h1>
+      <div className={'h-full bg-gray-50 text-gray-800 flex flex-col items-center justify-center px-4 py-12 space-y-4'}>
+        <div className="w-full max-w-xl bg-white text-gray-800 shadow-md rounded-md">
+          <div className="bg-sky-200 w-full h-[10rem] md:h-[12rem] rounded-t-md relative mb-[2.5rem]">
+            <div className="flex space-x-6 justify-between p-8">
+              <div className="whitespace-nowrap">
+                <div className="text-sky-800 font-semibold md:text-lg">Forgot your password?</div>
+                <div className="text-sky-800 md:text-lg">Don&apos;t worry</div>
+              </div>
+              <div className="grow flex justify-end">
+                <img className="w-auto max-h-[8rem] object-contain" src={ForgotPasswordImage} alt="Social Networking" />
+              </div>
+            </div>
+            <div
+              className={
+                'absolute bg-slate-100 top-[7.5rem] md:top-[9.5rem] left-8 rounded-full ' + 'h-[5rem] w-[5rem] p-4'
+              }
+            >
+              <img className="h-auto w-full" src={Logo} alt="Logo" />
+            </div>
           </div>
-          {success && <p className="text-center text-green-500">{success}</p>}
-          {error && <p className="text-center text-red-500">{error}</p>}
-          {searchParams.get('token') ? (
-            <div className="space-y-6">
-              <p>Use the form below to choose a new password.</p>
-              <Formik
-                initialValues={{
-                  password: '',
-                  confirmPassword: '',
-                }}
-                validationSchema={yup.object().shape({
-                  password: yup.string().required('Is required'),
-                  passwordConfirmation: yup
-                    .string()
-                    .oneOf([yup.ref('password')], 'Passwords must match')
-                    .required('Is required'),
-                })}
-                onSubmit={onResetPassword}
-              >
-                {(formikProps) => (
-                  <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
-                    <div>
-                      <TextField
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                        label="Password"
-                        disabled={loading}
-                        onChange={formikProps.handleChange}
-                        onBlur={formikProps.handleBlur}
-                        value={formikProps.values.password}
-                        error={formikProps.errors.password}
-                        touched={formikProps.errors.password && formikProps.touched.password}
-                      />
-                    </div>
-                    <div>
-                      <TextField
-                        name="passwordConfirmation"
-                        type="password"
-                        placeholder="Confirm Password"
-                        label="Confirm Password"
-                        disabled={loading}
-                        onChange={formikProps.handleChange}
-                        onBlur={formikProps.handleBlur}
-                        value={formikProps.values.passwordConfirmation}
-                        error={formikProps.errors.passwordConfirmation}
-                        touched={formikProps.errors.passwordConfirmation && formikProps.touched.passwordConfirmation}
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                      className="w-full flex justify-center"
-                    >
-                      {!loading && <span>Reset Pasword</span>}
-                      {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
-                    </Button>
-                  </form>
-                )}
-              </Formik>
-              <div className="text-center">
-                <Link className="!text-sm" to="/login">
-                  Back to Login.
-                </Link>
+          <div className="p-8 space-y-6">
+            {success && <p className="text-center text-green-500">{success}</p>}
+            {error && <p className="text-center text-red-500">{error}</p>}
+            {searchParams.get('token') ? (
+              <div className="space-y-6">
+                <p>Use the form below to choose a new password.</p>
+                <Formik
+                  initialValues={{
+                    password: '',
+                    confirmPassword: '',
+                  }}
+                  validationSchema={yup.object().shape({
+                    password: yup.string().required('Is required'),
+                    passwordConfirmation: yup
+                      .string()
+                      .oneOf([yup.ref('password')], 'Passwords must match')
+                      .required('Is required'),
+                  })}
+                  onSubmit={onResetPassword}
+                >
+                  {(formikProps) => (
+                    <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
+                      <div>
+                        <TextField
+                          name="password"
+                          type="password"
+                          placeholder="Password"
+                          label="Password"
+                          disabled={loading}
+                          onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
+                          value={formikProps.values.password}
+                          error={formikProps.errors.password}
+                          touched={formikProps.errors.password && formikProps.touched.password}
+                        />
+                      </div>
+                      <div>
+                        <TextField
+                          name="passwordConfirmation"
+                          type="password"
+                          placeholder="Confirm Password"
+                          label="Confirm Password"
+                          disabled={loading}
+                          onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
+                          value={formikProps.values.passwordConfirmation}
+                          error={formikProps.errors.passwordConfirmation}
+                          touched={formikProps.errors.passwordConfirmation && formikProps.touched.passwordConfirmation}
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={!(formikProps.isValid && formikProps.dirty) || loading}
+                        className="w-full flex justify-center"
+                      >
+                        {!loading && <span>Reset Pasword</span>}
+                        {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                      </Button>
+                    </form>
+                  )}
+                </Formik>
+                <div className="text-center">
+                  <Link className="!text-sm" to="/login">
+                    Back to Login.
+                  </Link>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <p>Enter your email address below and we will send you a link to reset your password.</p>
-              <Formik
-                initialValues={{
-                  email: '',
-                }}
-                validationSchema={yup.object().shape({
-                  email: yup.string().email('Must be a valid email').required('Is required'),
-                })}
-                onSubmit={onRequestResetEmail}
-              >
-                {(formikProps) => (
-                  <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
-                    <div>
-                      <TextField
-                        name="email"
-                        type="email"
-                        placeholder="E-Mail"
-                        label="E-Mail"
-                        disabled={loading}
-                        onChange={formikProps.handleChange}
-                        onBlur={formikProps.handleBlur}
-                        value={formikProps.values.email}
-                        error={formikProps.errors.email}
-                        touched={formikProps.errors.email && formikProps.touched.email}
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                      className="w-full flex justify-center"
-                    >
-                      {!loading && <span>Send E-Mail</span>}
-                      {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
-                    </Button>
-                  </form>
-                )}
-              </Formik>
-              <div className="text-center">
-                <Link className="!text-sm">Resend email with verification token.</Link>
+            ) : (
+              <div className="space-y-6">
+                <p>Enter your email address below and we will send you a link to reset your password.</p>
+                <Formik
+                  initialValues={{
+                    email: '',
+                  }}
+                  validationSchema={yup.object().shape({
+                    email: yup.string().email('Must be a valid email').required('Is required'),
+                  })}
+                  onSubmit={onRequestResetEmail}
+                >
+                  {(formikProps) => (
+                    <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
+                      <div>
+                        <TextField
+                          name="email"
+                          type="email"
+                          placeholder="E-Mail"
+                          label="E-Mail"
+                          disabled={loading}
+                          onChange={formikProps.handleChange}
+                          onBlur={formikProps.handleBlur}
+                          value={formikProps.values.email}
+                          error={formikProps.errors.email}
+                          touched={formikProps.errors.email && formikProps.touched.email}
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={!(formikProps.isValid && formikProps.dirty) || loading}
+                        className="w-full flex justify-center"
+                      >
+                        {!loading && <span>Send E-Mail</span>}
+                        {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                      </Button>
+                    </form>
+                  )}
+                </Formik>
+                <div className="text-center">
+                  <Link className="!text-sm">Resend email with verification token.</Link>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </StackTemplate>
