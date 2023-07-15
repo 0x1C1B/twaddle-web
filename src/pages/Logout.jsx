@@ -31,8 +31,8 @@ export default function Logout() {
           <img className="mx-auto h-10 md:h-12 lg:h-8 w-auto" src={LogoTextDark} alt="Logo" />
           <div className="flex items-center space-x-4 py-4">
             <hr className="w-full border-slate-300" />
-            <div className="rounded-full border-4 border-sky-200 p-3">
-              <FontAwesomeIcon icon={faCheck} className="block h-12 w-12 text-sky-500" aria-hidden="true" />
+            <div className="rounded-full border-4 border-green-200 p-4">
+              <FontAwesomeIcon icon={faCheck} className="block h-10 w-10 text-green-600" aria-hidden="true" />
             </div>
             <hr className="w-full border-slate-300" />
           </div>

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
+import VerifyUser from './pages/VerifyUser';
 import Settings from './pages/Settings';
 
 /**
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/verify-user/:verificationToken" element={<VerifyUser />} />
       <Route
         path="/settings"
         element={

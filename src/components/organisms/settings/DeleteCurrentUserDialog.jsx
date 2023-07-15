@@ -1,12 +1,11 @@
 import React, {Fragment, useState, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faX} from '@fortawesome/free-solid-svg-icons';
 import {Dialog, Transition} from '@headlessui/react';
 import Button from '../../atoms/Button';
-import {deleteUser} from '../../../api/users';
+import {deleteCurrentUser} from '../../../api/users';
 
 /**
  * Dialog for confirming the deletion of the current user.
@@ -19,14 +18,12 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const principal = useSelector((state) => state.auth.principal);
-
   const onSubmitModal = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      await deleteUser(principal.id);
+      await deleteCurrentUser();
       onSubmit();
     } catch (err) {
       if (err.response && err.response.status === 401) {
@@ -41,7 +38,7 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
     } finally {
       setLoading(false);
     }
-  }, [navigate, onSubmit, principal]);
+  }, [navigate, onSubmit]);
 
   const onCloseModal = () => {
     if (!loading) {
