@@ -20,7 +20,7 @@ export default function Register() {
     displayName: yup
       .string()
       .required('Is required')
-      .max(150, 'Must be at most 50 characters')
+      .max(150, 'Must be at most 150 characters')
       .min(4, 'Must be at least 4 characters'),
     email: yup.string().email('Must be a valid email').required('Is required'),
     password: yup.string().required('Is required'),

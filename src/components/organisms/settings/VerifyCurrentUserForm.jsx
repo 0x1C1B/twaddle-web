@@ -9,7 +9,7 @@ import {sendUserVerificationMail} from '../../../api/users';
  *
  * @return {JSX.Element} The form component
  */
-export default function VerifyUserForm() {
+export default function VerifyCurrentUserForm() {
   const navigate = useNavigate();
 
   const [success, setSuccess] = useState(null);
@@ -21,6 +21,7 @@ export default function VerifyUserForm() {
   const onSendVerificationMail = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
       await sendUserVerificationMail(principal.email);

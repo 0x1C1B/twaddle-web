@@ -4,6 +4,10 @@ export const createUser = (data) => {
   return api.post('/users', data);
 };
 
+export const updateCurrentUser = (data) => {
+  return api.patch('/user/me', data);
+};
+
 export const getCurrentUser = () => {
   return api.get('/user/me');
 };

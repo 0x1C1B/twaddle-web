@@ -9,6 +9,7 @@ import Link from '../components/atoms/Link';
 import StackTemplate from '../components/templates/StackTemplate';
 import VerifyCurrentUserForm from '../components/organisms/settings/VerifyCurrentUserForm';
 import DeleteCurrentUserForm from '../components/organisms/settings/DeleteCurrentUserForm';
+import UpdateCurrentUserForm from '../components/organisms/settings/UpdateCurrentUserForm';
 
 /**
  * The settings page of the application.
@@ -70,6 +71,7 @@ export default function Settings() {
               <Tab.Panel>
                 <div className="space-y-8">
                   {principal && !principal.verified && <VerifyCurrentUserForm />}
+                  <UpdateCurrentUserForm />
                   <DeleteCurrentUserForm onChange={() => navigate('/logout')} />
                 </div>
               </Tab.Panel>
