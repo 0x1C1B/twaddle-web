@@ -27,7 +27,7 @@ export default function Login() {
   const dispatch = useDispatch();
 
   const schema = yup.object().shape({
-    email: yup.string().email('Must be a valid email').required('Is required'),
+    username: yup.string().required('Is required'),
     password: yup.string().required('Is required'),
   });
 
@@ -40,7 +40,7 @@ export default function Login() {
     setError(null);
 
     try {
-      const tokenRes = await generateToken(values.email, values.password);
+      const tokenRes = await generateToken(values.username, values.password);
 
       dispatch(
         authSlice.actions.setToken({
@@ -99,21 +99,20 @@ export default function Login() {
           </div>
           <div className="p-8 space-y-6">
             {error && <p className="text-center text-red-500">{error}</p>}
-            <Formik initialValues={{email: '', password: ''}} validationSchema={schema} onSubmit={onLogin}>
+            <Formik initialValues={{username: '', password: ''}} validationSchema={schema} onSubmit={onLogin}>
               {(formikProps) => (
                 <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
                   <div>
                     <TextField
-                      name="email"
-                      type="email"
-                      placeholder="E-Mail"
-                      label="E-Mail"
+                      name="username"
+                      placeholder="Username"
+                      label="Username"
                       disabled={loading}
                       onChange={formikProps.handleChange}
                       onBlur={formikProps.handleBlur}
-                      value={formikProps.values.email}
-                      error={formikProps.errors.email}
-                      touched={formikProps.errors.email && formikProps.touched.email}
+                      value={formikProps.values.username}
+                      error={formikProps.errors.username}
+                      touched={formikProps.errors.username && formikProps.touched.username}
                     />
                   </div>
                   <div>

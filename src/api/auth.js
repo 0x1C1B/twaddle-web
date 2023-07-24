@@ -3,13 +3,13 @@ import api from './index';
 /**
  * Logs in the user by generating an access token.
  *
- * @param {string} email The user's email address
+ * @param {string} username The user's username
  * @param {string} password The user's password
  * @return {object} The response object containing the access token
  */
-export function generateToken(email, password) {
+export function generateToken(username, password) {
   return api.post('/auth/credentials', {
-    email,
+    username,
     password,
   });
 }

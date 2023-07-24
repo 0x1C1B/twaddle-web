@@ -7,16 +7,17 @@ import * as yup from 'yup';
 import {useNavigate} from 'react-router-dom';
 import Button from '../../atoms/Button';
 import TextField from '../../atoms/TextField';
+import TextArea from '../../atoms/TextArea';
 import Avatar from '../../atoms/Avatar';
 import {updateCurrentUser, getCurrentUser} from '../../../api/users';
 import authSlice from '../../../store/slices/auth';
 
 /**
- * Form for updating the public profile and account information of the currently logged in user.
+ * Form for updating the public profile of the currently logged in user.
  *
  * @return {JSX.Element} The form component
  */
-export default function UpdateCurrentUserForm() {
+export default function UpdateCurrentUserProfileForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -32,20 +33,8 @@ export default function UpdateCurrentUserForm() {
       .max(150, 'Must be at most 150 characters')
       .min(4, 'Must be at least 4 characters')
       .optional(),
-    email: yup.string().email('Must be a valid email'),
-    password: yup.string().optional(),
-    passwordConfirmation: yup
-      .string()
-      .when('password', {
-        is: (password) => password && password.length > 0,
-        then: () =>
-          yup
-            .string()
-            .oneOf([yup.ref('password')], 'Passwords must match')
-            .required('Is required'),
-        otherwise: () => yup.string().nullable(),
-      })
-      .optional(),
+    status: yup.string().min(1).max(150).optional(),
+    location: yup.string().min(1).max(150).optional(),
   });
 
   const onUpdate = useCallback(
@@ -57,8 +46,8 @@ export default function UpdateCurrentUserForm() {
       try {
         await updateCurrentUser({
           displayName: values.displayName != '' ? values.displayName : undefined,
-          email: values.email != '' ? values.email : undefined,
-          password: values.password != '' ? values.password : undefined,
+          status: values.status != '' ? values.status : undefined,
+          location: values.location != '' ? values.location : undefined,
         });
 
         const userRes = await getCurrentUser();
@@ -86,7 +75,7 @@ export default function UpdateCurrentUserForm() {
   return (
     <div className="text-gray-800 space-y-4">
       <div>
-        <h2 className="text-2xl">Update your account</h2>
+        <h2 className="text-2xl">Public profile</h2>
         <hr className="border-slate-300 mt-2" />
       </div>
       <div className="flex flex-col lg:flex-row w-full">
@@ -94,7 +83,7 @@ export default function UpdateCurrentUserForm() {
           <div className="mb-1 text-sm">Profile image</div>
           <div className="bg-gray-200 text-gray-800 p-5 rounded-full w-fit relative">
             <div className="h-32 aspect-square rounded-md">
-              <Avatar value={principal.displayName} />
+              <Avatar value={principal.username} />
             </div>
             <div className="absolute bottom-4 -right-4">
               <Button className="!text-xs flex justify-center items-center space-x-1">
@@ -107,10 +96,9 @@ export default function UpdateCurrentUserForm() {
         <div className="w-full">
           <Formik
             initialValues={{
-              displayName: '',
-              email: '',
-              password: '',
-              passwordConfirmation: '',
+              displayName: principal.displayName || '',
+              location: principal.location || '',
+              status: principal.status || '',
             }}
             validationSchema={schema}
             onSubmit={onUpdate}
@@ -120,7 +108,7 @@ export default function UpdateCurrentUserForm() {
                 <div>
                   <TextField
                     name="displayName"
-                    placeholder={principal?.displayName || 'Display Name'}
+                    placeholder="Display Name"
                     label="Display Name"
                     disabled={loading}
                     onChange={formikProps.handleChange}
@@ -129,66 +117,45 @@ export default function UpdateCurrentUserForm() {
                     error={formikProps.errors.displayName}
                     touched={formikProps.errors.displayName && formikProps.touched.displayName}
                   />
-                  <div className="text-xs mt-1">Your name will be shown to your contacts and chat partners.</div>
+                  <div className="text-xs mt-1">
+                    Your name will be shown to your contacts and chat partners. However, you can only be found via your
+                    username <span className="font-semibold">@{principal.username}</span>.
+                  </div>
                 </div>
                 <div>
-                  <TextField
-                    name="email"
-                    type="email"
-                    placeholder={principal?.email || 'E-Mail'}
-                    label="E-Mail"
+                  <TextArea
+                    name="status"
+                    placeholder="Status"
+                    label="Status"
                     disabled={loading}
                     onChange={formikProps.handleChange}
                     onBlur={formikProps.handleBlur}
-                    value={formikProps.values.email}
-                    error={formikProps.errors.email}
-                    touched={formikProps.errors.email && formikProps.touched.email}
+                    value={formikProps.values.status}
+                    error={formikProps.errors.status}
+                    touched={formikProps.errors.status && formikProps.touched.status}
                   />
-                  {formikProps.touched.email && (
-                    <div className="text-xs mt-1">
-                      Changing the e-mail requires a new validation of the e-mail address. Until then, functions may be
-                      restricted again.
-                    </div>
-                  )}
                 </div>
-                <div className="flex flex-col md:flex-row w-full space-y-4 md:space-y-0 md:space-x-4">
-                  <div className="grow">
-                    <TextField
-                      name="password"
-                      type="password"
-                      placeholder="Password"
-                      label="Password"
-                      disabled={loading}
-                      onChange={formikProps.handleChange}
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.password}
-                      error={formikProps.errors.password}
-                      touched={formikProps.errors.password && formikProps.touched.password}
-                    />
-                  </div>
-                  <div className="grow">
-                    <TextField
-                      name="passwordConfirmation"
-                      type="password"
-                      placeholder="Confirm Password"
-                      label="Confirm Password"
-                      disabled={loading}
-                      onChange={formikProps.handleChange}
-                      onBlur={formikProps.handleBlur}
-                      value={formikProps.values.passwordConfirmation}
-                      error={formikProps.errors.passwordConfirmation}
-                      touched={formikProps.errors.passwordConfirmation && formikProps.touched.passwordConfirmation}
-                    />
-                  </div>
+                <div>
+                  <TextField
+                    name="location"
+                    placeholder="Location"
+                    label="Location"
+                    disabled={loading}
+                    onChange={formikProps.handleChange}
+                    onBlur={formikProps.handleBlur}
+                    value={formikProps.values.location}
+                    error={formikProps.errors.location}
+                    touched={formikProps.errors.location && formikProps.touched.location}
+                  />
                 </div>
                 {error && <p className="text-left text-red-500">{error}</p>}
-                {success && <p className="text-left text-green-600">The account information has been updated.</p>}
+                {success && <p className="text-left text-green-600">Your profile has been updated.</p>}
                 <Button
                   type="submit"
                   disabled={!(formikProps.isValid && formikProps.dirty) || loading}
-                  className="flex justify-center !text-green-600"
+                  className="flex justify-center"
                 >
-                  {!loading && <span>Update account</span>}
+                  {!loading && <span>Update profile</span>}
                   {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
                 </Button>
               </form>

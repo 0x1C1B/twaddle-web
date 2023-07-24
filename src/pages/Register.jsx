@@ -17,10 +17,11 @@ import ChattingImage from '../assets/images/chatting.png';
  */
 export default function Register() {
   const schema = yup.object().shape({
-    displayName: yup
+    username: yup
       .string()
       .required('Is required')
-      .max(150, 'Must be at most 150 characters')
+      .matches(/^[a-zA-Z0-9_]+$/, 'Must contain only letters, numbers and underscores')
+      .max(50, 'Must be at most 50 characters')
       .min(4, 'Must be at least 4 characters'),
     email: yup.string().email('Must be a valid email').required('Is required'),
     password: yup.string().required('Is required'),
@@ -46,7 +47,7 @@ export default function Register() {
 
       try {
         await createUser({
-          displayName: values.displayName,
+          username: values.username,
           email: values.email,
           password: values.password,
         });
@@ -98,7 +99,7 @@ export default function Register() {
             {error && <p className="text-center text-red-500">{error}</p>}
             <Formik
               initialValues={{
-                displayName: '',
+                username: '',
                 email: '',
                 password: '',
                 passwordConfirmation: '',
@@ -110,15 +111,15 @@ export default function Register() {
                 <form className="space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
                   <div>
                     <TextField
-                      name="displayName"
-                      placeholder="Display Name"
-                      label="Display Name"
+                      name="username"
+                      placeholder="Username"
+                      label="Username"
                       disabled={loading}
                       onChange={formikProps.handleChange}
                       onBlur={formikProps.handleBlur}
-                      value={formikProps.values.displayName}
-                      error={formikProps.errors.displayName}
-                      touched={formikProps.errors.displayName && formikProps.touched.displayName}
+                      value={formikProps.values.username}
+                      error={formikProps.errors.username}
+                      touched={formikProps.errors.username && formikProps.touched.username}
                     />
                   </div>
                   <div>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import {useNavigate} from 'react-router-dom';
 import DeleteCurrentUserDialog from './DeleteCurrentUserDialog';
 import Button from '../../atoms/Button';
 
@@ -8,7 +8,9 @@ import Button from '../../atoms/Button';
  *
  * @return {JSX.Element} The form component
  */
-export default function DeleteUserForm({onChange}) {
+export default function DeleteCurrentUserForm() {
+  const navigate = useNavigate();
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
@@ -25,7 +27,7 @@ export default function DeleteUserForm({onChange}) {
         <DeleteCurrentUserDialog
           onSubmit={() => {
             setShowDeleteModal(false);
-            if (onChange) onChange();
+            navigate('/logout');
           }}
           onClose={() => setShowDeleteModal(false)}
           isOpen={showDeleteModal}
@@ -37,7 +39,3 @@ export default function DeleteUserForm({onChange}) {
     </div>
   );
 }
-
-DeleteUserForm.propTypes = {
-  onChange: PropTypes.func,
-};

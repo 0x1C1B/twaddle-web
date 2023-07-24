@@ -45,7 +45,7 @@ export default function NavbarMenu() {
             {principal ? (
               <div className="bg-gray-200 text-gray-800 p-2 rounded-full">
                 <div className="h-5 md:h-6 aspect-square rounded-md">
-                  <Avatar value={principal.displayName} />
+                  <Avatar value={principal.username} />
                 </div>
               </div>
             ) : (
@@ -64,12 +64,20 @@ export default function NavbarMenu() {
                   <div className="flex space-x-4 items-center overflow-hidden">
                     <div className="bg-gray-200 text-gray-800 p-2 rounded-full">
                       <div className="h-10 aspect-square rounded-md">
-                        <Avatar value={principal.displayName} />
+                        <Avatar value={principal.username} />
                       </div>
                     </div>
-                    <div className="space-y-1 overflow-hidden">
-                      <div className="truncate">{principal.displayName}</div>
-                    </div>
+                    {principal.displayName ? (
+                      <div className="space-y-1 overflow-hidden">
+                        <span className="block truncate font-bold">{principal.displayName}</span>
+                        <span className="block text-xs truncate">@{principal.username}</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-1 overflow-hidden">
+                        <span className="block truncate font-bold">@{principal.username}</span>
+                        <span className="block text-xs truncate">Your personal account</span>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Link to="/logout" className="p-1 rounded-full !text-gray-800">

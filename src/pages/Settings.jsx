@@ -1,15 +1,16 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {Tab} from '@headlessui/react';
-import {useNavigate} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faUser} from '@fortawesome/free-solid-svg-icons';
+import {faUser, faAddressCard} from '@fortawesome/free-solid-svg-icons';
 import Avatar from '../components/atoms/Avatar';
 import Link from '../components/atoms/Link';
 import StackTemplate from '../components/templates/StackTemplate';
 import VerifyCurrentUserForm from '../components/organisms/settings/VerifyCurrentUserForm';
 import DeleteCurrentUserForm from '../components/organisms/settings/DeleteCurrentUserForm';
-import UpdateCurrentUserForm from '../components/organisms/settings/UpdateCurrentUserForm';
+import UpdateCurrentUserProfileForm from '../components/organisms/settings/UpdateCurrentUserProfileForm';
+import UpdateCurrentUserPasswordForm from '../components/organisms/settings/UpdateCurrentUserPasswordForm';
+import UpdateCurrentUserEmailForm from '../components/organisms/settings/UpdateCurrentUserEmailForm';
 
 /**
  * The settings page of the application.
@@ -17,8 +18,6 @@ import UpdateCurrentUserForm from '../components/organisms/settings/UpdateCurren
  * @return {JSX.Element} Application's settings page component
  */
 export default function Settings() {
-  const navigate = useNavigate();
-
   const principal = useSelector((state) => state.auth.principal);
 
   useEffect(() => {
@@ -35,15 +34,39 @@ export default function Settings() {
               <div className="w-full flex space-x-4 items-center max-w-full text-gray-800">
                 <div className="bg-gray-200 text-gray-800 p-2 rounded-full">
                   <div className="h-10 aspect-square rounded-md">
-                    <Avatar value={principal.displayName} />
+                    <Avatar value={principal.username} />
                   </div>
                 </div>
-                <div className="space-y-1 max-w-full overflow-hidden">
-                  <span className="block truncate">{principal.displayName}</span>
-                  <span className="block text-xs truncate">{principal.email}</span>
-                </div>
+                {principal.displayName ? (
+                  <div className="space-y-1 max-w-full overflow-hidden">
+                    <span className="block truncate font-bold">{principal.displayName}</span>
+                    <span className="block text-xs truncate">@{principal.username}</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1 max-w-full overflow-hidden">
+                    <span className="block truncate font-bold">@{principal.username}</span>
+                    <span className="block text-xs truncate">Your personal account</span>
+                  </div>
+                )}
               </div>
               <Tab.List className="rounded-xl w-full text-gray-700 space-y-3">
+                <Tab
+                  className={({selected}) =>
+                    `w-full flex items-center space-x-2 text-sm leading-5 font-medium outline-none pl-1 border-l-4
+                      ${selected ? 'border-l-sky-500' : 'border-transparent'}`
+                  }
+                >
+                  {({selected}) => (
+                    <div
+                      className={`truncate w-full h-full flex items-center rounded-lg p-2 text-gray-800 ${
+                        selected ? 'bg-gray-100' : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      <FontAwesomeIcon icon={faAddressCard} className="block h-4 w-4" aria-hidden="true" />
+                      <div className="ml-2 truncate">Profile</div>
+                    </div>
+                  )}
+                </Tab>
                 <Tab
                   className={({selected}) =>
                     `w-full flex items-center space-x-2 text-sm leading-5 font-medium outline-none pl-1 border-l-4
@@ -70,9 +93,15 @@ export default function Settings() {
             <Tab.Panels as="div" className="w-full md:w-2/3 lg:w-3/4 xl:w-4/5">
               <Tab.Panel>
                 <div className="space-y-8">
+                  <UpdateCurrentUserProfileForm />
+                </div>
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="space-y-8">
                   {principal && !principal.verified && <VerifyCurrentUserForm />}
-                  <UpdateCurrentUserForm />
-                  <DeleteCurrentUserForm onChange={() => navigate('/logout')} />
+                  <UpdateCurrentUserEmailForm />
+                  <UpdateCurrentUserPasswordForm />
+                  <DeleteCurrentUserForm />
                 </div>
               </Tab.Panel>
             </Tab.Panels>
