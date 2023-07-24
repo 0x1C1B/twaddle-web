@@ -2,6 +2,7 @@ import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
 import RouteProtector from './components/organisms/RouteProtector';
 import Home from './pages/Home';
+import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Register from './pages/Register';
@@ -17,7 +18,9 @@ import Settings from './pages/Settings';
 export default function App() {
   return (
     <Routes>
+      <Route path="*" element={<Navigate to="/not-found" />} />
       <Route path="/" element={<Navigate to="/home" />} />
+      <Route path="/not-found" element={<NotFound />} />
       <Route
         path="/home"
         element={
