@@ -8,8 +8,9 @@ import {useNavigate} from 'react-router-dom';
 import Button from '../../atoms/Button';
 import TextField from '../../atoms/TextField';
 import TextArea from '../../atoms/TextArea';
-import Avatar from '../../atoms/Avatar';
-import {updateCurrentUser, getCurrentUser} from '../../../api/users';
+import CurrentUserAvatar from '../CurrentUserAvatar';
+import UpdateCurrentUserAvatarDialog from './UpdateCurrentUserAvatarDialog';
+import {updateCurrentUser} from '../../../api/users';
 import authSlice from '../../../store/slices/auth';
 
 /**
@@ -24,6 +25,8 @@ export default function UpdateCurrentUserProfileForm() {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [showUpdateAvatarModal, setShowUpdateAvatarModal] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
 
@@ -44,13 +47,12 @@ export default function UpdateCurrentUserProfileForm() {
       setError(null);
 
       try {
-        await updateCurrentUser({
-          displayName: values.displayName != '' ? values.displayName : undefined,
-          status: values.status != '' ? values.status : undefined,
-          location: values.location != '' ? values.location : undefined,
+        const userRes = await updateCurrentUser({
+          displayName: values.displayName != '' ? values.displayName : null,
+          status: values.status != '' ? values.status : null,
+          location: values.location != '' ? values.location : null,
         });
 
-        const userRes = await getCurrentUser();
         dispatch(authSlice.actions.setPrincipal(userRes.data));
 
         resetForm();
@@ -73,7 +75,7 @@ export default function UpdateCurrentUserProfileForm() {
   );
 
   return (
-    <div className="text-gray-800 space-y-4">
+    <div className="text-slate-800 space-y-4">
       <div>
         <h2 className="text-2xl">Public profile</h2>
         <hr className="border-slate-300 mt-2" />
@@ -81,20 +83,31 @@ export default function UpdateCurrentUserProfileForm() {
       <div className="flex flex-col lg:flex-row w-full">
         <div className="order-first lg:order-last mb-8 lg:ml-8 lg:mb-0">
           <div className="mb-1 text-sm">Profile image</div>
-          <div className="bg-gray-200 text-gray-800 p-5 rounded-full w-fit relative">
-            <div className="h-32 aspect-square rounded-md">
-              <Avatar value={principal.username} />
+          <div className="bg-slate-200 text-slate-800 border border-slate-400 p-2 w-fit rounded-full relative">
+            <div className="w-32 h-32 rounded-full overflow-hidden">
+              <CurrentUserAvatar />
             </div>
-            <div className="absolute bottom-4 -right-4">
-              <Button className="!text-xs flex justify-center items-center space-x-1">
-                <FontAwesomeIcon icon={faPen} className="block h-3 w-3 text-gray-800" aria-hidden="true" />
+            <div className="absolute -bottom-4 mx-auto left-0 right-0 w-16">
+              <Button
+                className="!text-xs flex justify-center items-center space-x-1"
+                onClick={() => setShowUpdateAvatarModal(true)}
+              >
+                <FontAwesomeIcon icon={faPen} className="block h-3 w-3 text-slate-800" aria-hidden="true" />
                 <span>Edit</span>
               </Button>
             </div>
+            <UpdateCurrentUserAvatarDialog
+              onSubmit={() => {
+                setShowUpdateAvatarModal(false);
+              }}
+              onClose={() => setShowUpdateAvatarModal(false)}
+              isOpen={showUpdateAvatarModal}
+            />
           </div>
         </div>
         <div className="w-full">
           <Formik
+            enableReinitialize={true}
             initialValues={{
               displayName: principal.displayName || '',
               location: principal.location || '',

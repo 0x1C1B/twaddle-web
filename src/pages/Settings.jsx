@@ -3,7 +3,7 @@ import {useSelector} from 'react-redux';
 import {Tab} from '@headlessui/react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUser, faAddressCard} from '@fortawesome/free-solid-svg-icons';
-import Avatar from '../components/atoms/Avatar';
+import CurrentUserAvatar from '../components/organisms/CurrentUserAvatar';
 import Link from '../components/atoms/Link';
 import StackTemplate from '../components/templates/StackTemplate';
 import VerifyCurrentUserForm from '../components/organisms/settings/VerifyCurrentUserForm';
@@ -32,9 +32,9 @@ export default function Settings() {
           <Tab.Group as="div" className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
             <div className="w-full md:w-1/3 lg:w-1/4 xl:w-1/5 flex flex-col space-y-6">
               <div className="w-full flex space-x-4 items-center max-w-full text-gray-800">
-                <div className="bg-gray-200 text-gray-800 p-2 rounded-full">
-                  <div className="h-10 aspect-square rounded-md">
-                    <Avatar value={principal.username} />
+                <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+                  <div className="h-10 w-10 rounded-full overflow-hidden">
+                    <CurrentUserAvatar userId={principal.id} />
                   </div>
                 </div>
                 {principal.displayName ? (

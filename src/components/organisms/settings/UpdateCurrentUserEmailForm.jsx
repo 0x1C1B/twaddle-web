@@ -5,7 +5,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
-import {updateCurrentUser, getCurrentUser} from '../../../api/users';
+import {updateCurrentUser} from '../../../api/users';
 import authSlice from '../../../store/slices/auth';
 
 /**
@@ -33,11 +33,10 @@ export default function UpdateCurrentUserEmailForm() {
     setError(null);
 
     try {
-      await updateCurrentUser({
+      const userRes = await updateCurrentUser({
         email: values.email,
       });
 
-      const userRes = await getCurrentUser();
       dispatch(authSlice.actions.setPrincipal(userRes.data));
 
       resetForm();
@@ -71,7 +70,12 @@ export default function UpdateCurrentUserEmailForm() {
       {error && <p className="text-left text-red-500">{error}</p>}
       {success && <p className="text-left text-green-600">Changed password successfully.</p>}
       <div className="w-full">
-        <Formik initialValues={{email: principal.email || ''}} onSubmit={onUpdate} validationSchema={schema}>
+        <Formik
+          enableReinitialize={true}
+          initialValues={{email: principal.email || ''}}
+          onSubmit={onUpdate}
+          validationSchema={schema}
+        >
           {(formikProps) => (
             <form className="flex flex-col w-full space-y-4" onSubmit={formikProps.handleSubmit} noValidate>
               <div>

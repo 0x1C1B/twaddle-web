@@ -31,3 +31,11 @@ export const sendUserVerificationMail = (email) => {
 export const verifyUser = (data) => {
   return api.post('/user/verify-user', data);
 };
+
+export const getUserAvatar = (id) => {
+  return api.get(`/users/${id}/avatar`, {responseType: 'blob'});
+};
+
+export const getCurrentUserAvatar = () => {
+  return api.get(`/user/me/avatar`, {responseType: 'blob'});
+};

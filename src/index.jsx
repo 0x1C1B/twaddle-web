@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import store, {persistor} from './store';
 import {injectStore} from './api';
 import PrivacyCompliantPersistGate from './components/organisms/PrivacyCompliantPersistGate';
+import {CurrentUserAvatarProvider} from './contexts/CurrentUserAvatarContext';
 import App from './App';
 
 import './styles/index.css';
@@ -17,9 +18,11 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <PrivacyCompliantPersistGate persistor={persistor}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <CurrentUserAvatarProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </CurrentUserAvatarProvider>
       </PrivacyCompliantPersistGate>
     </Provider>
   </React.StrictMode>,
