@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useState, useEffect, useCallback} from 'react';
 import PropTypes from 'prop-types';
+import {useNavigate} from 'react-router-dom';
 import {getCurrentUserAvatar} from '../api/users';
 
 const CurrentUserAvatarContext = createContext(null);
@@ -10,6 +11,8 @@ const CurrentUserAvatarContext = createContext(null);
  * @return {JSX.Element} The current user's avatar provider
  */
 export function CurrentUserAvatarProvider({children}) {
+  const navigate = useNavigate();
+
   const [avatar, setAvatar] = useState(null);
 
   const updateAvatar = (newAvatar) => {
