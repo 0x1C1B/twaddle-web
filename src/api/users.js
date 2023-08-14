@@ -39,3 +39,11 @@ export const getUserAvatar = (id) => {
 export const getCurrentUserAvatar = () => {
   return api.get(`/user/me/avatar`, {responseType: 'blob'});
 };
+
+export const deleteCurrentUserAvatar = () => {
+  return api.delete(`/user/me/avatar`);
+};
+
+export const updateCurrentUserAvatar = (data) => {
+  return api.post(`/user/me/avatar`, data);
+};

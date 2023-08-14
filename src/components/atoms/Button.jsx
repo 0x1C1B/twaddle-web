@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -6,23 +6,26 @@ import PropTypes from 'prop-types';
  *
  * @return {JSX.Element} Button component
  */
-export default function Button({children, className, ...props}) {
-  return (
-    <button
-      type="button"
-      className={
-        'group relative py-2 px-3 text-sm font-medium rounded-md outline-none bg-slate-100 ' +
-        'border border-slate-300 text-slate-800' +
-        `focus:outline-slate-100 hover:brightness-95 disabled:brightness-75 hover:cursor-pointer ${className}`
-      }
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
+const Button = forwardRef(({className, children, ...props}, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    className={
+      'group relative py-2 px-3 text-sm font-medium rounded-md outline-none bg-slate-100 ' +
+      'border border-slate-300 text-slate-800' +
+      `focus:outline-slate-100 hover:brightness-95 disabled:brightness-75 hover:cursor-pointer ${className}`
+    }
+    {...props}
+  >
+    {children}
+  </button>
+));
+
+Button.displayName = 'Button';
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
 };
+
+export default Button;

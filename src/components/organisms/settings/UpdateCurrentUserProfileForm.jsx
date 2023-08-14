@@ -1,7 +1,5 @@
 import React, {useCallback, useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPen} from '@fortawesome/free-solid-svg-icons';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useNavigate} from 'react-router-dom';
@@ -9,7 +7,7 @@ import Button from '../../atoms/Button';
 import TextField from '../../atoms/TextField';
 import TextArea from '../../atoms/TextArea';
 import CurrentUserAvatar from '../CurrentUserAvatar';
-import UpdateCurrentUserAvatarDialog from './UpdateCurrentUserAvatarDialog';
+import UpdateCurrentUserAvatarMenu from './UpdateCurrentUserAvatarMenu';
 import {updateCurrentUser} from '../../../api/users';
 import authSlice from '../../../store/slices/auth';
 
@@ -25,8 +23,6 @@ export default function UpdateCurrentUserProfileForm() {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const [showUpdateAvatarModal, setShowUpdateAvatarModal] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
 
@@ -88,21 +84,8 @@ export default function UpdateCurrentUserProfileForm() {
               <CurrentUserAvatar />
             </div>
             <div className="absolute -bottom-4 mx-auto left-0 right-0 w-16">
-              <Button
-                className="!text-xs flex justify-center items-center space-x-1"
-                onClick={() => setShowUpdateAvatarModal(true)}
-              >
-                <FontAwesomeIcon icon={faPen} className="block h-3 w-3 text-slate-800" aria-hidden="true" />
-                <span>Edit</span>
-              </Button>
+              <UpdateCurrentUserAvatarMenu />
             </div>
-            <UpdateCurrentUserAvatarDialog
-              onSubmit={() => {
-                setShowUpdateAvatarModal(false);
-              }}
-              onClose={() => setShowUpdateAvatarModal(false)}
-              isOpen={showUpdateAvatarModal}
-            />
           </div>
         </div>
         <div className="w-full">

@@ -54,7 +54,7 @@ export default function NavbarMenu() {
           </Popover.Button>
           <Popover.Panel
             ref={setPopupDialogElement}
-            className="shadow-md border rounded-md z-50 w-screen max-w-xs sm:max-w-sm bg-white text-gray-800"
+            className="shadow-md border rounded-md z-50 w-screen max-w-xs sm:max-w-sm bg-white text-gray-800 mt-1"
             style={styles.popper}
             {...attributes.popper}
           >
