@@ -66,7 +66,7 @@ export function useCurrentUserAvatar() {
   const context = useContext(CurrentUserAvatarContext);
 
   if (context === undefined) {
-    throw new Error('useCurrentUserAvatar must be used within a CurrentUserAvatarProvider');
+    throw new Error('useCurrentUserAvatar() may be used only in the context of a <CurrentUserAvatarProvider>');
   }
 
   return context;

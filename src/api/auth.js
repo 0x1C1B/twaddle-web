@@ -25,3 +25,12 @@ export function refreshToken(token) {
     refreshToken: token,
   });
 }
+
+/**
+ * Generates a ticket for the user to use for websocket authentication.
+ *
+ * @return {object} The response object containing the ticket
+ */
+export function generateTicket() {
+  return api.post('/auth/tickets');
+}

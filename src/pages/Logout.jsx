@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck} from '@fortawesome/free-solid-svg-icons';
+import {useTwaddleChat} from '../contexts/TwaddleChatContext';
 import StackTemplate from '../components/templates/StackTemplate';
 import Link from '../components/atoms/Link';
 import authSlice from '../store/slices/auth';
@@ -16,12 +17,15 @@ import LogoTextDark from '../assets/images/logo-text-dark.png';
 export default function Logout() {
   const dispatch = useDispatch();
 
+  const {disconnect} = useTwaddleChat();
+
   useEffect(() => {
     document.title = 'Twaddle Web | Logout';
   }, []);
 
   useEffect(() => {
     dispatch(authSlice.actions.clearAuthentication());
+    disconnect();
   }, [dispatch]);
 
   return (
