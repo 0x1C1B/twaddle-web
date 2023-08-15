@@ -3,6 +3,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
+import {useCurrentUserAvatar} from '../contexts/CurrentUserAvatarContext';
 import {generateToken} from '../api/auth';
 import {getCurrentUser} from '../api/users';
 import authSlice from '../store/slices/auth';
@@ -25,6 +26,8 @@ export default function Login() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const {reloadAvatar} = useCurrentUserAvatar();
 
   const schema = yup.object().shape({
     username: yup.string().required('Is required'),
@@ -52,8 +55,9 @@ export default function Login() {
       );
 
       const userRes = await getCurrentUser();
-
       dispatch(authSlice.actions.setPrincipal(userRes.data));
+
+      reloadAvatar();
 
       navigate('/home');
     } catch (err) {

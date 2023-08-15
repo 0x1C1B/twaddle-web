@@ -37,15 +37,21 @@ export function CurrentUserAvatarProvider({children}) {
     }
   }, []);
 
-  useEffect(() => {
-    getAvatar().then((newAvatar) => setAvatar(newAvatar));
+  const reloadAvatar = useCallback(async () => {
+    const newAvatar = await getAvatar();
+    setAvatar(newAvatar);
   }, [getAvatar]);
+
+  useEffect(() => {
+    reloadAvatar();
+  }, [reloadAvatar]);
 
   return (
     <CurrentUserAvatarContext.Provider
       value={{
         avatar,
         updateAvatar,
+        reloadAvatar,
       }}
     >
       {children}
