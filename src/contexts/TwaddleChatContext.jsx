@@ -1,6 +1,7 @@
 import React, {useRef, useState, useEffect, useContext, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
+import {useQueue} from '@uidotdev/usehooks';
 
 const TwaddleChatContext = React.createContext(null);
 
@@ -15,6 +16,8 @@ export function TwaddleChatProvider({children}) {
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(null);
+
+  const {add, remove, size, first} = useQueue([]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
@@ -72,6 +75,10 @@ export function TwaddleChatProvider({children}) {
         console.error('Socket domain error occurred.', err);
       });
 
+      socketRef.current.on('message', (message) => {
+        add(message);
+      });
+
       setError(null);
       setConnected(false);
       setConnecting(true);
@@ -82,6 +89,18 @@ export function TwaddleChatProvider({children}) {
     },
     [disconnect],
   );
+
+  const send = useCallback((message) => {
+    if (socketRef.current) {
+      socketRef.current.emit('message', message);
+    }
+  }, []);
+
+  const receive = useCallback(() => {
+    const message = first;
+    remove();
+    return message;
+  }, [first, remove]);
 
   useEffect(() => {
     return () => {
@@ -95,8 +114,11 @@ export function TwaddleChatProvider({children}) {
         connected,
         connecting,
         error,
+        messageCount: size,
         connect,
         disconnect,
+        send,
+        receive,
       }}
     >
       {children}

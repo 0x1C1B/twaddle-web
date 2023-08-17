@@ -47,3 +47,11 @@ export const deleteCurrentUserAvatar = () => {
 export const updateCurrentUserAvatar = (data) => {
   return api.post(`/user/me/avatar`, data);
 };
+
+export const getUserByUsername = (username) => {
+  return api.get(`/users/by-username/${username}`);
+};
+
+export const getUserById = (id) => {
+  return api.get(`/users/${id}`);
+};

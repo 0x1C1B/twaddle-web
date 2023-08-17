@@ -3,6 +3,7 @@ import {persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, R
 import storage from 'redux-persist/lib/storage';
 import privacySlice from './slices/privacy';
 import authSlice from './slices/auth';
+import chatsSlice from './slices/chats';
 
 const persistConfig = {
   key: 'twaddle',
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   privacy: privacySlice.reducer,
   auth: authSlice.reducer,
+  chats: chatsSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
