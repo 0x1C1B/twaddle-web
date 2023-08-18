@@ -5,7 +5,7 @@ import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
 import ChatList from './ChatList';
 import MessageBox from './MessageBox';
 import {generateTicket} from '../../../api/auth';
-import {getUserById} from '../../../api/users';
+import {getChatById} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -22,7 +22,6 @@ export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
 
   const chats = useSelector((state) => state.chats.chats);
-  const principal = useSelector((state) => state.auth.principal);
 
   const onConnect = useCallback(async () => {
     try {
@@ -44,23 +43,17 @@ export default function Chat() {
       try {
         if (!newMessage) return;
 
-        let chat;
-
-        if (newMessage.from === principal.id) {
-          chat = chats.find((chat) => chat.id === newMessage.to);
-        } else {
-          chat = chats.find((chat) => chat.id === newMessage.from);
-        }
+        const chat = chats.find((chat) => chat.id === newMessage.to);
 
         if (!chat) {
-          const userRes = await getUserById(newMessage.from);
+          const chatRes = await getChatById(newMessage.to);
 
           dispatch(
             chatsSlice.actions.addChat({
-              id: userRes.data.id,
-              name: userRes.data.displayName || userRes.data.username,
-              user: userRes.data,
-              messages: [newMessage],
+              id: chatRes.data.id,
+              name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
+              participants: chatRes.data.participants,
+              messages: chatRes.data.messages ? [...chatRes.data.messages, newMessage] : [newMessage],
             }),
           );
         } else {

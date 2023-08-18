@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useSelector, useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -10,6 +10,7 @@ import UserAvatar from '../UserAvatar';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import {getUserByUsername} from '../../../api/users';
+import {createChat, getCurrentUserChats} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -23,6 +24,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingNew, setLoadingNew] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
   const chats = useSelector((state) => state.chats.chats);
@@ -31,18 +33,50 @@ export default function ChatList({selectedChat, onChatSelect}) {
     username: yup.string().required('Is required'),
   });
 
+  const getChats = useCallback(async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const chatsRes = await getCurrentUserChats();
+
+      dispatch(
+        chatsSlice.actions.setChats(
+          chatsRes.data.map((chat) => ({
+            id: chat.id,
+            name: chat.participants[0].displayName || chat.participants[0].username,
+            participants: chat.participants,
+            messages: chat.messages || [],
+          })),
+        ),
+      );
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        navigate('/logout');
+      } else {
+        setError('An unexpected error occurred, please retry.');
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const onNewChat = useCallback(
     async (values, {resetForm}) => {
       setError(null);
-      setLoading(true);
+      setLoadingNew(true);
 
       try {
         if (values.username === principal.username) {
           setError('You cannot chat with yourself.');
           return;
         }
-
-        const chat = chats.find((chat) => chat.user.username === values.username);
+        const chat = chats.find((chat) => {
+          const participants = chat.participants.map((participant) => participant.username);
+          return participants.includes(values.username);
+        });
 
         if (chat) {
           onChatSelect(chat.id);
@@ -52,11 +86,15 @@ export default function ChatList({selectedChat, onChatSelect}) {
 
         const userRes = await getUserByUsername(values.username);
 
+        const chatRes = await createChat({
+          participants: [userRes.data.id],
+        });
+
         dispatch(
           chatsSlice.actions.addChat({
-            id: userRes.data.id,
-            name: userRes.data.displayName || userRes.data.username,
-            user: userRes.data,
+            id: chatRes.data.id,
+            name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
+            participants: chatRes.data.participants,
             messages: [],
           }),
         );
@@ -69,14 +107,18 @@ export default function ChatList({selectedChat, onChatSelect}) {
           setError('An unexpected error occurred, please retry.');
         }
 
-        throw error;
+        throw err;
       } finally {
-        setLoading(false);
+        setLoadingNew(false);
         resetForm();
       }
     },
     [chats, principal],
   );
+
+  useEffect(() => {
+    getChats();
+  }, [getChats]);
 
   return (
     <div className="w-full h-full bg-gray-100 p-2 space-y-4 border-r border-slate-300 flex flex-col">
@@ -91,7 +133,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
                 <TextField
                   name="username"
                   placeholder="Enter username to chat with"
-                  disabled={loading}
+                  disabled={loadingNew}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   value={formikProps.values.username}
@@ -101,14 +143,14 @@ export default function ChatList({selectedChat, onChatSelect}) {
               </div>
               <Button
                 type="submit"
-                disabled={!(formikProps.isValid && formikProps.dirty) || loading}
+                disabled={!(formikProps.isValid && formikProps.dirty) || loadingNew}
                 className={
                   'flex items-center justify-center !bg-green-600 focus:!outline-green-600 !rounded-full !p-2' +
                   ' !text-white h-10 w-10'
                 }
               >
-                {!loading && <FontAwesomeIcon icon={faPlus} />}
-                {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                {!loadingNew && <FontAwesomeIcon icon={faPlus} />}
+                {loadingNew && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
               </Button>
             </form>
           )}
@@ -118,6 +160,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
       <div className="px-2">
         <hr className="w-full border-slate-300" />
       </div>
+      {loading}
       {!chats || chats.length === 0 ? (
         <div className="text-center">
           <span>No conversations were found.</span>
@@ -135,7 +178,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
               <div className="flex space-x-4 items-center overflow-hidden">
                 <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
                   <div className="h-8 w-8 rounded-full overflow-hidden">
-                    <UserAvatar userId={chat.id} />
+                    <UserAvatar userId={chat.participants[0].id} />
                   </div>
                 </div>
                 <div className="space-y-1 overflow-hidden">

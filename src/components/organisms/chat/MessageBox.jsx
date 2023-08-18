@@ -81,7 +81,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
           <div className="flex space-x-4 items-center overflow-hidden">
             <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
               <div className="h-8 w-8 rounded-full overflow-hidden">
-                <UserAvatar userId={chat.id} />
+                <UserAvatar userId={chat.participants[0].id} />
               </div>
             </div>
             <div className="space-y-1 overflow-hidden">

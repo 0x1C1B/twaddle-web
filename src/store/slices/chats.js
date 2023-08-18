@@ -14,6 +14,12 @@ const chatsSlice = createSlice({
         chats: [...state.chats, action.payload],
       };
     },
+    setChats: (state, action) => {
+      return {
+        ...state,
+        chats: action.payload,
+      };
+    },
     removeChat: (state, action) => {
       return {
         ...state,
