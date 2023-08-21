@@ -83,8 +83,8 @@ export default function Chat() {
   }, [twaddleChat.messageCount]);
 
   return (
-    <div className="h-full">
-      <div className="hidden lg:flex h-full">
+    <div className="h-full flex flex-col">
+      <div className="hidden lg:flex grow">
         <div className="w-1/3 xl:w-1/4 h-full">
           <ChatList selectedChat={selectedChat} onChatSelect={(chatId) => setSelectedChat(chatId)} />
         </div>
@@ -98,7 +98,7 @@ export default function Chat() {
           )}
         </div>
       </div>
-      <div className="flex lg:hidden h-full">
+      <div className="flex lg:hidden h-full grow">
         {selectedChat ? (
           <MessageBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
         ) : (

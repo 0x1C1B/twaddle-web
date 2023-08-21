@@ -56,7 +56,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
     } catch (err) {
       setError('An unexpected error occurred, please retry.');
 
-      throw error;
+      throw err;
     } finally {
       setLoading(false);
       resetForm();

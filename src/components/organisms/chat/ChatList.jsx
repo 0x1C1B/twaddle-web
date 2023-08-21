@@ -2,7 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useSelector, useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlus} from '@fortawesome/free-solid-svg-icons';
+import {faPlus, faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {useNavigate} from 'react-router-dom';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -12,6 +12,61 @@ import Button from '../../atoms/Button';
 import {getUserByUsername} from '../../../api/users';
 import {createChat, getCurrentUserChats} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
+
+/**
+ * A component that displays a single chat in the list.
+ *
+ * @return {JSX.Element} The list entry component
+ */
+function ChatListEntry({chat, selected, onChatSelect}) {
+  return (
+    <div
+      className={`hover:bg-slate-200 rounded p-2 cursor-pointer ${selected ? 'bg-slate-300 hover:bg-slate-300' : ''}`}
+      onClick={() => onChatSelect(chat.id)}
+    >
+      <div className="flex space-x-4 items-center overflow-hidden">
+        <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+          <div className="h-8 w-8 rounded-full overflow-hidden">
+            <UserAvatar userId={chat.participants[0].id} />
+          </div>
+        </div>
+        <div className="space-y-1 overflow-hidden">
+          <span className="block truncate font-semibold">{chat.name}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ChatListEntry.propTypes = {
+  chat: PropTypes.object.isRequired,
+  selected: PropTypes.bool.isRequired,
+  onChatSelect: PropTypes.func.isRequired,
+};
+
+/**
+ * Component that displays a skeleton for a chat list entry.
+ *
+ * @return {JSX.Element} The skeleton component
+ */
+function ChatListEntrySkeleton({error}) {
+  return (
+    <div className="rounded p-2">
+      <div className={`flex space-x-4 ${!error && 'animate-pulse'} items-center overflow-hidden`}>
+        <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+          <div className="h-8 w-8 rounded-full overflow-hidden" />
+        </div>
+        <div className="space-y-1 overflow-hidden grow">
+          <div className="rounded bg-slate-200 w-2/3 h-4" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ChatListEntrySkeleton.propTypes = {
+  error: PropTypes.string,
+};
 
 /**
  * A component that displays all available chats in a list.
@@ -24,7 +79,9 @@ export default function ChatList({selectedChat, onChatSelect}) {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loadingNew, setLoadingNew] = useState(false);
+
+  const [errorCreation, setErrorCreation] = useState(null);
+  const [loadingCreation, setLoadingCreation] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
   const chats = useSelector((state) => state.chats.chats);
@@ -66,11 +123,11 @@ export default function ChatList({selectedChat, onChatSelect}) {
   const onNewChat = useCallback(
     async (values, {resetForm}) => {
       setError(null);
-      setLoadingNew(true);
+      setLoadingCreation(true);
 
       try {
         if (values.username === principal.username) {
-          setError('You cannot chat with yourself.');
+          setErrorCreation('You cannot chat with yourself.');
           return;
         }
         const chat = chats.find((chat) => {
@@ -102,14 +159,14 @@ export default function ChatList({selectedChat, onChatSelect}) {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         } else if (err.response && err.response.status === 404) {
-          setError('No user with this username was found.');
+          setErrorCreation('No user with this username was found.');
         } else {
-          setError('An unexpected error occurred, please retry.');
+          setErrorCreation('An unexpected error occurred, please retry.');
         }
 
         throw err;
       } finally {
-        setLoadingNew(false);
+        setLoadingCreation(false);
         resetForm();
       }
     },
@@ -133,7 +190,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
                 <TextField
                   name="username"
                   placeholder="Enter username to chat with"
-                  disabled={loadingNew}
+                  disabled={loadingCreation || loading}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   value={formikProps.values.username}
@@ -143,52 +200,67 @@ export default function ChatList({selectedChat, onChatSelect}) {
               </div>
               <Button
                 type="submit"
-                disabled={!(formikProps.isValid && formikProps.dirty) || loadingNew}
+                disabled={!(formikProps.isValid && formikProps.dirty) || loadingCreation || loading}
                 className={
                   'flex items-center justify-center !bg-green-600 focus:!outline-green-600 !rounded-full !p-2' +
                   ' !text-white h-10 w-10'
                 }
               >
-                {!loadingNew && <FontAwesomeIcon icon={faPlus} />}
-                {loadingNew && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                {!loadingCreation && <FontAwesomeIcon icon={faPlus} />}
+                {loadingCreation && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
               </Button>
             </form>
           )}
         </Formik>
-        {error && <p className="text-left text-xs text-red-500">{error}</p>}
+        {errorCreation && <p className="text-left text-xs text-red-500">{errorCreation}</p>}
       </div>
       <div className="px-2">
         <hr className="w-full border-slate-300" />
       </div>
-      {loading}
-      {!chats || chats.length === 0 ? (
-        <div className="text-center">
-          <span>No conversations were found.</span>
-        </div>
-      ) : (
+      {loading && (
         <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
-          {chats.map((chat) => (
-            <li
-              key={chat.id}
-              className={`hover:bg-slate-200 rounded p-2 cursor-pointer ${
-                selectedChat === chat.id ? 'bg-slate-300 hover:bg-slate-300' : ''
-              }`}
-              onClick={() => onChatSelect(chat.id)}
-            >
-              <div className="flex space-x-4 items-center overflow-hidden">
-                <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                  <div className="h-8 w-8 rounded-full overflow-hidden">
-                    <UserAvatar userId={chat.participants[0].id} />
-                  </div>
-                </div>
-                <div className="space-y-1 overflow-hidden">
-                  <span className="block truncate font-semibold">{chat.name}</span>
-                </div>
-              </div>
+          {Array.from(Array(5).keys()).map((value) => (
+            <li key={value}>
+              <ChatListEntrySkeleton />
             </li>
           ))}
         </ul>
       )}
+      {!loading &&
+        (error ? (
+          <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2 relative">
+            <button type="button" className="group absolute top-2 left-2 flex items-start space-x-2 text-red-500">
+              <div className="rounded-full flex items-center justify-center h-8 w-8 p-2 bg-gray-100 shadow-md">
+                <FontAwesomeIcon icon={faExclamationTriangle} className="h-4 w-4" />
+              </div>
+              <div
+                className={
+                  'invisible group-hover:visible group-focus:visible bg-gray-100 rounded-md shadow-md ' +
+                  'text-xs p-2 opacity-80 max-w-xs line-clamp-4'
+                }
+              >
+                There seems to be an error loading the chats.
+              </div>
+            </button>
+            {Array.from(Array(5).keys()).map((value) => (
+              <li key={value}>
+                <ChatListEntrySkeleton error={error} />
+              </li>
+            ))}
+          </ul>
+        ) : chats.length === 0 ? (
+          <div className="text-center">
+            <span>No conversations were found.</span>
+          </div>
+        ) : (
+          <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
+            {chats.map((chat) => (
+              <li key={chat.id}>
+                <ChatListEntry chat={chat} selected={selectedChat === chat.id} onChatSelect={onChatSelect} />
+              </li>
+            ))}
+          </ul>
+        ))}
     </div>
   );
 }
