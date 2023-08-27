@@ -34,7 +34,7 @@ export default function Message({chat, message}) {
           }
         >
           <div className="w-full h-full rounded-full overflow-hidden">
-            {message.from === principal.id ? <CurrentUserAvatar /> : <UserAvatar userId={chat.id} />}
+            {message.from === principal.id ? <CurrentUserAvatar /> : <UserAvatar userId={message.from} />}
           </div>
         </div>
       </div>
