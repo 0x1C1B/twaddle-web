@@ -25,7 +25,7 @@ export default function Message({chat, message}) {
             {message.from === principal.id ? principal.displayName || principal.username : chat.name}
           </div>
           <div className="w-full break-all whitespace-pre-wrap">{message.content}</div>
-          <div className="w-fit text-xs self-end">{new Date().toLocaleString()}</div>
+          <div className="w-fit text-xs self-end">{new Date(message.timestamp).toLocaleString()}</div>
         </div>
         <div
           className={
