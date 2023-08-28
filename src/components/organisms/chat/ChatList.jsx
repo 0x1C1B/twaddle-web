@@ -103,7 +103,8 @@ export default function ChatList({selectedChat, onChatSelect}) {
             id: chat.id,
             name: chat.participants[0].displayName || chat.participants[0].username,
             participants: chat.participants,
-            messages: chat.messages || [],
+            storedMessages: {},
+            liveMessages: [],
           })),
         ),
       );
@@ -152,7 +153,8 @@ export default function ChatList({selectedChat, onChatSelect}) {
             id: chatRes.data.id,
             name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
             participants: chatRes.data.participants,
-            messages: [],
+            storedMessages: {},
+            liveMessages: [],
           }),
         );
       } catch (err) {
@@ -228,26 +230,19 @@ export default function ChatList({selectedChat, onChatSelect}) {
       )}
       {!loading &&
         (error ? (
-          <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2 relative">
-            <button type="button" className="group absolute top-2 left-2 flex items-start space-x-2 text-red-500">
-              <div className="rounded-full flex items-center justify-center h-8 w-8 p-2 bg-gray-100 shadow-md">
-                <FontAwesomeIcon icon={faExclamationTriangle} className="h-4 w-4" />
-              </div>
-              <div
-                className={
-                  'invisible group-hover:visible group-focus:visible bg-gray-100 rounded-md shadow-md ' +
-                  'text-xs p-2 opacity-80 max-w-xs line-clamp-4'
-                }
-              >
-                There seems to be an error loading the chats.
-              </div>
-            </button>
-            {Array.from(Array(5).keys()).map((value) => (
-              <li key={value}>
-                <ChatListEntrySkeleton error={error} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="text-red-500 flex justify-center items-center space-x-2">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+              <span className="text-sm">There seems to be an error loading the chats.</span>
+            </div>
+            <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
+              {Array.from(Array(5).keys()).map((value) => (
+                <li key={value}>
+                  <ChatListEntrySkeleton error={error} />
+                </li>
+              ))}
+            </ul>
+          </>
         ) : chats.length === 0 ? (
           <div className="text-center">
             <span>No conversations were found.</span>

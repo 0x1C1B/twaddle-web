@@ -53,11 +53,12 @@ export default function Chat() {
               id: chatRes.data.id,
               name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
               participants: chatRes.data.participants,
-              messages: chatRes.data.messages ? [...chatRes.data.messages, newMessage] : [newMessage],
+              storedMessages: {},
+              liveMessages: [newMessage],
             }),
           );
         } else {
-          dispatch(chatsSlice.actions.addMessage({chatId: chat.id, message: newMessage}));
+          dispatch(chatsSlice.actions.addLiveMessage({chatId: chat.id, message: newMessage}));
         }
       } catch (err) {
         if (err.response && err.response.status === 401) {

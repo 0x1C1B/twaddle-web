@@ -11,3 +11,7 @@ export const getCurrentUserChats = () => {
 export const getChatById = (id) => {
   return api.get(`/chats/${id}`);
 };
+
+export const getMessagesOfChat = (id, page) => {
+  return api.get(`/chats/${id}/messages`, {params: { page },});
+};

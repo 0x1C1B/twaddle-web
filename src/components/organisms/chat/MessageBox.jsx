@@ -2,7 +2,7 @@ import React, {useState, useCallback, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowLeft, faPaperPlane} from '@fortawesome/free-solid-svg-icons';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
@@ -10,6 +10,8 @@ import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
 import Message from './Message';
+import chatsSlice from '../../../store/slices/chats';
+import {getMessagesOfChat} from '../../../api/chats';
 
 /**
  * A component that displays the messages of a selected chat.
@@ -17,10 +19,14 @@ import Message from './Message';
  * @return {JSX.Element} The message box component
  */
 export default function MessageBox({selectedChat, onBackButtonClick}) {
+  const dispatch = useDispatch();
   const twaddleChat = useTwaddleChat();
 
   const [, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [, setErrorSend] = useState(null);
+  const [loadingSend, setLoadingSend] = useState(false);
 
   const chat = useSelector((state) => state.chats.chats.find((chat) => chat.id === selectedChat), [selectedChat]);
 
@@ -45,8 +51,8 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
   }, []);
 
   const onSend = useCallback(async (values, {resetForm}) => {
-    setError(null);
-    setLoading(true);
+    setErrorSend(null);
+    setLoadingSend(true);
 
     try {
       await twaddleChat.send({
@@ -54,20 +60,56 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
         content: values.message,
       });
     } catch (err) {
-      setError('An unexpected error occurred, please retry.');
+      setErrorSend('An unexpected error occurred, please retry.');
 
       throw err;
     } finally {
-      setLoading(false);
+      setLoadingSend(false);
       resetForm();
     }
   }, []);
+
+  const onFetchMessages = useCallback(
+    async (_page) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const messagesRes = await getMessagesOfChat(selectedChat, _page);
+
+        dispatch(
+          chatsSlice.actions.setStoredMessages({
+            chatId: selectedChat,
+            messages: messagesRes.data.content.reverse(),
+            page: messagesRes.data.info.page,
+          }),
+        );
+      } catch (err) {
+        if (err.response && err.response.data?.code === 'InvalidTokenError') {
+          navigate('/login');
+        } else {
+          setError('An unexpected error occurred, please retry!');
+        }
+
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedChat],
+  );
 
   useEffect(() => {
     if (messageBoxStickyBottom) {
       messageBoxRef.current.scrollTo(0, messageBoxRef.current.scrollHeight);
     }
   }, [chat.messages]);
+
+  useEffect(() => {
+    if (selectedChat && onFetchMessages) {
+      onFetchMessages(0);
+    }
+  }, [selectedChat, onFetchMessages]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -95,7 +137,12 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
         ref={messageBoxRef}
         className="grow h-0 overflow-hidden overflow-y-auto p-4 space-y-2"
       >
-        {chat.messages.map((message, index) => (
+        {Object.values(chat.storedMessages)
+          .flat()
+          .map((message, index) => (
+            <Message key={index} message={message} chat={chat} />
+          ))}
+        {chat.liveMessages.map((message, index) => (
           <Message key={index} message={message} chat={chat} />
         ))}
       </div>
@@ -107,8 +154,9 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
                 <TextField
                   autoFocus
                   name="message"
+                  autocomplete="off"
                   placeholder="Enter message"
-                  disabled={loading}
+                  disabled={loadingSend || loading}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   value={formikProps.values.message}
@@ -118,14 +166,14 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
               </div>
               <Button
                 type="submit"
-                disabled={!(formikProps.isValid && formikProps.dirty) || loading}
+                disabled={!(formikProps.isValid && formikProps.dirty) || loadingSend || loading}
                 className={
                   'flex items-center justify-center !bg-sky-600 focus:!outline-sky-600 !rounded-full !p-2' +
                   ' !text-white h-10 w-10'
                 }
               >
-                {!loading && <FontAwesomeIcon icon={faPaperPlane} />}
-                {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                {!loadingSend && <FontAwesomeIcon icon={faPaperPlane} />}
+                {loadingSend && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
               </Button>
             </form>
           )}

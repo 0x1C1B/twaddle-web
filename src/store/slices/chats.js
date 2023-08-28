@@ -26,7 +26,7 @@ const chatsSlice = createSlice({
         chats: state.chats.filter((chat) => chat.id !== action.payload),
       };
     },
-    addMessage: (state, action) => {
+    addLiveMessage: (state, action) => {
       const {chatId, message} = action.payload;
       const chatIndex = state.chats.findIndex((chat) => chat.id === chatId);
 
@@ -37,7 +37,27 @@ const chatsSlice = createSlice({
             ...state.chats.slice(0, chatIndex),
             {
               ...state.chats[chatIndex],
-              messages: [...state.chats[chatIndex].messages, message],
+              liveMessages: [...state.chats[chatIndex].liveMessages, message],
+            },
+            ...state.chats.slice(chatIndex + 1),
+          ],
+        };
+      }
+
+      return state;
+    },
+    setStoredMessages: (state, action) => {
+      const {chatId, page, messages} = action.payload;
+      const chatIndex = state.chats.findIndex((chat) => chat.id === chatId);
+
+      if (chatIndex !== -1) {
+        return {
+          ...state,
+          chats: [
+            ...state.chats.slice(0, chatIndex),
+            {
+              ...state.chats[chatIndex],
+              storedMessages: {...state.chats[chatIndex].storedMessages, [page]: messages},
             },
             ...state.chats.slice(chatIndex + 1),
           ],
