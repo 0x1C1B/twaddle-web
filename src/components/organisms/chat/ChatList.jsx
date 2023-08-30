@@ -65,7 +65,7 @@ function ChatListEntrySkeleton({error}) {
 }
 
 ChatListEntrySkeleton.propTypes = {
-  error: PropTypes.string,
+  error: PropTypes.any,
 };
 
 /**
@@ -231,9 +231,11 @@ export default function ChatList({selectedChat, onChatSelect}) {
       {!loading &&
         (error ? (
           <>
-            <div className="text-red-500 flex justify-center items-center space-x-2">
-              <FontAwesomeIcon icon={faExclamationTriangle} />
-              <span className="text-sm">There seems to be an error loading the chats.</span>
+            <div className="flex justify-center">
+              <div className={'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}>
+                <FontAwesomeIcon icon={faExclamationTriangle} />
+                <span className="text-sm">There seems to be an error loading the chats.</span>
+              </div>
             </div>
             <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
               {Array.from(Array(5).keys()).map((value) => (

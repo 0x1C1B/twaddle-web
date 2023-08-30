@@ -29,8 +29,8 @@ export default function Message({chat, message}) {
         </div>
         <div
           className={
-            'shrink-0 h-8 w-8 bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit' +
-            ` rounded-full ml-2 ${message.from !== principal.id && 'order-first mr-2 ml-0'}`
+            'shrink-0 h-8 w-8 bg-slate-200 text-slate-800 border border-slate-400 p-1' +
+            ` rounded-full ${message.from !== principal.id ? 'order-first mr-2' : 'ml-2'}`
           }
         >
           <div className="w-full h-full rounded-full overflow-hidden">

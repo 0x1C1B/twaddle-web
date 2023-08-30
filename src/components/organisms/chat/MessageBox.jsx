@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowLeft, faPaperPlane} from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faPaperPlane, faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -10,6 +10,7 @@ import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
 import Message from './Message';
+import MessageSkeleton from './MessageSkeleton';
 import chatsSlice from '../../../store/slices/chats';
 import {getMessagesOfChat} from '../../../api/chats';
 
@@ -22,7 +23,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
   const dispatch = useDispatch();
   const twaddleChat = useTwaddleChat();
 
-  const [, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [, setErrorSend] = useState(null);
@@ -137,14 +138,35 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
         ref={messageBoxRef}
         className="grow h-0 overflow-hidden overflow-y-auto p-4 space-y-2"
       >
-        {Object.values(chat.storedMessages)
-          .flat()
-          .map((message, index) => (
-            <Message key={index} message={message} chat={chat} />
+        {loading &&
+          Array.from(Array(5).keys()).map((value) => <MessageSkeleton key={value} isOwner={value % 2 === 0} />)}
+        {!loading &&
+          (error ? (
+            <>
+              <div className="flex justify-center mb-4">
+                <div
+                  className={'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}
+                >
+                  <FontAwesomeIcon icon={faExclamationTriangle} />
+                  <span className="text-sm">There seems to be an error loading the messages.</span>
+                </div>
+              </div>
+              {Array.from(Array(5).keys()).map((value) => (
+                <MessageSkeleton key={value} error={error} isOwner={value % 2 === 0} />
+              ))}
+            </>
+          ) : (
+            <>
+              {Object.values(chat.storedMessages)
+                .flat()
+                .map((message, index) => (
+                  <Message key={index} message={message} chat={chat} />
+                ))}
+              {chat.liveMessages.map((message, index) => (
+                <Message key={index} message={message} chat={chat} />
+              ))}
+            </>
           ))}
-        {chat.liveMessages.map((message, index) => (
-          <Message key={index} message={message} chat={chat} />
-        ))}
       </div>
       <div className="bg-gray-100 border-t border-slate-300 px-4 py-3">
         <Formik initialValues={{message: ''}} validationSchema={schema} onSubmit={onSend}>
