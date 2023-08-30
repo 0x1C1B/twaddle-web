@@ -114,7 +114,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="bg-gray-100 border-b border-slate-300 px-4 py-3">
+      <div className="bg-gray-100 border-b border-slate-300 px-4 py-3 h-16">
         <div className="flex items-center">
           <div className="lg:hidden mr-4">
             <button onClick={onBackButtonClick}>

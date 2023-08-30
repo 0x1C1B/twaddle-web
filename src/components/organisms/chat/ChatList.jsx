@@ -2,7 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useSelector, useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlus, faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
+import {faPlus, faExclamationTriangle, faUserPlus, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 import {useNavigate} from 'react-router-dom';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -82,6 +82,8 @@ export default function ChatList({selectedChat, onChatSelect}) {
 
   const [errorCreation, setErrorCreation] = useState(null);
   const [loadingCreation, setLoadingCreation] = useState(false);
+
+  const [showCreation, setShowCreation] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
   const chats = useSelector((state) => state.chats.chats);
@@ -180,84 +182,106 @@ export default function ChatList({selectedChat, onChatSelect}) {
   }, [getChats]);
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2 space-y-4 border-r border-slate-300 flex flex-col">
-      <div className="flex p-2">
-        <h2 className="text-xl font-semibold">Chats</h2>
-      </div>
-      <div className="p-2 space-y-2">
-        <Formik initialValues={{username: ''}} validationSchema={schema} onSubmit={onNewChat}>
-          {(formikProps) => (
-            <form className="flex w-full flex items-center space-x-4" onSubmit={formikProps.handleSubmit} noValidate>
-              <div className="grow">
-                <TextField
-                  name="username"
-                  placeholder="Enter username to chat with"
-                  disabled={loadingCreation || loading}
-                  onChange={formikProps.handleChange}
-                  onBlur={formikProps.handleBlur}
-                  value={formikProps.values.username}
-                  touched={formikProps.errors.username && formikProps.touched.username}
-                  className="h-10"
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={!(formikProps.isValid && formikProps.dirty) || loadingCreation || loading}
-                className={
-                  'flex items-center justify-center !bg-green-600 focus:!outline-green-600 !rounded-full !p-2' +
-                  ' !text-white h-10 w-10'
-                }
-              >
-                {!loadingCreation && <FontAwesomeIcon icon={faPlus} />}
-                {loadingCreation && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
-              </Button>
-            </form>
-          )}
-        </Formik>
-        {errorCreation && <p className="text-left text-xs text-red-500">{errorCreation}</p>}
-      </div>
-      <div className="px-2">
-        <hr className="w-full border-slate-300" />
-      </div>
-      {loading && (
-        <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
-          {Array.from(Array(5).keys()).map((value) => (
-            <li key={value}>
-              <ChatListEntrySkeleton />
-            </li>
-          ))}
-        </ul>
-      )}
-      {!loading &&
-        (error ? (
-          <>
-            <div className="flex justify-center">
-              <div className={'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}>
-                <FontAwesomeIcon icon={faExclamationTriangle} />
-                <span className="text-sm">There seems to be an error loading the chats.</span>
-              </div>
-            </div>
-            <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
-              {Array.from(Array(5).keys()).map((value) => (
-                <li key={value}>
-                  <ChatListEntrySkeleton error={error} />
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : chats.length === 0 ? (
-          <div className="text-center">
-            <span>No conversations were found.</span>
+    <div className="w-full h-full bg-gray-100 space-y-4 border-r border-slate-300 flex flex-col">
+      {!showCreation && (
+        <div className="flex p-4 py-3 justify-between items-center h-16 border-b border-slate-300">
+          <h2 className="text-xl font-semibold">Chats</h2>
+          <div>
+            <button onClick={() => setShowCreation(true)} className="flex justify-center items-center">
+              <FontAwesomeIcon className="h-5 w-5" icon={faUserPlus} />
+            </button>
           </div>
-        ) : (
+        </div>
+      )}
+      {showCreation && (
+        <div className="border-b border-slate-300 px-4">
+          <div className="flex py-3 justify-left items-center h-16 space-x-2">
+            <button onClick={() => setShowCreation(false)} className="flex justify-center items-center">
+              <FontAwesomeIcon className="h-5 w-5" icon={faArrowLeft} />
+            </button>
+            <h2 className="text-xl font-semibold">New Chat</h2>
+          </div>
+          <div className="pb-3 space-y-2">
+            <Formik initialValues={{username: ''}} validationSchema={schema} onSubmit={onNewChat}>
+              {(formikProps) => (
+                <form
+                  className="flex w-full flex items-center space-x-4"
+                  onSubmit={formikProps.handleSubmit}
+                  noValidate
+                >
+                  <div className="grow">
+                    <TextField
+                      name="username"
+                      placeholder="Enter username to chat with"
+                      disabled={loadingCreation || loading}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      value={formikProps.values.username}
+                      touched={formikProps.errors.username && formikProps.touched.username}
+                      className="h-10"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={!(formikProps.isValid && formikProps.dirty) || loadingCreation || loading}
+                    className={
+                      'flex items-center justify-center !bg-green-600 focus:!outline-green-600 !rounded-full !p-2' +
+                      ' !text-white h-10 w-10'
+                    }
+                  >
+                    {!loadingCreation && <FontAwesomeIcon icon={faPlus} />}
+                    {loadingCreation && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                  </Button>
+                </form>
+              )}
+            </Formik>
+            {errorCreation && <p className="text-left text-xs text-red-500">{errorCreation}</p>}
+          </div>
+        </div>
+      )}
+      <div className="grow p-2 space-y-4 flex flex-col">
+        {loading && (
           <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
-            {chats.map((chat) => (
-              <li key={chat.id}>
-                <ChatListEntry chat={chat} selected={selectedChat === chat.id} onChatSelect={onChatSelect} />
+            {Array.from(Array(5).keys()).map((value) => (
+              <li key={value}>
+                <ChatListEntrySkeleton />
               </li>
             ))}
           </ul>
-        ))}
+        )}
+        {!loading &&
+          (error ? (
+            <>
+              <div className="flex justify-center">
+                <div
+                  className={'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}
+                >
+                  <FontAwesomeIcon icon={faExclamationTriangle} />
+                  <span className="text-sm">There seems to be an error loading the chats.</span>
+                </div>
+              </div>
+              <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
+                {Array.from(Array(5).keys()).map((value) => (
+                  <li key={value}>
+                    <ChatListEntrySkeleton error={error} />
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : chats.length === 0 ? (
+            <div className="text-center">
+              <span>No conversations were found.</span>
+            </div>
+          ) : (
+            <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
+              {chats.map((chat) => (
+                <li key={chat.id}>
+                  <ChatListEntry chat={chat} selected={selectedChat === chat.id} onChatSelect={onChatSelect} />
+                </li>
+              ))}
+            </ul>
+          ))}
+      </div>
     </div>
   );
 }
