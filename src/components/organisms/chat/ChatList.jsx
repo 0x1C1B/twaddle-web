@@ -106,6 +106,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
             name: chat.participants[0].displayName || chat.participants[0].username,
             participants: chat.participants,
             storedMessages: {},
+            storedMessagesLoaded: false,
             liveMessages: [],
           })),
         ),
@@ -156,6 +157,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
             name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
             participants: chatRes.data.participants,
             storedMessages: {},
+            storedMessagesLoaded: false,
             liveMessages: [],
           }),
         );

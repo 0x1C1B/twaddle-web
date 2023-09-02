@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowLeft, faPaperPlane, faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faPaperPlane, faExclamationTriangle, faArrowsRotate} from '@fortawesome/free-solid-svg-icons';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -30,6 +30,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
   const [loadingSend, setLoadingSend] = useState(false);
 
   const chat = useSelector((state) => state.chats.chats.find((chat) => chat.id === selectedChat), [selectedChat]);
+  const timestampOffset = useSelector((state) => state.chats.timestampOffset);
 
   const schema = yup.object().shape({
     message: yup.string().required('Is required'),
@@ -76,7 +77,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
       setError(null);
 
       try {
-        const messagesRes = await getMessagesOfChat(selectedChat, _page);
+        const messagesRes = await getMessagesOfChat(selectedChat, _page, 25, timestampOffset);
 
         dispatch(
           chatsSlice.actions.setStoredMessages({
@@ -85,6 +86,10 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
             page: messagesRes.data.info.page,
           }),
         );
+
+        if (messagesRes.data.info.page === messagesRes.data.info.totalPages - 1) {
+          dispatch(chatsSlice.actions.setStoredMessagesLoaded({chatId: selectedChat}));
+        }
       } catch (err) {
         if (err.response && err.response.data?.code === 'InvalidTokenError') {
           navigate('/login');
@@ -97,20 +102,20 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
         setLoading(false);
       }
     },
-    [selectedChat],
+    [selectedChat, timestampOffset],
   );
 
   useEffect(() => {
     if (messageBoxStickyBottom) {
       messageBoxRef.current.scrollTo(0, messageBoxRef.current.scrollHeight);
     }
-  }, [chat.messages]);
+  }, [chat.storedMessages, chat.liveMessages, messageBoxStickyBottom]);
 
   useEffect(() => {
-    if (selectedChat && onFetchMessages) {
+    if (onFetchMessages && Object.keys(chat.storedMessages).length === 0) {
       onFetchMessages(0);
     }
-  }, [selectedChat, onFetchMessages]);
+  }, [onFetchMessages, chat]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -157,7 +162,19 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
             </>
           ) : (
             <>
+              {chat.storedMessages.length !== 0 && !chat.storedMessagesLoaded && (
+                <div className="flex justify-center mb-4">
+                  <button
+                    className={'flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}
+                    onClick={() => onFetchMessages(Object.keys(chat.storedMessages).length)}
+                  >
+                    <FontAwesomeIcon icon={faArrowsRotate} />
+                    <span className="text-sm">Load more</span>
+                  </button>
+                </div>
+              )}
               {Object.values(chat.storedMessages)
+                .reverse()
                 .flat()
                 .map((message, index) => (
                   <Message key={index} message={message} chat={chat} />
@@ -176,7 +193,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
                 <TextField
                   autoFocus
                   name="message"
-                  autocomplete="off"
+                  autoComplete="off"
                   placeholder="Enter message"
                   disabled={loadingSend || loading}
                   onChange={formikProps.handleChange}

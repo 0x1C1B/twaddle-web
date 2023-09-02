@@ -54,6 +54,7 @@ export default function Chat() {
               name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
               participants: chatRes.data.participants,
               storedMessages: {},
+              storedMessagesLoaded: false,
               liveMessages: [newMessage],
             }),
           );
