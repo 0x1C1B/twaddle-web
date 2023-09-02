@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
 import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
 import ChatList from './ChatList';
-import MessageBox from './MessageBox';
+import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
 import {getChatById} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
@@ -92,7 +92,7 @@ export default function Chat() {
         </div>
         <div className="w-2/3 xl:w-3/4 h-full">
           {selectedChat ? (
-            <MessageBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
+            <ChatBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
           ) : (
             <div className="flex justify-center items-center w-full bg-gray-200 h-full">
               <p>Select a chat.</p>
@@ -102,7 +102,7 @@ export default function Chat() {
       </div>
       <div className="flex lg:hidden h-full grow">
         {selectedChat ? (
-          <MessageBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
+          <ChatBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
         ) : (
           <ChatList selectedChat={selectedChat} onChatSelect={(chatId) => setSelectedChat(chatId)} />
         )}

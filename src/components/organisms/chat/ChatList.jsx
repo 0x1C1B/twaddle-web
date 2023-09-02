@@ -214,7 +214,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
                   <div className="grow">
                     <TextField
                       name="username"
-                      placeholder="Enter username to chat with"
+                      placeholder="Enter user's name"
                       disabled={loadingCreation || loading}
                       onChange={formikProps.handleChange}
                       onBlur={formikProps.handleBlur}

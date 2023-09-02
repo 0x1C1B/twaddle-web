@@ -11,6 +11,7 @@ import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
 import Message from './Message';
 import MessageSkeleton from './MessageSkeleton';
+import EmojiPicker from './EmojiPicker';
 import chatsSlice from '../../../store/slices/chats';
 import {getMessagesOfChat} from '../../../api/chats';
 
@@ -19,7 +20,7 @@ import {getMessagesOfChat} from '../../../api/chats';
  *
  * @return {JSX.Element} The message box component
  */
-export default function MessageBox({selectedChat, onBackButtonClick}) {
+export default function ChatBox({selectedChat, onBackButtonClick}) {
   const dispatch = useDispatch();
   const twaddleChat = useTwaddleChat();
 
@@ -185,22 +186,32 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
             </>
           ))}
       </div>
-      <div className="bg-gray-100 border-t border-slate-300 px-4 py-3">
+      <div className="bg-slate-100 border-t border-slate-300 px-4 py-3">
         <Formik initialValues={{message: ''}} validationSchema={schema} onSubmit={onSend}>
           {(formikProps) => (
             <form className="flex w-full flex items-center space-x-4" onSubmit={formikProps.handleSubmit} noValidate>
-              <div className="grow">
+              <div className="grow flex relative bg-slate-200 rounded-md px-2">
+                <div className="absolute h-full flex items-center">
+                  <EmojiPicker
+                    onSelect={(emoji) =>
+                      formikProps.setFieldValue('message', `${formikProps.values.message}${emoji.native}`)
+                    }
+                  />
+                </div>
                 <TextField
                   autoFocus
                   name="message"
                   autoComplete="off"
-                  placeholder="Enter message"
+                  placeholder="Enter your message"
                   disabled={loadingSend || loading}
                   onChange={formikProps.handleChange}
                   onBlur={formikProps.handleBlur}
                   value={formikProps.values.message}
                   touched={formikProps.errors.message && formikProps.touched.message}
-                  className="h-10"
+                  className={
+                    '!h-10 !bg-slate-200 focus:!placeholder:text-slate-400 !text-slate-800 ' +
+                    'placeholder:!text-slate-800 !border-0 focus:!outline-none !ml-6'
+                  }
                 />
               </div>
               <Button
@@ -222,7 +233,7 @@ export default function MessageBox({selectedChat, onBackButtonClick}) {
   );
 }
 
-MessageBox.propTypes = {
+ChatBox.propTypes = {
   selectedChat: PropTypes.string.isRequired,
   onBackButtonClick: PropTypes.func.isRequired,
 };

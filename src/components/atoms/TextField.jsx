@@ -12,11 +12,9 @@ export default function TextField({onChange, onBlur, value, label, error, touche
       {label && <p className="mb-1 text-sm">{label}</p>}
       <input
         className={
-          'relative bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-300 ' +
+          'relative bg-white text-gray-800 placeholder-gray-300 ' +
           'placeholder-gray-400 border block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-sky-500 ' +
-          `disabled:brightness-75 ${
-            error && touched ? 'border-red-500' : 'border-gray-300 dark:border-gray-500'
-          } ${className}`
+          `disabled:brightness-75 ${error && touched ? 'border-red-500' : 'border-gray-300'} ${className}`
         }
         onChange={onChange}
         onBlur={onBlur}
