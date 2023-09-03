@@ -89,7 +89,7 @@ export default function ChatListCreationHeader({onNewChat, onReturn}) {
   );
 
   return (
-    <div className="border-b border-slate-300 px-4">
+    <div className="border-b border-slate-300 px-2">
       <div className="flex py-3 justify-left items-center h-16 space-x-2">
         <Button
           onClick={() => onReturn()}
@@ -101,7 +101,7 @@ export default function ChatListCreationHeader({onNewChat, onReturn}) {
         </Button>
         <h2 className="text-xl font-semibold">New Chat</h2>
       </div>
-      <div className="pb-3 space-y-2">
+      <div className="pb-3 space-y-2 px-2">
         <Formik initialValues={{username: ''}} validationSchema={schema} onSubmit={onAddChat}>
           {(formikProps) => (
             <form className="flex w-full flex items-center space-x-4" onSubmit={formikProps.handleSubmit} noValidate>

@@ -17,8 +17,6 @@ export function TwaddleChatProvider({children}) {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(null);
 
-  const {add, remove, size, first} = useQueue([]);
-
   const disconnect = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.disconnect();
@@ -75,10 +73,6 @@ export function TwaddleChatProvider({children}) {
         console.error('Socket domain error occurred.', err);
       });
 
-      socketRef.current.on('message', (message) => {
-        add(message);
-      });
-
       setError(null);
       setConnected(false);
       setConnecting(true);
@@ -90,17 +84,11 @@ export function TwaddleChatProvider({children}) {
     [disconnect],
   );
 
-  const send = useCallback((message) => {
+  const sendMessage = useCallback((message) => {
     if (socketRef.current) {
       socketRef.current.emit('message', message);
     }
   }, []);
-
-  const receive = useCallback(() => {
-    const message = first;
-    remove();
-    return message;
-  }, [first, remove]);
 
   useEffect(() => {
     return () => {
@@ -114,11 +102,10 @@ export function TwaddleChatProvider({children}) {
         connected,
         connecting,
         error,
-        messageCount: size,
+        socket: socketRef.current,
         connect,
         disconnect,
-        send,
-        receive,
+        sendMessage,
       }}
     >
       {children}
@@ -143,4 +130,29 @@ export const useTwaddleChat = () => {
   }
 
   return context;
+};
+
+/**
+ * Hook to listen to twaddle chat events.
+ *
+ * @param {string} event The event to listen to
+ * @param {Function} listener The listener to add
+ */
+export const useTwaddleEvent = (event, listener) => {
+  const events = useQueue();
+
+  const {socket} = useTwaddleChat();
+
+  useEffect(() => {
+    if (socket) {
+      socket.on(event, events.add);
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    if (events.size > 0) {
+      listener(events.first);
+      events.remove();
+    }
+  }, [events.size]);
 };

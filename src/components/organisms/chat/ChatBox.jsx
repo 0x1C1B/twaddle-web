@@ -58,7 +58,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
     setLoadingSend(true);
 
     try {
-      await twaddleChat.send({
+      await twaddleChat.sendMessage({
         to: chat.id,
         content: values.message,
       });
@@ -80,16 +80,18 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       try {
         const messagesRes = await getMessagesOfChat(selectedChat, _page, 25, timestampOffset);
 
-        dispatch(
-          chatsSlice.actions.setStoredMessages({
-            chatId: selectedChat,
-            messages: messagesRes.data.content.reverse(),
-            page: messagesRes.data.info.page,
-          }),
-        );
+        if (messagesRes.data.info.totalElements > 0) {
+          dispatch(
+            chatsSlice.actions.setStoredMessages({
+              chatId: selectedChat,
+              messages: messagesRes.data.content.reverse(),
+              page: messagesRes.data.info.page,
+            }),
+          );
 
-        if (messagesRes.data.info.page === messagesRes.data.info.totalPages - 1) {
-          dispatch(chatsSlice.actions.setStoredMessagesLoaded({chatId: selectedChat}));
+          if (messagesRes.data.info.page === messagesRes.data.info.totalPages - 1) {
+            dispatch(chatsSlice.actions.setStoredMessagesLoaded({chatId: selectedChat}));
+          }
         }
       } catch (err) {
         if (err.response && err.response.data?.code === 'InvalidTokenError') {
@@ -169,7 +171,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
             </>
           ) : (
             <>
-              {chat.storedMessages.length !== 0 && !chat.storedMessagesLoaded && (
+              {Object.keys(chat.storedMessages).length !== 0 && !chat.storedMessagesLoaded && (
                 <div className="flex justify-center mb-4">
                   <button
                     className={'flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'}

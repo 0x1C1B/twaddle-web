@@ -11,8 +11,8 @@ import Button from '../../atoms/Button';
  */
 export default function ChatListDefaultHeader({onShowCreation}) {
   return (
-    <div className="flex p-4 py-3 justify-between items-center h-16 border-b border-slate-300">
-      <h2 className="text-xl font-semibold">Chats</h2>
+    <div className="flex px-2 py-3 justify-between items-center h-16 border-b border-slate-300">
+      <h2 className="text-xl font-semibold pl-2">Chats</h2>
       <div>
         <Button
           onClick={() => onShowCreation()}

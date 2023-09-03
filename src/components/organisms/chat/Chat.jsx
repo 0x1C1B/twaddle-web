@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
-import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
+import {useTwaddleChat, useTwaddleEvent} from '../../../contexts/TwaddleChatContext';
 import ChatList from './ChatList';
 import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
@@ -78,11 +78,7 @@ export default function Chat() {
     }
   }, [onConnect, twaddleChat.connected, twaddleChat.connecting]);
 
-  useEffect(() => {
-    if (twaddleChat.messageCount > 0) {
-      onMessage(twaddleChat.receive());
-    }
-  }, [twaddleChat.messageCount]);
+  useTwaddleEvent('message', onMessage);
 
   return (
     <div className="h-full flex flex-col">
