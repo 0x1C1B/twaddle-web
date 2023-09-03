@@ -12,7 +12,7 @@ import Picker from '@emoji-mart/react';
  *
  * @return {JSX.Element} The emoji picker component
  */
-export default function EmojiPicker({onSelect}) {
+export default function EmojiPicker({onSelect, disabled}) {
   const [popupButtonElement, setPopupButtonElement] = useState();
   const [popupDialogElement, setPopupDialogElement] = useState();
   const {styles, attributes} = usePopper(popupButtonElement, popupDialogElement, {
@@ -33,12 +33,13 @@ export default function EmojiPicker({onSelect}) {
         <>
           <Popover.Button
             ref={setPopupButtonElement}
+            disabled={disabled}
             className={
-              'p-1 rounded-full text-slate-800 hover:brightness-95 focus:outline-none flex ' +
-              'items-center justify-center'
+              'py-2 px-3 rounded-md bg-slate-100 hover:brightness-95 focus:outline-none flex ' +
+              'items-center justify-center disabled:cursor-not-allowed disabled:hover:brightness-100'
             }
           >
-            <FontAwesomeIcon icon={faFaceSmile} className="w-5 h-5" />
+            <FontAwesomeIcon icon={faFaceSmile} className="w-4 h-4 lg:h-5 lg:w-5 text-slate-800" />
           </Popover.Button>
           <Popover.Panel
             ref={setPopupDialogElement}
@@ -56,4 +57,5 @@ export default function EmojiPicker({onSelect}) {
 
 EmojiPicker.propTypes = {
   onSelect: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
 };

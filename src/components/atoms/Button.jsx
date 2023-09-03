@@ -11,8 +11,8 @@ const Button = forwardRef(({className, children, ...props}, ref) => (
     ref={ref}
     type="button"
     className={
-      'group relative py-2 px-3 text-sm font-medium rounded-md outline-none bg-slate-100 ' +
-      'border border-slate-300 text-slate-800' +
+      'group relative py-2 px-3 text-sm font-medium rounded-md outline-none bg-white ' +
+      'border border-slate-300 text-slate-800 disabled:cursor-not-allowed ' +
       `focus:outline-slate-100 hover:brightness-95 disabled:brightness-75 hover:cursor-pointer ${className}`
     }
     {...props}

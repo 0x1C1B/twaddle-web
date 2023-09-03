@@ -120,12 +120,18 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="bg-gray-100 border-b border-slate-300 px-4 py-3 h-16">
-        <div className="flex items-center">
-          <div className="lg:hidden mr-4">
-            <button onClick={onBackButtonClick}>
-              <FontAwesomeIcon icon={faArrowLeft} className="h-5 w-5" />
-            </button>
+      <div className="bg-gray-100 border-b border-slate-300 px-2 py-3 h-16">
+        <div className="flex items-center space-x-2">
+          <div className="lg:hidden">
+            <Button
+              onClick={onBackButtonClick}
+              className={
+                'flex items-center justify-center focus:!outline-none !border-0 ' +
+                '!bg-slate-100 disabled:brightness-100'
+              }
+            >
+              <FontAwesomeIcon className="h-4 w-4 text-slate-800 lg:h-5 lg:w-5" icon={faArrowLeft} />
+            </Button>
           </div>
           <div className="flex space-x-4 items-center overflow-hidden">
             <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
@@ -186,45 +192,54 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
             </>
           ))}
       </div>
-      <div className="bg-slate-100 border-t border-slate-300 px-4 py-3">
+      <div className="bg-slate-100 border-t border-slate-300 px-2 py-1">
         <Formik initialValues={{message: ''}} validationSchema={schema} onSubmit={onSend}>
           {(formikProps) => (
             <form className="flex w-full flex items-center space-x-4" onSubmit={formikProps.handleSubmit} noValidate>
-              <div className="grow flex relative bg-slate-200 rounded-md px-2">
-                <div className="absolute h-full flex items-center">
+              <div className="grow flex items-center rounded-md space-x-2">
+                <div className="h-full flex items-center">
                   <EmojiPicker
+                    disabled={loadingSend || loading}
                     onSelect={(emoji) =>
                       formikProps.setFieldValue('message', `${formikProps.values.message}${emoji.native}`)
                     }
                   />
                 </div>
-                <TextField
-                  autoFocus
-                  name="message"
-                  autoComplete="off"
-                  placeholder="Enter your message"
-                  disabled={loadingSend || loading}
-                  onChange={formikProps.handleChange}
-                  onBlur={formikProps.handleBlur}
-                  value={formikProps.values.message}
-                  touched={formikProps.errors.message && formikProps.touched.message}
-                  className={
-                    '!h-10 !bg-slate-200 focus:!placeholder:text-slate-400 !text-slate-800 ' +
-                    'placeholder:!text-slate-800 !border-0 focus:!outline-none !ml-6'
-                  }
-                />
+                <div className="grow">
+                  <TextField
+                    autoFocus
+                    name="message"
+                    autoComplete="off"
+                    placeholder="Enter your message"
+                    disabled={loadingSend || loading}
+                    onChange={formikProps.handleChange}
+                    onBlur={formikProps.handleBlur}
+                    value={formikProps.values.message}
+                    touched={formikProps.errors.message && formikProps.touched.message}
+                    className={
+                      '!h-10 !bg-slate-100 focus:!placeholder:text-slate-400 !text-slate-800 ' +
+                      'placeholder:!text-slate-800 !border-0 focus:!outline-none !p-0 disabled:brightness-100'
+                    }
+                  />
+                </div>
+                {(loadingSend || (formikProps.isValid && formikProps.dirty)) && (
+                  <Button
+                    type="submit"
+                    disabled={!(formikProps.isValid && formikProps.dirty) || loadingSend || loading}
+                    className={
+                      'flex items-center justify-center focus:!outline-none !border-0 ' +
+                      '!bg-slate-100 disabled:brightness-100'
+                    }
+                  >
+                    {!loadingSend && (
+                      <FontAwesomeIcon icon={faPaperPlane} className="text-slate-800 h-4 w-4 lg:h-5 lg:w-5" />
+                    )}
+                    {loadingSend && (
+                      <div className="w-4 h-4 lg:h-5 lg:w-5 border-b-2 border-sky-500 rounded-full animate-spin" />
+                    )}
+                  </Button>
+                )}
               </div>
-              <Button
-                type="submit"
-                disabled={!(formikProps.isValid && formikProps.dirty) || loadingSend || loading}
-                className={
-                  'flex items-center justify-center !bg-sky-600 focus:!outline-sky-600 !rounded-full !p-2' +
-                  ' !text-white h-10 w-10'
-                }
-              >
-                {!loadingSend && <FontAwesomeIcon icon={faPaperPlane} />}
-                {loadingSend && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
-              </Button>
             </form>
           )}
         </Formik>

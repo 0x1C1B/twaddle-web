@@ -12,9 +12,11 @@ export default function TextArea({onChange, onBlur, value, label, error, touched
       {label && <p className="mb-1 text-sm">{label}</p>}
       <textarea
         className={
-          'relative bg-white text-gray-800 placeholder-gray-300 ' +
-          'placeholder-gray-400 border block w-full px-3 py-2 rounded-md focus:outline-none focus:outline-sky-500 ' +
-          `disabled:brightness-75 ${error && touched ? 'border-red-500' : 'border-gray-300'} ${className}`
+          'relative bg-white text-gray-800 placeholder:text-gray-400 ' +
+          'block w-full px-3 py-2 rounded-md disabled:cursor-not-allowed ' +
+          'border border-slate-200 border-b-2 border-b-slate-400 ' +
+          'focus:border-b-sky-500 focus:outline-none disabled:brightness-75 ' +
+          `${error && touched && 'border-b-red-500'} ${className}`
         }
         onChange={onChange}
         onBlur={onBlur}
