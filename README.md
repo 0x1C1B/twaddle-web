@@ -2,6 +2,12 @@
 
 > 1st party web client of the real time messenger Twaddle.
 
+![Logo](docs/images/banner.png)
+
+![](https://img.shields.io/badge/Node.js-green?logo=nodedotjs)
+![](https://img.shields.io/badge/React.js-blue?logo=react)
+![](https://img.shields.io/badge/Socket.io-black?logo=socketdotio)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -15,6 +21,8 @@ This is the UI of the Twaddle messenger, a messenger with user management
 for mutual communication exchange in real time. This project does not serve
 to replace existing messengers from production, but rather to understand
 communication processes in the area of messaging.
+
+This is the first party web client of the Twaddle messenger.
 
 ## License
 
