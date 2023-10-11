@@ -67,7 +67,13 @@ export default function ChatList({selectedChat, onChatSelect}) {
     <div className="w-full h-full bg-gray-100 space-y-4 border-r border-slate-300 flex flex-col">
       {!showCreation && <ChatListDefaultHeader onShowCreation={() => setShowCreation(true)} />}
       {showCreation && (
-        <ChatListCreationHeader onNewChat={(id) => onChatSelect(id)} onReturn={() => setShowCreation(false)} />
+        <ChatListCreationHeader
+          onNewChat={(id) => {
+            onChatSelect(id);
+            setShowCreation(false);
+          }}
+          onReturn={() => setShowCreation(false)}
+        />
       )}
       <div className="grow p-2 space-y-4 flex flex-col">
         {loading && (
