@@ -13,7 +13,7 @@ import Message from './Message';
 import MessageSkeleton from './MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
 import chatsSlice from '../../../store/slices/chats';
-import {getMessagesOfChat} from '../../../api/chats';
+import {getMessagesOfPrivateChat} from '../../../api/chats';
 
 /**
  * A component that displays the messages of a selected chat.
@@ -78,7 +78,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       setError(null);
 
       try {
-        const messagesRes = await getMessagesOfChat(selectedChat, _page, 25, timestampOffset);
+        const messagesRes = await getMessagesOfPrivateChat(selectedChat, _page, 25, timestampOffset);
 
         if (messagesRes.data.info.totalElements > 0) {
           dispatch(

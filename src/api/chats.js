@@ -1,17 +1,17 @@
 import api from './index';
 
-export const createChat = (data) => {
-  return api.post('/chats', data);
+export const createPrivateChat = (data) => {
+  return api.post('/chats/private', data);
 };
 
-export const getCurrentUserChats = () => {
-  return api.get('/user/me/chats');
+export const getCurrentUserPrivateChats = () => {
+  return api.get('/user/me/chats/private');
 };
 
-export const getChatById = (id) => {
-  return api.get(`/chats/${id}`);
+export const getPrivateChatById = (id) => {
+  return api.get(`/chats/private/${id}`);
 };
 
-export const getMessagesOfChat = (id, page, perPage, timestampOffset) => {
-  return api.get(`/chats/${id}/messages`, {params: {page, perPage, timestampOffset}});
+export const getMessagesOfPrivateChat = (id, page, perPage, timestampOffset) => {
+  return api.get(`/chats/private/${id}/messages`, {params: {page, perPage, timestampOffset}});
 };

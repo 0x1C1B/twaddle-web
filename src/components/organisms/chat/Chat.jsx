@@ -5,7 +5,7 @@ import {useTwaddleChat, useTwaddleEvent} from '../../../contexts/TwaddleChatCont
 import ChatList from './ChatList';
 import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
-import {getChatById} from '../../../api/chats';
+import {getPrivateChatById} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -46,7 +46,7 @@ export default function Chat() {
         const chat = chats.find((chat) => chat.id === newMessage.to);
 
         if (!chat) {
-          const chatRes = await getChatById(newMessage.to);
+          const chatRes = await getPrivateChatById(newMessage.to);
 
           dispatch(
             chatsSlice.actions.addChat({

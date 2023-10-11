@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import {getUserByUsername} from '../../../api/users';
-import {createChat} from '../../../api/chats';
+import {createPrivateChat} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -54,7 +54,7 @@ export default function ChatListCreationHeader({onNewChat, onReturn}) {
 
         const userRes = await getUserByUsername(values.username);
 
-        const chatRes = await createChat({
+        const chatRes = await createPrivateChat({
           participants: [userRes.data.id],
         });
 

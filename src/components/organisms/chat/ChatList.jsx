@@ -8,7 +8,7 @@ import ChatListDefaultHeader from './ChatListDefaultHeader';
 import ChatListCreationHeader from './ChatListCreationHeader';
 import ChatListEntry from '../../molecules/chat/ChatListEntry';
 import ChatListEntrySkeleton from '../../molecules/chat/ChatListEntrySkeleton';
-import {getCurrentUserChats} from '../../../api/chats';
+import {getCurrentUserPrivateChats} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -32,7 +32,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
     setLoading(true);
 
     try {
-      const chatsRes = await getCurrentUserChats();
+      const chatsRes = await getCurrentUserPrivateChats();
 
       dispatch(
         chatsSlice.actions.setChats(
