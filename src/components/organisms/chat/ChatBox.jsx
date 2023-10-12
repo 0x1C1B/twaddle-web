@@ -1,7 +1,13 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowLeft, faPaperPlane, faExclamationTriangle, faArrowsRotate} from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowLeft,
+  faPaperPlane,
+  faExclamationTriangle,
+  faArrowsRotate,
+  faCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -14,7 +20,9 @@ import Message from './Message';
 import MessageSkeleton from './MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
 import chatsSlice from '../../../store/slices/chats';
+import usersSlice from '../../../store/slices/users';
 import {getMessagesOfChat} from '../../../api/chats';
+import {getStatusById} from '../../../api/users';
 
 /**
  * A component that displays the messages of a selected chat.
@@ -25,17 +33,22 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
   const dispatch = useDispatch();
   const twaddleChat = useTwaddleChat();
 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [messagesError, setMessagesError] = useState(null);
+  const [messagesLoading, setMessagesLoading] = useState(false);
 
-  const [, setErrorSend] = useState(null);
-  const [loadingSend, setLoadingSend] = useState(false);
+  const [statusError, setStatusError] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(false);
 
+  const [, setSendError] = useState(null);
+  const [sendLoading, setSendLoading] = useState(false);
+
+  const principal = useSelector((state) => state.auth.principal);
   const chat = useSelector(
     (state) => state.chats.chats.find((chat) => chat.id === selectedChat.id && chat.type === selectedChat.type),
     [selectedChat],
   );
   const timestampOffset = useSelector((state) => state.chats.timestampOffset);
+  const onlineUsers = useSelector((state) => state.users.online);
 
   const schema = yup.object().shape({
     message: yup.string().required('Is required'),
@@ -58,8 +71,8 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
   }, []);
 
   const onSend = useCallback(async (values, {resetForm}) => {
-    setErrorSend(null);
-    setLoadingSend(true);
+    setSendError(null);
+    setSendLoading(true);
 
     try {
       if (selectedChat.type === 'private') {
@@ -74,19 +87,19 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         });
       }
     } catch (err) {
-      setErrorSend('An unexpected error occurred, please retry.');
+      setSendError('An unexpected error occurred, please retry.');
 
       throw err;
     } finally {
-      setLoadingSend(false);
+      setSendLoading(false);
       resetForm();
     }
   }, []);
 
   const onFetchMessages = useCallback(
     async (_page) => {
-      setLoading(true);
-      setError(null);
+      setMessagesLoading(true);
+      setMessagesError(null);
 
       try {
         const messagesRes = await getMessagesOfChat(selectedChat.id, selectedChat.type, _page, 25, timestampOffset);
@@ -109,16 +122,41 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         if (err.response && err.response.data?.code === 'InvalidTokenError') {
           navigate('/login');
         } else {
-          setError('An unexpected error occurred, please retry!');
+          setMessagesError('An unexpected error occurred, please retry!');
         }
 
         throw err;
       } finally {
-        setLoading(false);
+        setMessagesLoading(false);
       }
     },
     [selectedChat, timestampOffset],
   );
+
+  const onFetchStatus = useCallback(async (userId) => {
+    setStatusLoading(true);
+    setStatusError(null);
+
+    try {
+      const statusRes = await getStatusById(userId);
+
+      if (statusRes.data.status === 'online') {
+        dispatch(usersSlice.actions.markUserOnline(userId));
+      } else {
+        dispatch(usersSlice.actions.markUserOffline(userId));
+      }
+    } catch (err) {
+      if (err.response && err.response.data?.code === 'InvalidTokenError') {
+        navigate('/login');
+      } else {
+        setStatusError('An unexpected error occurred, please retry!');
+      }
+
+      throw err;
+    } finally {
+      setStatusLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (messageBoxStickyBottom) {
@@ -131,6 +169,12 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       onFetchMessages(0);
     }
   }, [onFetchMessages, chat]);
+
+  useEffect(() => {
+    if (onFetchStatus && chat?.type === 'private') {
+      onFetchStatus(chat.participants.filter((participant) => participant.id !== principal.id)[0].id);
+    }
+  }, [onFetchStatus, chat]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -154,8 +198,37 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                   <UserAvatar userId={chat.participants[0].id} />
                 </div>
               </div>
-              <div className="space-y-1 overflow-hidden">
-                <span className="block truncate font-semibold">{chat.name}</span>
+              <div className="overflow-hidden">
+                <div className="truncate font-semibold">{chat.name}</div>
+                <div className="text-xs">
+                  {!statusError &&
+                    !statusLoading &&
+                    (onlineUsers.includes(
+                      chat.participants.filter((participant) => participant.id !== principal.id)[0].id,
+                    ) ? (
+                      <div className="flex space-x-1 items-center">
+                        <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-green-500" />
+                        <span className="truncate">online</span>
+                      </div>
+                    ) : (
+                      <div className="flex space-x-1 items-center">
+                        <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                        <span className="truncate">offline</span>
+                      </div>
+                    ))}
+                  {statusError && (
+                    <div className="flex space-x-1 items-center">
+                      <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                      <span className="text-red-500 truncate">Failed to load status</span>
+                    </div>
+                  )}
+                  {statusLoading && (
+                    <div className="flex space-x-1 items-center">
+                      <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                      <span className="truncate">Loading...</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -165,8 +238,16 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                   <Avatar value={chat.name} />
                 </div>
               </div>
-              <div className="space-y-1 overflow-hidden">
-                <span className="block truncate font-semibold">{chat.name}</span>
+              <div className="overflow-hidden">
+                <div className="block truncate font-semibold">{chat.name}</div>
+                <div className="text-xs">
+                  {[
+                    ...chat.participants
+                      .filter((participant) => participant.id !== principal.id)
+                      .map((participant) => participant.displayName || participant.username),
+                    'You',
+                  ].join(', ')}
+                </div>
               </div>
             </div>
           )}
@@ -177,10 +258,10 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         ref={messageBoxRef}
         className="grow h-0 overflow-hidden overflow-y-auto p-4 space-y-2"
       >
-        {loading &&
+        {messagesLoading &&
           Array.from(Array(5).keys()).map((value) => <MessageSkeleton key={value} isOwner={value % 2 === 0} />)}
-        {!loading &&
-          (error ? (
+        {!messagesLoading &&
+          (messagesError ? (
             <>
               <div className="flex justify-center mb-4">
                 <div
@@ -191,7 +272,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                 </div>
               </div>
               {Array.from(Array(5).keys()).map((value) => (
-                <MessageSkeleton key={value} error={error} isOwner={value % 2 === 0} />
+                <MessageSkeleton key={value} error={messagesError} isOwner={value % 2 === 0} />
               ))}
             </>
           ) : (
@@ -226,7 +307,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
               <div className="grow flex items-center rounded-md space-x-2">
                 <div className="h-full flex items-center">
                   <EmojiPicker
-                    disabled={loadingSend || loading}
+                    disabled={sendLoading || messagesLoading}
                     onSelect={(emoji) =>
                       formikProps.setFieldValue('message', `${formikProps.values.message}${emoji.native}`)
                     }
@@ -238,7 +319,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                     name="message"
                     autoComplete="off"
                     placeholder="Enter your message"
-                    disabled={loadingSend || loading}
+                    disabled={sendLoading || messagesLoading}
                     onChange={formikProps.handleChange}
                     onBlur={formikProps.handleBlur}
                     value={formikProps.values.message}
@@ -249,19 +330,19 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                     }
                   />
                 </div>
-                {(loadingSend || (formikProps.isValid && formikProps.dirty)) && (
+                {(sendLoading || (formikProps.isValid && formikProps.dirty)) && (
                   <Button
                     type="submit"
-                    disabled={!(formikProps.isValid && formikProps.dirty) || loadingSend || loading}
+                    disabled={!(formikProps.isValid && formikProps.dirty) || sendLoading || messagesLoading}
                     className={
                       'flex items-center justify-center focus:!outline-none !border-0 ' +
                       '!bg-slate-100 disabled:brightness-100'
                     }
                   >
-                    {!loadingSend && (
+                    {!sendLoading && (
                       <FontAwesomeIcon icon={faPaperPlane} className="text-slate-800 h-4 w-4 lg:h-5 lg:w-5" />
                     )}
-                    {loadingSend && (
+                    {sendLoading && (
                       <div className="w-4 h-4 lg:h-5 lg:w-5 border-b-2 border-sky-500 rounded-full animate-spin" />
                     )}
                   </Button>

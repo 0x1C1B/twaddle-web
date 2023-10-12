@@ -1,57 +1,149 @@
 import api from './index';
 
-export const createUser = (data) => {
+/**
+ * Creates a user.
+ *
+ * @param {object} data The user data
+ * @return {Promise<any>} The request promise
+ */
+export function createUser(data) {
   return api.post('/users', data);
-};
+}
 
-export const updateCurrentUser = (data) => {
+/**
+ * Updates the current user.
+ *
+ * @param {object} data The user data
+ * @return {Promise<any>} The request promise
+ */
+export function updateCurrentUser(data) {
   return api.patch('/user/me', data);
-};
+}
 
-export const getCurrentUser = () => {
+/**
+ * Fetchs the current user.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function getCurrentUser() {
   return api.get('/user/me');
-};
+}
 
-export const deleteCurrentUser = () => {
+/**
+ * Deletes the current user.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function deleteCurrentUser() {
   return api.delete(`/user/me`);
-};
+}
 
-export const sendPasswordResetMail = (email) => {
+/**
+ * Requests a password reset email to be sent to the user.
+ *
+ * @param {string} email The user's email
+ * @return {Promise<any>} The request promise
+ */
+export function sendPasswordResetMail(email) {
   return api.get(`/user/reset-password?email=${email}`);
-};
+}
 
-export const resetPassword = (data) => {
+/**
+ * Resets a user's password. This is used when a user clicks on the password
+ * reset link sent to their email.
+ *
+ * @param {object} data The password reset data
+ * @return {Promise<any>} The request promise
+ */
+export function resetPassword(data) {
   return api.post('/user/reset-password', data);
-};
+}
 
-export const sendUserVerificationMail = (email) => {
+/**
+ * Requests a verification email to be sent to the user.
+ *
+ * @param {string} email The user's email
+ * @return {Promise<any>} The request promise
+ */
+export function sendUserVerificationMail(email) {
   return api.get(`/user/verify-user?email=${email}`);
-};
+}
 
-export const verifyUser = (data) => {
+/**
+ * Verifies a user. This is used when a user clicks on the verification link
+ * sent to their email.
+ *
+ * @param {object} data The verification data
+ * @return {Promise<any>} The request promise
+ */
+export function verifyUser(data) {
   return api.post('/user/verify-user', data);
-};
+}
 
-export const getUserAvatar = (id) => {
+/**
+ * Fetchs the avatar of a user.
+ *
+ * @param {string} id The user id
+ * @return {Promise<any>} The request promise
+ */
+export function getUserAvatar(id) {
   return api.get(`/users/${id}/avatar`, {responseType: 'blob'});
-};
+}
 
-export const getCurrentUserAvatar = () => {
+/**
+ * Fetchs the current user's avatar.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function getCurrentUserAvatar() {
   return api.get(`/user/me/avatar`, {responseType: 'blob'});
-};
+}
 
-export const deleteCurrentUserAvatar = () => {
+/**
+ * Deletes the current user's avatar.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function deleteCurrentUserAvatar() {
   return api.delete(`/user/me/avatar`);
-};
+}
 
+/**
+ * Updates the current user's avatar.
+ *
+ * @param {object} data The avatar data
+ * @return {Promise<any>} The request promise
+ */
 export const updateCurrentUserAvatar = (data) => {
   return api.post(`/user/me/avatar`, data);
 };
 
-export const getUserByUsername = (username) => {
+/**
+ * Fetchs a user by username.
+ *
+ * @param {string} username The username
+ * @return {Promise<any>} The request promise
+ */
+export function getUserByUsername(username) {
   return api.get(`/users/by-username/${username}`);
-};
+}
 
-export const getUserById = (id) => {
+/**
+ * Fetchs a user by id.
+ *
+ * @param {string} id The user id
+ * @return {Promise<any>} The request promise
+ */
+export function getUserById(id) {
   return api.get(`/users/${id}`);
-};
+}
+
+/**
+ * Checks if a user is online.
+ *
+ * @param {string} id The user id
+ * @return {Promise<any>} The request promise
+ */
+export function getStatusById(id) {
+  return api.get(`/users/${id}/status`);
+}

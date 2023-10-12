@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import privacySlice from './slices/privacy';
 import authSlice from './slices/auth';
 import chatsSlice from './slices/chats';
+import usersSlice from './slices/users';
 
 const persistConfig = {
   key: 'twaddle',
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   privacy: privacySlice.reducer,
   auth: authSlice.reducer,
   chats: chatsSlice.reducer,
+  users: usersSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

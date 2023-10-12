@@ -7,6 +7,7 @@ import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
 import {getChatById} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
+import usersSlice from '../../../store/slices/users';
 
 /**
  * A chat component that displays all available chats and allows the user to
@@ -112,6 +113,8 @@ export default function Chat() {
 
   useTwaddleEvent('message/private', onPrivateMessage);
   useTwaddleEvent('message/group', onGroupMessage);
+  useTwaddleEvent('user/online', (userId) => dispatch(usersSlice.actions.markUserOnline(userId)));
+  useTwaddleEvent('user/offline', (userId) => dispatch(usersSlice.actions.markUserOffline(userId)));
 
   return (
     <div className="h-full flex flex-col">
