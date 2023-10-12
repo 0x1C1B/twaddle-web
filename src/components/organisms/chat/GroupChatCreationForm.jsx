@@ -8,16 +8,15 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
-import {getUserByUsername} from '../../../api/users';
 import {createChat} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
- * Form component for the chat list that allows the user to create a new private chat.
+ * Form component for the chat list that allows the user to create a new group chat.
  *
  * @return {JSX.Element} The header component
  */
-export default function PrivateChatCreationForm({onNewChat}) {
+export default function GroupChatCreationForm({onNewChat}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -28,7 +27,7 @@ export default function PrivateChatCreationForm({onNewChat}) {
   const chats = useSelector((state) => state.chats.chats);
 
   const schema = yup.object().shape({
-    username: yup.string().required('Is required'),
+    name: yup.string().required('Is required'),
   });
 
   const onAddChat = useCallback(
@@ -37,39 +36,17 @@ export default function PrivateChatCreationForm({onNewChat}) {
       setLoading(true);
 
       try {
-        if (values.username === principal.username) {
-          setError('You cannot chat with yourself.');
-          return;
-        }
-        const chat = chats.find((chat) => {
-          const participants = chat.participants.map((participant) => participant.username);
-          return participants.includes(values.username);
-        });
-
-        if (chat) {
-          onNewChat(chat.id);
-          resetForm();
-          return;
-        }
-
-        const userRes = await getUserByUsername(values.username);
-
         const chatRes = await createChat(
           {
-            participants: [userRes.data.id],
+            name: values.name,
           },
-          'private',
+          'group',
         );
 
         dispatch(
           chatsSlice.actions.addChat({
-            type: 'private',
-            chat: {
-              ...chatRes.data,
-              name:
-                chatRes.data.participants.filter((participant) => participant.id !== principal.id)[0].displayName ||
-                chatRes.data.participants.filter((participant) => participant.id !== principal.id)[0].username,
-            },
+            chat: chatRes.data,
+            type: 'group',
           }),
         );
 
@@ -94,18 +71,18 @@ export default function PrivateChatCreationForm({onNewChat}) {
 
   return (
     <div className="space-y-1">
-      <Formik initialValues={{username: ''}} validationSchema={schema} onSubmit={onAddChat}>
+      <Formik initialValues={{name: ''}} validationSchema={schema} onSubmit={onAddChat}>
         {(formikProps) => (
           <form className="flex w-full flex items-center space-x-4" onSubmit={formikProps.handleSubmit} noValidate>
             <div className="grow flex relative items-center">
               <TextField
-                name="username"
-                placeholder="Enter user's name"
+                name="name"
+                placeholder="Group name"
                 disabled={loading}
                 onChange={formikProps.handleChange}
                 onBlur={formikProps.handleBlur}
-                value={formikProps.values.username}
-                touched={formikProps.errors.username && formikProps.touched.username}
+                value={formikProps.values.name}
+                touched={formikProps.errors.name && formikProps.touched.name}
                 className="h-10 pr-14"
               />
               {(loading || (formikProps.isValid && formikProps.dirty)) && (
@@ -134,6 +111,6 @@ export default function PrivateChatCreationForm({onNewChat}) {
   );
 }
 
-PrivateChatCreationForm.propTypes = {
+GroupChatCreationForm.propTypes = {
   onNewChat: PropTypes.func.isRequired,
 };

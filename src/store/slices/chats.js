@@ -9,111 +9,230 @@ const chatsSlice = createSlice({
   name: 'chats',
   initialState,
   reducers: {
+    /**
+     * Adds a new chat to the state.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chat: object}} action The action object
+     * @return {*} The altered state
+     */
     addChat: (state, action) => {
-      const newChat = action.payload;
-      const chatIndex = state.chats.findIndex((chat) => chat.id === newChat.id);
+      const {type, chat: newChat} = action.payload;
+
+      let chats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+      }
+
+      const chatIndex = chats.findIndex((chat) => chat.id === newChat.id);
 
       if (chatIndex !== -1) {
         return {
           ...state,
           chats: [
-            ...state.chats.slice(0, chatIndex),
+            ...chats.slice(0, chatIndex),
             {
-              ...state.chats[chatIndex],
+              ...chats[chatIndex],
               participants: newChat.participants,
             },
-            ...state.chats.slice(chatIndex + 1),
+            ...chats.slice(chatIndex + 1),
           ],
         };
       }
 
       return {
         ...state,
-        chats: [...state.chats, newChat],
+        chats: [...chats, {liveMessages: [], storedMessages: {}, storedMessagesLoaded: false, type, ...newChat}].sort(
+          (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+        ),
       };
     },
+    /**
+     * Sets the chats in the state. This is used when the user logs and all available chats are loaded from the
+     * database.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chats: [object]}} action The action object
+     * @return {*} The altered state
+     */
     setChats: (state, action) => {
-      const newChats = action.payload;
+      const {type, chats: newChats} = action.payload;
+
+      let chats;
+      let remainingChats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+        remainingChats = state.chats.filter((chat) => chat.type === 'group');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+        remainingChats = state.chats.filter((chat) => chat.type === 'private');
+      }
 
       const updatedChats = newChats.map((newChat) => {
-        const chatIndex = state.chats.findIndex((chat) => chat.id === newChat.id);
+        const chatIndex = chats.findIndex((chat) => chat.id === newChat.id);
 
         if (chatIndex !== -1) {
           return {
-            ...state.chats[chatIndex],
+            ...chats[chatIndex],
+            name: newChat.name,
             participants: newChat.participants,
           };
         }
 
-        return newChat;
+        return {liveMessages: [], storedMessages: {}, storedMessagesLoaded: false, type, ...newChat};
       });
 
       return {
         ...state,
-        chats: updatedChats,
+        chats: [...updatedChats, ...remainingChats].sort((a, b) =>
+          a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+        ),
       };
     },
+    /**
+     * Removes a private chat from the state.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chatId: string}} action The action object
+     * @return {*} The altered state
+     */
     removeChat: (state, action) => {
+      const {type, chatId} = action.payload;
+
+      let chats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+      }
+
       return {
         ...state,
-        chats: state.chats.filter((chat) => chat.id !== action.payload),
+        chats: chats.filter((chat) => chat.id !== chatId),
       };
     },
+    /**
+     * Add a new live message. Live messages are messages that have been written in the current session. Hence
+     * since the user came online.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chatId: string, message: object}} action The action object
+     * @return {*} The altered state
+     */
     addLiveMessage: (state, action) => {
-      const {chatId, message} = action.payload;
-      const chatIndex = state.chats.findIndex((chat) => chat.id === chatId);
+      const {type, chatId, message} = action.payload;
+
+      let chats;
+      let remainingChats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+        remainingChats = state.chats.filter((chat) => chat.type === 'group');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+        remainingChats = state.chats.filter((chat) => chat.type === 'private');
+      }
+
+      const chatIndex = chats.findIndex((chat) => chat.id === chatId);
 
       if (chatIndex !== -1) {
         return {
           ...state,
           chats: [
-            ...state.chats.slice(0, chatIndex),
+            ...chats.slice(0, chatIndex),
             {
-              ...state.chats[chatIndex],
-              liveMessages: [...state.chats[chatIndex].liveMessages, message],
+              ...chats[chatIndex],
+              liveMessages: [...chats[chatIndex].liveMessages, message],
             },
-            ...state.chats.slice(chatIndex + 1),
-          ],
+            ...chats.slice(chatIndex + 1),
+            ...remainingChats,
+          ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
         };
       }
 
       return state;
     },
+    /**
+     * Sets the stored messages for a chat. Stored messages are messages that have been written in former sessions
+     * and are stored in the database. They are loaded when the user scrolls up in the chat.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chatId: string, page: number, messages: [object]}} action The action object
+     * @return {*} The altered state
+     */
     setStoredMessages: (state, action) => {
-      const {chatId, page, messages} = action.payload;
-      const chatIndex = state.chats.findIndex((chat) => chat.id === chatId);
+      const {type, chatId, page, messages} = action.payload;
+
+      let chats;
+      let remainingChats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+        remainingChats = state.chats.filter((chat) => chat.type === 'group');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+        remainingChats = state.chats.filter((chat) => chat.type === 'private');
+      }
+
+      const chatIndex = chats.findIndex((chat) => chat.id === chatId);
 
       if (chatIndex !== -1) {
         return {
           ...state,
           chats: [
-            ...state.chats.slice(0, chatIndex),
+            ...chats.slice(0, chatIndex),
             {
-              ...state.chats[chatIndex],
-              storedMessages: {...state.chats[chatIndex].storedMessages, [page]: messages},
+              ...chats[chatIndex],
+              storedMessages: {...chats[chatIndex].storedMessages, [page]: messages},
             },
-            ...state.chats.slice(chatIndex + 1),
-          ],
+            ...chats.slice(chatIndex + 1),
+            ...remainingChats,
+          ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
         };
       }
 
       return state;
     },
+    /**
+     * Sets a flag to indicate that all stored messages have been loaded for a chat.
+     *
+     * @param {*} state The current state
+     * @param {{type: ("private"|"group"), chatId: string}} action The action object
+     * @return {*} The altered state
+     */
     setStoredMessagesLoaded: (state, action) => {
-      const {chatId} = action.payload;
-      const chatIndex = state.chats.findIndex((chat) => chat.id === chatId);
+      const {type, chatId} = action.payload;
+
+      let chats;
+      let remainingChats;
+
+      if (type === 'private') {
+        chats = state.chats.filter((chat) => chat.type === 'private');
+        remainingChats = state.chats.filter((chat) => chat.type === 'group');
+      } else {
+        chats = state.chats.filter((chat) => chat.type === 'group');
+        remainingChats = state.chats.filter((chat) => chat.type === 'private');
+      }
+
+      const chatIndex = chats.findIndex((chat) => chat.id === chatId);
 
       if (chatIndex !== -1) {
         return {
           ...state,
           chats: [
-            ...state.chats.slice(0, chatIndex),
+            ...chats.slice(0, chatIndex),
             {
-              ...state.chats[chatIndex],
+              ...chats[chatIndex],
               storedMessagesLoaded: true,
             },
-            ...state.chats.slice(chatIndex + 1),
-          ],
+            ...chats.slice(chatIndex + 1),
+            ...remainingChats,
+          ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
         };
       }
 

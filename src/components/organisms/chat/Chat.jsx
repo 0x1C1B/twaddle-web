@@ -5,7 +5,7 @@ import {useTwaddleChat, useTwaddleEvent} from '../../../contexts/TwaddleChatCont
 import ChatList from './ChatList';
 import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
-import {getPrivateChatById} from '../../../api/chats';
+import {getChatById} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -21,6 +21,7 @@ export default function Chat() {
 
   const [selectedChat, setSelectedChat] = useState(null);
 
+  const principal = useSelector((state) => state.auth.principal);
   const chats = useSelector((state) => state.chats.chats);
 
   const onConnect = useCallback(async () => {
@@ -38,7 +39,7 @@ export default function Chat() {
     }
   }, [navigate]);
 
-  const onMessage = useCallback(
+  const onPrivateMessage = useCallback(
     async (newMessage) => {
       try {
         if (!newMessage) return;
@@ -46,20 +47,51 @@ export default function Chat() {
         const chat = chats.find((chat) => chat.id === newMessage.to);
 
         if (!chat) {
-          const chatRes = await getPrivateChatById(newMessage.to);
+          const chatRes = await getChatById(newMessage.to, 'private');
 
           dispatch(
             chatsSlice.actions.addChat({
-              id: chatRes.data.id,
-              name: chatRes.data.participants[0].displayName || chatRes.data.participants[0].username,
-              participants: chatRes.data.participants,
-              storedMessages: {},
-              storedMessagesLoaded: false,
-              liveMessages: [newMessage],
+              type: 'private',
+              chat: {
+                ...chatRes.data,
+                name:
+                  chatRes.data.participants.filter((participant) => participant.id !== principal.id)[0].displayName ||
+                  chatRes.data.participants.filter((participant) => participant.id !== principal.id)[0].username,
+              },
             }),
           );
         } else {
-          dispatch(chatsSlice.actions.addLiveMessage({chatId: chat.id, message: newMessage}));
+          dispatch(chatsSlice.actions.addLiveMessage({chatId: chat.id, type: 'private', message: newMessage}));
+        }
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          navigate('/logout');
+        }
+
+        throw err;
+      }
+    },
+    [chats],
+  );
+
+  const onGroupMessage = useCallback(
+    async (newMessage) => {
+      try {
+        if (!newMessage) return;
+
+        const chat = chats.find((chat) => chat.id === newMessage.to);
+
+        if (!chat) {
+          const chatRes = await getChatById(newMessage.to, 'group');
+
+          dispatch(
+            chatsSlice.actions.addChat({
+              type: 'group',
+              chat: chatRes.data,
+            }),
+          );
+        } else {
+          dispatch(chatsSlice.actions.addLiveMessage({chatId: chat.id, type: 'group', message: newMessage}));
         }
       } catch (err) {
         if (err.response && err.response.status === 401) {
@@ -78,13 +110,14 @@ export default function Chat() {
     }
   }, [onConnect, twaddleChat.connected, twaddleChat.connecting]);
 
-  useTwaddleEvent('message', onMessage);
+  useTwaddleEvent('message/private', onPrivateMessage);
+  useTwaddleEvent('message/group', onGroupMessage);
 
   return (
     <div className="h-full flex flex-col">
       <div className="hidden lg:flex grow">
         <div className="w-1/3 xl:w-1/4 h-full">
-          <ChatList selectedChat={selectedChat} onChatSelect={(chatId) => setSelectedChat(chatId)} />
+          <ChatList selectedChat={selectedChat} onChatSelect={(id, type) => setSelectedChat({id, type})} />
         </div>
         <div className="w-2/3 xl:w-3/4 h-full">
           {selectedChat ? (
@@ -100,7 +133,7 @@ export default function Chat() {
         {selectedChat ? (
           <ChatBox selectedChat={selectedChat} onBackButtonClick={() => setSelectedChat(null)} />
         ) : (
-          <ChatList selectedChat={selectedChat} onChatSelect={(chatId) => setSelectedChat(chatId)} />
+          <ChatList selectedChat={selectedChat} onChatSelect={(id, type) => setSelectedChat({id, type})} />
         )}
       </div>
     </div>

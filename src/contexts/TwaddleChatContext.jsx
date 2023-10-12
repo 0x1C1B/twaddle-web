@@ -84,9 +84,15 @@ export function TwaddleChatProvider({children}) {
     [disconnect],
   );
 
-  const sendMessage = useCallback((message) => {
+  const sendPrivateMessage = useCallback((message) => {
     if (socketRef.current) {
-      socketRef.current.emit('message', message);
+      socketRef.current.emit('message/private', message);
+    }
+  }, []);
+
+  const sendGroupMessage = useCallback((message) => {
+    if (socketRef.current) {
+      socketRef.current.emit('message/group', message);
     }
   }, []);
 
@@ -105,7 +111,8 @@ export function TwaddleChatProvider({children}) {
         socket: socketRef.current,
         connect,
         disconnect,
-        sendMessage,
+        sendPrivateMessage,
+        sendGroupMessage,
       }}
     >
       {children}

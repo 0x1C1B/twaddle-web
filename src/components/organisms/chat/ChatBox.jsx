@@ -9,11 +9,12 @@ import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
+import Avatar from '../../atoms/Avatar';
 import Message from './Message';
 import MessageSkeleton from './MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
 import chatsSlice from '../../../store/slices/chats';
-import {getMessagesOfPrivateChat} from '../../../api/chats';
+import {getMessagesOfChat} from '../../../api/chats';
 
 /**
  * A component that displays the messages of a selected chat.
@@ -30,7 +31,10 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
   const [, setErrorSend] = useState(null);
   const [loadingSend, setLoadingSend] = useState(false);
 
-  const chat = useSelector((state) => state.chats.chats.find((chat) => chat.id === selectedChat), [selectedChat]);
+  const chat = useSelector(
+    (state) => state.chats.chats.find((chat) => chat.id === selectedChat.id && chat.type === selectedChat.type),
+    [selectedChat],
+  );
   const timestampOffset = useSelector((state) => state.chats.timestampOffset);
 
   const schema = yup.object().shape({
@@ -58,10 +62,17 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
     setLoadingSend(true);
 
     try {
-      await twaddleChat.sendMessage({
-        to: chat.id,
-        content: values.message,
-      });
+      if (selectedChat.type === 'private') {
+        await twaddleChat.sendPrivateMessage({
+          to: chat.id,
+          content: values.message,
+        });
+      } else {
+        await twaddleChat.sendGroupMessage({
+          to: chat.id,
+          content: values.message,
+        });
+      }
     } catch (err) {
       setErrorSend('An unexpected error occurred, please retry.');
 
@@ -78,19 +89,20 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       setError(null);
 
       try {
-        const messagesRes = await getMessagesOfPrivateChat(selectedChat, _page, 25, timestampOffset);
+        const messagesRes = await getMessagesOfChat(selectedChat.id, selectedChat.type, _page, 25, timestampOffset);
 
         if (messagesRes.data.info.totalElements > 0) {
           dispatch(
             chatsSlice.actions.setStoredMessages({
-              chatId: selectedChat,
+              chatId: selectedChat.id,
+              type: selectedChat.type,
               messages: messagesRes.data.content.reverse(),
               page: messagesRes.data.info.page,
             }),
           );
 
           if (messagesRes.data.info.page === messagesRes.data.info.totalPages - 1) {
-            dispatch(chatsSlice.actions.setStoredMessagesLoaded({chatId: selectedChat}));
+            dispatch(chatsSlice.actions.setStoredMessagesLoaded({chatId: selectedChat.id, type: selectedChat.type}));
           }
         }
       } catch (err) {
@@ -135,16 +147,29 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
               <FontAwesomeIcon className="h-4 w-4 text-slate-800 lg:h-5 lg:w-5" icon={faArrowLeft} />
             </Button>
           </div>
-          <div className="flex space-x-4 items-center overflow-hidden">
-            <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-              <div className="h-8 w-8 rounded-full overflow-hidden">
-                <UserAvatar userId={chat.participants[0].id} />
+          {selectedChat.type === 'private' ? (
+            <div className="flex space-x-4 items-center overflow-hidden">
+              <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+                <div className="h-8 w-8 rounded-full overflow-hidden">
+                  <UserAvatar userId={chat.participants[0].id} />
+                </div>
+              </div>
+              <div className="space-y-1 overflow-hidden">
+                <span className="block truncate font-semibold">{chat.name}</span>
               </div>
             </div>
-            <div className="space-y-1 overflow-hidden">
-              <span className="block truncate font-semibold">{chat.name}</span>
+          ) : (
+            <div className="flex space-x-4 items-center overflow-hidden">
+              <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+                <div className="h-8 w-8 rounded-full overflow-hidden">
+                  <Avatar value={chat.name} />
+                </div>
+              </div>
+              <div className="space-y-1 overflow-hidden">
+                <span className="block truncate font-semibold">{chat.name}</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div
@@ -251,6 +276,6 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
 }
 
 ChatBox.propTypes = {
-  selectedChat: PropTypes.string.isRequired,
+  selectedChat: PropTypes.object.isRequired,
   onBackButtonClick: PropTypes.func.isRequired,
 };

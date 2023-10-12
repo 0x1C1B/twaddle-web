@@ -8,7 +8,7 @@ import ChatListDefaultHeader from './ChatListDefaultHeader';
 import ChatListCreationHeader from './ChatListCreationHeader';
 import ChatListEntry from '../../molecules/chat/ChatListEntry';
 import ChatListEntrySkeleton from '../../molecules/chat/ChatListEntrySkeleton';
-import {getCurrentUserPrivateChats} from '../../../api/chats';
+import {getCurrentUserChats} from '../../../api/chats';
 import chatsSlice from '../../../store/slices/chats';
 
 /**
@@ -25,6 +25,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
 
   const [showCreation, setShowCreation] = useState(false);
 
+  const principal = useSelector((state) => state.auth.principal);
   const chats = useSelector((state) => state.chats.chats);
 
   const getChats = useCallback(async () => {
@@ -32,19 +33,26 @@ export default function ChatList({selectedChat, onChatSelect}) {
     setLoading(true);
 
     try {
-      const chatsRes = await getCurrentUserPrivateChats();
+      const privateChatsRes = await getCurrentUserChats('private');
+      const groupChatsRes = await getCurrentUserChats('group');
 
       dispatch(
-        chatsSlice.actions.setChats(
-          chatsRes.data.map((chat) => ({
-            id: chat.id,
-            name: chat.participants[0].displayName || chat.participants[0].username,
-            participants: chat.participants,
-            storedMessages: {},
-            storedMessagesLoaded: false,
-            liveMessages: [],
+        chatsSlice.actions.setChats({
+          type: 'private',
+          chats: privateChatsRes.data.map((chat) => ({
+            ...chat,
+            name:
+              chat.participants.filter((participant) => participant.id !== principal.id)[0].displayName ||
+              chat.participants.filter((participant) => participant.id !== principal.id)[0].username,
           })),
-        ),
+        }),
+      );
+
+      dispatch(
+        chatsSlice.actions.setChats({
+          type: 'group',
+          chats: groupChatsRes.data,
+        }),
       );
     } catch (err) {
       if (err.response && err.response.status === 401) {
@@ -68,8 +76,8 @@ export default function ChatList({selectedChat, onChatSelect}) {
       {!showCreation && <ChatListDefaultHeader onShowCreation={() => setShowCreation(true)} />}
       {showCreation && (
         <ChatListCreationHeader
-          onNewChat={(id) => {
-            onChatSelect(id);
+          onNewChat={(id, type) => {
+            onChatSelect(id, type);
             setShowCreation(false);
           }}
           onReturn={() => setShowCreation(false)}
@@ -112,7 +120,7 @@ export default function ChatList({selectedChat, onChatSelect}) {
             <ul className="space-y-2 grow h-0 overflow-hidden overflow-y-auto px-2">
               {chats.map((chat) => (
                 <li key={chat.id}>
-                  <ChatListEntry chat={chat} selected={selectedChat === chat.id} onChatSelect={onChatSelect} />
+                  <ChatListEntry chat={chat} selected={selectedChat?.id === chat.id} onChatSelect={onChatSelect} />
                 </li>
               ))}
             </ul>
@@ -123,6 +131,6 @@ export default function ChatList({selectedChat, onChatSelect}) {
 }
 
 ChatList.propTypes = {
-  selectedChat: PropTypes.string,
+  selectedChat: PropTypes.object,
   onChatSelect: PropTypes.func.isRequired,
 };
