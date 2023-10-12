@@ -20,11 +20,14 @@ const chatsSlice = createSlice({
       const {type, chat: newChat} = action.payload;
 
       let chats;
+      let remainingChats;
 
       if (type === 'private') {
         chats = state.chats.filter((chat) => chat.type === 'private');
+        remainingChats = state.chats.filter((chat) => chat.type === 'group');
       } else {
         chats = state.chats.filter((chat) => chat.type === 'group');
+        remainingChats = state.chats.filter((chat) => chat.type === 'private');
       }
 
       const chatIndex = chats.findIndex((chat) => chat.id === newChat.id);
@@ -39,15 +42,18 @@ const chatsSlice = createSlice({
               participants: newChat.participants,
             },
             ...chats.slice(chatIndex + 1),
-          ],
+            ...remainingChats,
+          ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
         };
       }
 
       return {
         ...state,
-        chats: [...chats, {liveMessages: [], storedMessages: {}, storedMessagesLoaded: false, type, ...newChat}].sort(
-          (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
-        ),
+        chats: [
+          ...chats,
+          {liveMessages: [], storedMessages: {}, storedMessagesLoaded: false, type, ...newChat},
+          ...remainingChats,
+        ].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
       };
     },
     /**
