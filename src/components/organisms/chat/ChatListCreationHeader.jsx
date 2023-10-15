@@ -16,7 +16,7 @@ export default function ChatListCreationHeader({onNewChat, onReturn}) {
   return (
     <div className="border-b border-slate-300 px-2">
       <Tab.Group>
-        <div className="flex py-3 justify-between items-center h-16 space-x-2 pr-2">
+        <div className="flex py-2 pr-2 justify-between items-center h-16 space-x-2">
           <div className="flex items-center space-x-2">
             <Button
               onClick={() => onReturn()}

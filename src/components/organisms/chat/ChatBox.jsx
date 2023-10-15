@@ -19,6 +19,8 @@ import Avatar from '../../atoms/Avatar';
 import Message from './Message';
 import MessageSkeleton from './MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
+import UserProfileDialog from './UserProfileDialog';
+import GroupProfileDialog from './GroupProfileDialog';
 import chatsSlice from '../../../store/slices/chats';
 import usersSlice from '../../../store/slices/users';
 import {getMessagesOfChat} from '../../../api/chats';
@@ -41,6 +43,9 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
 
   const [, setSendError] = useState(null);
   const [sendLoading, setSendLoading] = useState(false);
+
+  const [showUserProfileModal, setShowUserProfileModal] = useState(false);
+  const [showGroupProfileModal, setShowGroupProfileModal] = useState(false);
 
   const principal = useSelector((state) => state.auth.principal);
   const chat = useSelector(
@@ -178,7 +183,7 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="bg-gray-100 border-b border-slate-300 px-2 py-3 h-16">
+      <div className="bg-gray-100 border-b border-slate-300 px-2 py-2 h-16">
         <div className="flex items-center space-x-2">
           <div className="lg:hidden">
             <Button
@@ -188,69 +193,93 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                 '!bg-slate-100 disabled:brightness-100'
               }
             >
-              <FontAwesomeIcon className="h-4 w-4 text-slate-800 lg:h-5 lg:w-5" icon={faArrowLeft} />
+              <FontAwesomeIcon className="h-[1.25rem] w-[1.25rem] text-slate-800" icon={faArrowLeft} />
             </Button>
           </div>
-          {selectedChat.type === 'private' ? (
-            <div className="flex space-x-4 items-center overflow-hidden">
-              <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                <div className="h-8 w-8 rounded-full overflow-hidden">
-                  <UserAvatar userId={chat.participants[0].id} />
-                </div>
-              </div>
-              <div className="overflow-hidden">
-                <div className="truncate font-semibold">{chat.name}</div>
-                <div className="text-xs">
-                  {!statusError &&
-                    !statusLoading &&
-                    (onlineUsers.includes(
-                      chat.participants.filter((participant) => participant.id !== principal.id)[0].id,
-                    ) ? (
-                      <div className="flex space-x-1 items-center">
-                        <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-green-500" />
-                        <span className="truncate">online</span>
-                      </div>
-                    ) : (
-                      <div className="flex space-x-1 items-center">
-                        <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
-                        <span className="truncate">offline</span>
-                      </div>
-                    ))}
-                  {statusError && (
-                    <div className="flex space-x-1 items-center">
-                      <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
-                      <span className="text-red-500 truncate">Failed to load status</span>
+          <div className="h-12 p-1 flex items-center overflow-hidden">
+            {selectedChat.type === 'private' ? (
+              <>
+                <div
+                  className="flex space-x-4 items-center overflow-hidden hover:cursor-pointer"
+                  onClick={() => setShowUserProfileModal(true)}
+                >
+                  <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+                    <div className="h-8 w-8 rounded-full overflow-hidden">
+                      <UserAvatar
+                        userId={chat.participants.filter((participant) => participant.id !== principal.id)[0].id}
+                      />
                     </div>
-                  )}
-                  {statusLoading && (
-                    <div className="flex space-x-1 items-center">
-                      <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
-                      <span className="truncate">Loading...</span>
+                  </div>
+                  <div className="h-10 overflow-hidden">
+                    <div className="truncate font-semibold">{chat.name}</div>
+                    <div className="text-xs">
+                      {!statusError &&
+                        !statusLoading &&
+                        (onlineUsers.includes(
+                          chat.participants.filter((participant) => participant.id !== principal.id)[0].id,
+                        ) ? (
+                          <div className="flex space-x-1 items-center">
+                            <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-green-500" />
+                            <span className="truncate">online</span>
+                          </div>
+                        ) : (
+                          <div className="flex space-x-1 items-center">
+                            <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                            <span className="truncate">offline</span>
+                          </div>
+                        ))}
+                      {statusError && (
+                        <div className="flex space-x-1 items-center">
+                          <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                          <span className="text-red-500 truncate">Failed to load status</span>
+                        </div>
+                      )}
+                      {statusLoading && (
+                        <div className="flex space-x-1 items-center">
+                          <FontAwesomeIcon icon={faCircle} className="h-2 w-2 text-slate-400" />
+                          <span className="truncate">Loading...</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex space-x-4 items-center overflow-hidden">
-              <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                <div className="h-8 w-8 rounded-full overflow-hidden">
-                  <Avatar value={chat.name} />
+                <UserProfileDialog
+                  userId={chat.participants.filter((participant) => participant.id !== principal.id)[0].id}
+                  onClose={() => setShowUserProfileModal(false)}
+                  isOpen={showUserProfileModal}
+                />
+              </>
+            ) : (
+              <>
+                <div
+                  className="flex space-x-4 items-center overflow-hidden hover:cursor-pointer"
+                  onClick={() => setShowGroupProfileModal(true)}
+                >
+                  <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+                    <div className="h-8 w-8 rounded-full overflow-hidden">
+                      <Avatar value={chat.name} />
+                    </div>
+                  </div>
+                  <div className="h-10 overflow-hidden">
+                    <div className="block truncate font-semibold">{chat.name}</div>
+                    <div className="text-xs">
+                      {[
+                        ...chat.participants
+                          .filter((participant) => participant.id !== principal.id)
+                          .map((participant) => participant.displayName || participant.username),
+                        'You',
+                      ].join(', ')}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="overflow-hidden">
-                <div className="block truncate font-semibold">{chat.name}</div>
-                <div className="text-xs">
-                  {[
-                    ...chat.participants
-                      .filter((participant) => participant.id !== principal.id)
-                      .map((participant) => participant.displayName || participant.username),
-                    'You',
-                  ].join(', ')}
-                </div>
-              </div>
-            </div>
-          )}
+                <GroupProfileDialog
+                  chatId={selectedChat.id}
+                  onClose={() => setShowGroupProfileModal(false)}
+                  isOpen={showGroupProfileModal}
+                />
+              </>
+            )}
+          </div>
         </div>
       </div>
       <div
