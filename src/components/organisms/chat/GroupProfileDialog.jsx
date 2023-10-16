@@ -169,7 +169,7 @@ export default function GroupProfileDialog({onClose, isOpen, chatId}) {
               className={
                 'inline-block max-h-[calc(100%-2rem)] h-fit w-full max-w-md p-4 overflow-hidden text-left ' +
                 'transition-all transform bg-white shadow-xl rounded-2xl bg-white text-gray-800 ' +
-                'flex flex-col h-full space-y-4'
+                'flex flex-col space-y-4'
               }
             >
               <div className="flex justify-between items-center">
