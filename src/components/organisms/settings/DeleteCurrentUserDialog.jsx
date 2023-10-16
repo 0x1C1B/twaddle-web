@@ -49,7 +49,7 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onCloseModal} className="fixed inset-0 z-10 overflow-y-auto">
-        <div className="min-h-screen px-4 text-center">
+        <div className="h-screen overflow-hidden p-4 flex items-center justify-center">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -59,11 +59,8 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0" />
+            <Dialog.Overlay className="fixed inset-0 bg-slate-800 opacity-75" />
           </Transition.Child>
-          <span className="inline-block h-screen align-middle" aria-hidden="true">
-            &#8203;
-          </span>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -75,8 +72,9 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
           >
             <Dialog.Panel
               className={
-                'inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle ' +
-                'transition-all transform bg-white shadow-xl rounded-2xl space-y-6 bg-white text-gray-800'
+                'inline-block max-h-[calc(100%-2rem)] h-fit w-full max-w-md p-4 overflow-hidden text-left ' +
+                'transition-all transform bg-white shadow-xl rounded-2xl bg-white text-gray-800 ' +
+                'flex flex-col h-full space-y-4'
               }
             >
               <div className="flex justify-between items-center">
@@ -92,15 +90,17 @@ export default function DeleteCurrentUserDialog({onSubmit, onClose, isOpen}) {
                   <FontAwesomeIcon icon={faX} className="block h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
-              {error && <p className="text-center text-red-500">{error}</p>}
-              <p>
-                Are you sure you want to delete your account? This action cannot be undone. Clicking &quot;Delete
-                account&quot; will immediately delete your account and log you out.
-              </p>
-              <Button onClick={onSubmitModal} disabled={loading} className="w-full !text-red-500">
-                {!loading && <span>Delete account</span>}
-                {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
-              </Button>
+              <div className="grow overflow-y-auto space-y-6">
+                {error && <p className="text-center text-red-500">{error}</p>}
+                <p>
+                  Are you sure you want to delete your account? This action cannot be undone. Clicking &quot;Delete
+                  account&quot; will immediately delete your account and log you out.
+                </p>
+                <Button onClick={onSubmitModal} disabled={loading} className="w-full !text-red-500">
+                  {!loading && <span>Delete account</span>}
+                  {loading && <div className="w-6 h-6 border-b-2 border-white rounded-full animate-spin" />}
+                </Button>
+              </div>
             </Dialog.Panel>
           </Transition.Child>
         </div>

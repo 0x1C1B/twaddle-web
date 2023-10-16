@@ -132,7 +132,7 @@ export default function UserProfileDialog({onClose, isOpen, userId}) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onCloseModal} className="fixed inset-0 z-10 overflow-y-auto">
-        <div className="min-h-screen px-4 text-center">
+        <div className="h-screen overflow-hidden p-4 flex items-center justify-center">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -142,11 +142,8 @@ export default function UserProfileDialog({onClose, isOpen, userId}) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0" />
+            <Dialog.Overlay className="fixed inset-0 bg-slate-800 opacity-75" />
           </Transition.Child>
-          <span className="inline-block h-screen align-middle" aria-hidden="true">
-            &#8203;
-          </span>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -158,8 +155,9 @@ export default function UserProfileDialog({onClose, isOpen, userId}) {
           >
             <Dialog.Panel
               className={
-                'inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle ' +
-                'transition-all transform bg-white shadow-xl rounded-2xl space-y-6 bg-white text-gray-800'
+                'inline-block max-h-[calc(100%-2rem)] h-fit w-full max-w-md p-4 overflow-hidden text-left ' +
+                'transition-all transform bg-white shadow-xl rounded-2xl bg-white text-gray-800 ' +
+                'flex flex-col h-full space-y-4'
               }
             >
               <div className="flex justify-between items-center space-x-2">
@@ -175,25 +173,27 @@ export default function UserProfileDialog({onClose, isOpen, userId}) {
                   <FontAwesomeIcon icon={faX} className="block h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
-              {loading && <UserProfileSkeleton error={error} />}
-              {!loading &&
-                (error ? (
-                  <>
-                    <div className="flex justify-center mb-4">
-                      <div
-                        className={
-                          'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'
-                        }
-                      >
-                        <FontAwesomeIcon icon={faExclamationTriangle} />
-                        <span className="text-sm">There seems to be an error loading the user profile.</span>
+              <div className="grow overflow-y-auto">
+                {loading && <UserProfileSkeleton error={error} />}
+                {!loading &&
+                  (error ? (
+                    <>
+                      <div className="flex justify-center mb-4">
+                        <div
+                          className={
+                            'text-red-500 flex justify-center items-center space-x-2 bg-slate-200 p-2 w-fit rounded'
+                          }
+                        >
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          <span className="text-sm">There seems to be an error loading the user profile.</span>
+                        </div>
                       </div>
-                    </div>
-                    <UserProfileSkeleton error={error} />
-                  </>
-                ) : (
-                  <UserProfile user={user} />
-                ))}
+                      <UserProfileSkeleton error={error} />
+                    </>
+                  ) : (
+                    <UserProfile user={user} />
+                  ))}
+              </div>
             </Dialog.Panel>
           </Transition.Child>
         </div>
