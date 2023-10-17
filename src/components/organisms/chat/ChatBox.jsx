@@ -16,14 +16,14 @@ import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
 import Avatar from '../../atoms/Avatar';
-import Message from './Message';
-import MessageSkeleton from './MessageSkeleton';
+import Message from '../../molecules/chat/Message';
+import MessageSkeleton from '../../molecules/chat/MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
 import UserProfileDialog from './UserProfileDialog';
 import GroupProfileDialog from './GroupProfileDialog';
 import chatsSlice from '../../../store/slices/chats';
 import usersSlice from '../../../store/slices/users';
-import {getMessagesOfChat} from '../../../api/chats';
+import {getMessagesOfChat} from '../../../api/messages';
 import {getStatusById} from '../../../api/users';
 
 /**
@@ -262,12 +262,12 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                   </div>
                   <div className="h-10 overflow-hidden">
                     <div className="block truncate font-semibold">{chat.name}</div>
-                    <div className="text-xs">
+                    <div className="text-xs truncate max-w-sm">
                       {[
+                        'You',
                         ...chat.participants
                           .filter((participant) => participant.id !== principal.id)
                           .map((participant) => participant.displayName || participant.username),
-                        'You',
                       ].join(', ')}
                     </div>
                   </div>

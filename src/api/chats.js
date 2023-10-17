@@ -1,36 +1,73 @@
 import api from './index';
 
-export const createPrivateChat = (data) => {
+/**
+ * Creates a private chat.
+ *
+ * @param {object} data The chat data
+ * @return {Promise<any>} The request promise
+ */
+export function createPrivateChat(data) {
   return api.post('/chats/private', data);
-};
+}
 
-export const getCurrentUserPrivateChats = () => {
+/**
+ * Fetch the current user's private chats.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function getCurrentUserPrivateChats() {
   return api.get('/user/me/chats/private');
-};
+}
 
-export const getPrivateChatById = (id) => {
+/**
+ * Fetches a private chat by id.
+ *
+ * @param {string} id The chat id
+ * @return {Promise<any>} The request promise
+ */
+export function getPrivateChatById(id) {
   return api.get(`/chats/private/${id}`);
-};
+}
 
-export const getMessagesOfPrivateChat = (id, page, perPage, timestampOffset) => {
-  return api.get(`/chats/private/${id}/messages`, {params: {page, perPage, timestampOffset}});
-};
-
-export const createGroupChat = (data) => {
+/**
+ * Creates a group chat.
+ *
+ * @param {object} data The chat data
+ * @return {Promise<any>} The request promise
+ */
+export function createGroupChat(data) {
   return api.post('/chats/group', data);
-};
+}
 
-export const getCurrentUserGroupChats = () => {
+/**
+ * Fetch the current user's group chats.
+ *
+ * @return {Promise<any>} The request promise
+ */
+export function getCurrentUserGroupChats() {
   return api.get('/user/me/chats/group');
-};
+}
 
-export const getGroupChatById = (id) => {
+/**
+ * Fetches a group chat by id.
+ *
+ * @param {string} id The chat id
+ * @return {Promise<any>} The request promise
+ */
+export function getGroupChatById(id) {
   return api.get(`/chats/group/${id}`);
-};
+}
 
-export const getMessagesOfGroupChat = (id, page, perPage, timestampOffset) => {
-  return api.get(`/chats/group/${id}/messages`, {params: {page, perPage, timestampOffset}});
-};
+/**
+ * Adds a participant to a group chat.
+ *
+ * @param {string} id The chat id
+ * @param {object} data The participant data
+ * @return {Promise<any>} The request promise
+ */
+export function addParticipantToGroupChat(id, data) {
+  return api.post(`/chats/group/${id}/participants`, data);
+}
 
 /**
  * Creates a chat.
@@ -39,7 +76,7 @@ export const getMessagesOfGroupChat = (id, page, perPage, timestampOffset) => {
  * @param {"private"|"group"} type The chat type
  * @return {Promise<any>} The request promise
  */
-export const createChat = (data, type) => {
+export function createChat(data, type) {
   if (type === 'private') {
     return createPrivateChat(data);
   } else if (type === 'group') {
@@ -47,7 +84,7 @@ export const createChat = (data, type) => {
   } else {
     throw new Error(`Invalid chat type: ${type}`);
   }
-};
+}
 
 /**
  * Fetch the current user chats.
@@ -55,7 +92,7 @@ export const createChat = (data, type) => {
  * @param {"private"|"group"} type The chat type
  * @return {Promise<any>} The request promise
  */
-export const getCurrentUserChats = (type) => {
+export function getCurrentUserChats(type) {
   if (type === 'private') {
     return getCurrentUserPrivateChats();
   } else if (type === 'group') {
@@ -63,7 +100,7 @@ export const getCurrentUserChats = (type) => {
   } else {
     throw new Error(`Invalid chat type: ${type}`);
   }
-};
+}
 
 /**
  * Fetch the current user chats.
@@ -72,7 +109,7 @@ export const getCurrentUserChats = (type) => {
  * @param {"private"|"group"} type The chat type
  * @return {Promise<any>} The request promise
  */
-export const getChatById = (id, type) => {
+export function getChatById(id, type) {
   if (type === 'private') {
     return getPrivateChatById(id);
   } else if (type === 'group') {
@@ -80,24 +117,4 @@ export const getChatById = (id, type) => {
   } else {
     throw new Error(`Invalid chat type: ${type}`);
   }
-};
-
-/**
- * Get the messages of a chat.
- *
- * @param {string} id The chat id
- * @param {"private"|"group"} type The chat type
- * @param {number} page The page number
- * @param {number} perPage The number of messages per page
- * @param {number} timestampOffset The timestamp offset
- * @return {Promise<any>} The request promise
- */
-export const getMessagesOfChat = (id, type, page, perPage, timestampOffset) => {
-  if (type === 'private') {
-    return getMessagesOfPrivateChat(id, page, perPage, timestampOffset);
-  } else if (type === 'group') {
-    return getMessagesOfGroupChat(id, page, perPage, timestampOffset);
-  } else {
-    throw new Error(`Invalid chat type: ${type}`);
-  }
-};
+}

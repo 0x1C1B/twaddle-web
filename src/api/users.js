@@ -114,9 +114,9 @@ export function deleteCurrentUserAvatar() {
  * @param {object} data The avatar data
  * @return {Promise<any>} The request promise
  */
-export const updateCurrentUserAvatar = (data) => {
+export function updateCurrentUserAvatar(data) {
   return api.post(`/user/me/avatar`, data);
-};
+}
 
 /**
  * Fetchs a user by username.

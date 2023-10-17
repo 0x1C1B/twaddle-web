@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {useSelector} from 'react-redux';
-import UserAvatar from '../UserAvatar';
-import CurrentUserAvatar from '../CurrentUserAvatar';
+import UserAvatar from '../../organisms/UserAvatar';
+import CurrentUserAvatar from '../../organisms/CurrentUserAvatar';
 
 /**
  * Component for displaying a text message.
