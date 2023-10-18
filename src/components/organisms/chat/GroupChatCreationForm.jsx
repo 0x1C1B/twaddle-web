@@ -59,8 +59,6 @@ export default function GroupChatCreationForm({onNewChat}) {
         } else {
           setError('An unexpected error occurred, please retry.');
         }
-
-        throw err;
       } finally {
         setLoading(false);
         resetForm();

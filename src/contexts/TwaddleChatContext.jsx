@@ -45,7 +45,7 @@ export function TwaddleChatProvider({children}) {
         setConnecting(false);
         setConnected(true);
 
-        console.debug(`Socket connection established.`);
+        console.debug('Socket connection established');
       });
 
       socketRef.current.on('disconnect', async (reason) => {
@@ -54,9 +54,9 @@ export function TwaddleChatProvider({children}) {
 
         if (reason === 'ping timeout' || reason === 'transport error') {
           setError('The connection was unexpectedly lost.');
-          console.error('The connection was unexpectedly lost.', reason);
+          console.error('Socket connection lost', reason);
         } else {
-          console.debug('Socket connection disconnected.');
+          console.debug('Socket connection closed');
         }
       });
 
@@ -65,12 +65,12 @@ export function TwaddleChatProvider({children}) {
         setConnected(false);
 
         setError('An unexpected error occurred, please retry.');
-        console.error('Socket connection error occurred.', err);
+        console.error('Socket connection error occurred', err);
       });
 
       socketRef.current.on('error', (err) => {
         setError('An unexpected error occurred, please retry.');
-        console.error('Socket domain error occurred.', err);
+        console.error('Socket domain error occurred', err);
       });
 
       setError(null);

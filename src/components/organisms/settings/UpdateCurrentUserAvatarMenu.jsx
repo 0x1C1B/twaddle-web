@@ -49,8 +49,6 @@ export default function UpdateCurrentUserAvatarMenu() {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         }
-
-        throw err;
       }
     },
     [updateAvatar],
@@ -64,8 +62,6 @@ export default function UpdateCurrentUserAvatarMenu() {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
-
-      throw err;
     }
   }, [navigate, updateAvatar]);
 

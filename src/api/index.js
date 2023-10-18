@@ -15,6 +15,25 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response) {
+      if (err.response.status >= 500) {
+        console.error(err.message, err.response.data);
+      } else {
+        console.warn(err.message, err.response.data);
+      }
+    } else if (err.request) {
+      console.error(err.message, err.request);
+    } else {
+      console.error(err.message);
+    }
+
+    return Promise.reject(err);
+  },
+);
+
 api.interceptors.request.use((config) => {
   const state = store.getState();
 

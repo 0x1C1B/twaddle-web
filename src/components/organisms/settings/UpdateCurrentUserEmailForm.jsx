@@ -49,8 +49,6 @@ export default function UpdateCurrentUserEmailForm() {
       } else {
         setError('An unexpected error occurred, please retry.');
       }
-
-      throw err;
     } finally {
       setLoading(false);
     }

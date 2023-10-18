@@ -12,7 +12,7 @@ import AddGroupMemberForm from './AddGroupMemberForm';
  *
  * @return {JSX.Element} The group profile component
  */
-export default function GroupProfile({group, onNewMember}) {
+export default function GroupProfile({group, onChange}) {
   const principal = useSelector((state) => state.auth.principal);
 
   const [showAddMember, setShowAddMember] = useState(false);
@@ -37,8 +37,8 @@ export default function GroupProfile({group, onNewMember}) {
             <div className="p-2">
               <AddGroupMemberForm
                 group={group}
-                onNewMember={(userId) => {
-                  onNewMember(userId);
+                onNewMember={() => {
+                  onChange();
                   setShowAddMember(false);
                 }}
               />
@@ -79,5 +79,5 @@ export default function GroupProfile({group, onNewMember}) {
 
 GroupProfile.propTypes = {
   group: PropTypes.object.isRequired,
-  onNewMember: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
 };

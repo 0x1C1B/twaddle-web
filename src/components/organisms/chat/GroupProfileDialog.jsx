@@ -33,8 +33,6 @@ export default function GroupProfileDialog({onClose, isOpen, chatId}) {
       } else {
         setError('An unexpected error occurred, please retry!');
       }
-
-      throw err;
     } finally {
       setLoading(false);
     }
@@ -113,7 +111,7 @@ export default function GroupProfileDialog({onClose, isOpen, chatId}) {
                       <GroupProfileSkeleton error={error} />
                     </>
                   ) : (
-                    <GroupProfile group={group} onNewMember={() => fetchGroup(chatId)} />
+                    <GroupProfile group={group} onChange={() => fetchGroup(chatId)} />
                   ))}
               </div>
             </Dialog.Panel>

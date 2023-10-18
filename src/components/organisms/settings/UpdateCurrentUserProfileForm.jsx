@@ -61,8 +61,6 @@ export default function UpdateCurrentUserProfileForm() {
         } else {
           setError('An unexpected error occurred, please retry.');
         }
-
-        throw err;
       } finally {
         setLoading(false);
       }

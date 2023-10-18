@@ -35,8 +35,6 @@ export default function Chat() {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
-
-      throw err;
     }
   }, [navigate]);
 
@@ -68,8 +66,6 @@ export default function Chat() {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         }
-
-        throw err;
       }
     },
     [chats],
@@ -98,8 +94,6 @@ export default function Chat() {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         }
-
-        throw err;
       }
     },
     [chats],

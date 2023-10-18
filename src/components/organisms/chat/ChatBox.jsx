@@ -93,8 +93,6 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       }
     } catch (err) {
       setSendError('An unexpected error occurred, please retry.');
-
-      throw err;
     } finally {
       setSendLoading(false);
       resetForm();
@@ -129,8 +127,6 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         } else {
           setMessagesError('An unexpected error occurred, please retry!');
         }
-
-        throw err;
       } finally {
         setMessagesLoading(false);
       }
@@ -156,8 +152,6 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
       } else {
         setStatusError('An unexpected error occurred, please retry!');
       }
-
-      throw err;
     } finally {
       setStatusLoading(false);
     }
