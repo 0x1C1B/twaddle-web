@@ -1,22 +1,22 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useNavigate} from 'react-router-dom';
-import Avatar from '../atoms/Avatar';
-import {getUserAvatar} from '../../api/users';
+import Avatar from '../../atoms/Avatar';
+import {getGroupChatAvatar} from '../../../api/chats';
 
 /**
- * Avatar component for displaying a user's avatar with a fallback to a jdenticon.
+ * Avatar component for displaying a group chat's avatar with a fallback to a jdenticon.
  *
  * @return {JSX.Element} The avatar component
  */
-export default function UserAvatar({userId}) {
+export default function GroupChatAvatar({chatId}) {
   const navigate = useNavigate();
 
   const [avatar, setAvatar] = useState(null);
 
   const getAvatar = useCallback(async (id) => {
     try {
-      const response = await getUserAvatar(id);
+      const response = await getGroupChatAvatar(id);
       const blob = new Blob([response.data], {type: response.headers['content-type']});
       const imageUrl = URL.createObjectURL(blob);
 
@@ -31,16 +31,16 @@ export default function UserAvatar({userId}) {
   }, []);
 
   useEffect(() => {
-    getAvatar(userId).then((avatar) => setAvatar(avatar));
-  }, [userId, getAvatar]);
+    getAvatar(chatId).then((avatar) => setAvatar(avatar));
+  }, [chatId, getAvatar]);
 
   if (avatar) {
     return <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />;
   } else {
-    return <Avatar value={userId} />;
+    return <Avatar value={chatId} />;
   }
 }
 
-UserAvatar.propTypes = {
-  userId: PropTypes.string.isRequired,
+GroupChatAvatar.propTypes = {
+  chatId: PropTypes.string.isRequired,
 };

@@ -32,8 +32,8 @@ export default function Settings() {
           <Tab.Group as="div" className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
             <div className="w-full md:w-1/3 lg:w-1/4 xl:w-1/5 flex flex-col space-y-6">
               <div className="w-full flex space-x-4 items-center max-w-full text-gray-800">
-                <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                  <div className="h-10 w-10 rounded-full overflow-hidden">
+                <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+                  <div className="h-12 w-12 rounded-full overflow-hidden">
                     <CurrentUserAvatar />
                   </div>
                 </div>

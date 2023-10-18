@@ -11,7 +11,7 @@ export default function UserProfile({user}) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center space-y-2">
-        <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
+        <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
           <div className="h-32 w-32 rounded-full overflow-hidden">
             <UserAvatar userId={user.id} />
           </div>

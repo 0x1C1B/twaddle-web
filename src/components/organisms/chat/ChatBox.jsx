@@ -15,7 +15,7 @@ import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';
-import Avatar from '../../atoms/Avatar';
+import GroupChatAvatar from './GroupChatAvatar';
 import Message from '../../molecules/chat/Message';
 import MessageSkeleton from '../../molecules/chat/MessageSkeleton';
 import EmojiPicker from './EmojiPicker';
@@ -197,8 +197,8 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                   className="flex space-x-4 items-center overflow-hidden hover:cursor-pointer"
                   onClick={() => setShowUserProfileModal(true)}
                 >
-                  <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                    <div className="h-8 w-8 rounded-full overflow-hidden">
+                  <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+                    <div className="h-10 w-10 rounded-full overflow-hidden">
                       <UserAvatar
                         userId={chat.participants.filter((participant) => participant.id !== principal.id)[0].id}
                       />
@@ -249,9 +249,9 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
                   className="flex space-x-4 items-center overflow-hidden hover:cursor-pointer"
                   onClick={() => setShowGroupProfileModal(true)}
                 >
-                  <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                    <div className="h-8 w-8 rounded-full overflow-hidden">
-                      <Avatar value={chat.name} />
+                  <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+                    <div className="h-10 w-10 rounded-full overflow-hidden">
+                      <GroupChatAvatar chatId={chat.id} />
                     </div>
                   </div>
                   <div className="h-10 overflow-hidden">

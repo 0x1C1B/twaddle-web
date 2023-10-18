@@ -15,8 +15,8 @@ export default function GroupMemberEntry({user}) {
     <div className="rounded p-2 hover:bg-slate-200">
       <div className="flex justify-between items-center overflow-hidden space-x-2">
         <div className="flex space-x-4 items-center overflow-hidden">
-          <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-            <div className="h-8 w-8 rounded-full overflow-hidden">
+          <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+            <div className="h-10 w-10 rounded-full overflow-hidden">
               <UserAvatar userId={user.id} />
             </div>
           </div>

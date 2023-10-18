@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {useSelector} from 'react-redux';
 import UserAvatar from '../../organisms/UserAvatar';
-import Avatar from '../../atoms/Avatar';
+import GroupChatAvatar from '../../organisms/chat/GroupChatAvatar';
 
 /**
  * A component that displays a single chat in the list.
@@ -19,15 +19,15 @@ export default function ChatListEntry({chat, selected, onChatSelect}) {
     >
       <div className="flex space-x-4 items-center overflow-hidden">
         {chat.type === 'private' ? (
-          <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-            <div className="h-8 w-8 rounded-full overflow-hidden">
+          <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+            <div className="h-10 w-10 rounded-full overflow-hidden">
               <UserAvatar userId={chat.participants.filter((participant) => participant.id !== principal.id)[0].id} />
             </div>
           </div>
         ) : (
-          <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-            <div className="h-8 w-8 rounded-full overflow-hidden">
-              <Avatar value={chat.name} />
+          <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+            <div className="h-10 w-10 rounded-full overflow-hidden">
+              <GroupChatAvatar chatId={chat.id} />
             </div>
           </div>
         )}

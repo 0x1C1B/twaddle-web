@@ -77,7 +77,7 @@ export default function UpdateCurrentUserProfileForm() {
       <div className="flex flex-col lg:flex-row w-full">
         <div className="order-first lg:order-last mb-8 lg:ml-8 lg:mb-0">
           <div className="mb-1 text-sm">Profile image</div>
-          <div className="bg-slate-200 text-slate-800 border border-slate-400 p-2 w-fit rounded-full relative">
+          <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full relative">
             <div className="w-32 h-32 rounded-full overflow-hidden">
               <CurrentUserAvatar />
             </div>

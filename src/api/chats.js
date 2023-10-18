@@ -118,3 +118,34 @@ export function getChatById(id, type) {
     throw new Error(`Invalid chat type: ${type}`);
   }
 }
+
+/**
+ * Fetchs the avatar of a group chat.
+ *
+ * @param {string} id The chat id
+ * @return {Promise<any>} The request promise
+ */
+export function getGroupChatAvatar(id) {
+  return api.get(`/chats/group/${id}/avatar`, {responseType: 'blob'});
+}
+
+/**
+ * Updates a group chat's avatar.
+ *
+ * @param {string} id The chat id
+ * @param {object} data The avatar data
+ * @return {Promise<any>} The request promise
+ */
+export function updateGroupChatAvatar(id, data) {
+  return api.post(`/chats/group/${id}/avatar`, data);
+}
+
+/**
+ * Deletes a group chat's avatar.
+ *
+ * @param {string} id The chat id
+ * @return {Promise<any>} The request promise
+ */
+export function deleteGroupChatAvatar(id) {
+  return api.delete(`/chats/group/${id}/avatar`);
+}

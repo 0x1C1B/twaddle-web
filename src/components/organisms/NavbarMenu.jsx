@@ -43,8 +43,8 @@ export default function NavbarMenu() {
             className="p-1 rounded-full text-gray-200 hover:text-white focus:outline-none"
           >
             {principal ? (
-              <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                <div className="h-6 w-6 md:w-7 md:h-7 rounded-full overflow-hidden">
+              <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+                <div className="h-8 w-8 md:h-9 md:w-9 rounded-full overflow-hidden">
                   <CurrentUserAvatar />
                 </div>
               </div>
@@ -62,8 +62,8 @@ export default function NavbarMenu() {
               <div className="rounded-md bg-slate-50">
                 <div className="p-4 rounded-t-md bg-white flex space-x-4 items-center justify-between">
                   <div className="flex space-x-4 items-center overflow-hidden">
-                    <div className="bg-slate-200 text-slate-800 border border-slate-400 p-1 w-fit rounded-full">
-                      <div className="h-10 w-10 rounded-full overflow-hidden">
+                    <div className="bg-slate-200 text-slate-800 border border-slate-400 w-fit rounded-full">
+                      <div className="h-12 w-12 rounded-full overflow-hidden">
                         <CurrentUserAvatar />
                       </div>
                     </div>
