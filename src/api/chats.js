@@ -40,6 +40,17 @@ export function createGroupChat(data) {
 }
 
 /**
+ * Updates a group chat.
+ *
+ * @param {string} id The chat id
+ * @param {object} data The chat data
+ * @return {Promise<any>} The request promise
+ */
+export function updateGroupChateById(id, data) {
+  return api.patch(`/chats/group/${id}`, data);
+}
+
+/**
  * Fetch the current user's group chats.
  *
  * @return {Promise<any>} The request promise

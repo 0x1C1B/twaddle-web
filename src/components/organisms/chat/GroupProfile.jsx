@@ -2,11 +2,12 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {useSelector} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faUserPlus} from '@fortawesome/free-solid-svg-icons';
+import {faUserPlus, faPen} from '@fortawesome/free-solid-svg-icons';
 import GroupChatAvatar from './GroupChatAvatar';
 import GroupMemberEntry from '../../molecules/chat/GroupMemberEntry';
 import AddGroupMemberForm from './AddGroupMemberForm';
 import UpdateGroupChatAvatarMenu from './UpdateGroupChatAvatarMenu';
+import UpdateGroupChatNameForm from './UpdateGroupChatNameForm';
 
 /**
  * Visualizes a group profile.
@@ -17,6 +18,7 @@ export default function GroupProfile({group, onChange}) {
   const principal = useSelector((state) => state.auth.principal);
 
   const [showAddMember, setShowAddMember] = useState(false);
+  const [showChangeName, setShowChangeName] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -35,9 +37,26 @@ export default function GroupProfile({group, onChange}) {
             </div>
           )}
         </div>
-        <div className="text-center overflow-hidden">
-          <div className="text-lg font-semibold text-gray-800 truncate">{group.name}</div>
-        </div>
+        {showChangeName ? (
+          <div className="w-full">
+            <UpdateGroupChatNameForm
+              group={group}
+              onChange={() => {
+                onChange();
+                setShowAddMember(false);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="overflow-hidden flex justify-center items-center w-full space-x-1">
+            <div className="text-lg font-semibold text-gray-800 truncate">{group.name}</div>
+            {group.participants.find((participant) => participant.id === principal.id)?.isAdmin && (
+              <button onClick={() => setShowChangeName(true)} className="rounded-md p-2 hover:bg-slate-100">
+                <FontAwesomeIcon icon={faPen} className="block h-3 w-3 text-slate-800" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <hr className="border-b border-slate-300" />
       <div className="space-y-2">
