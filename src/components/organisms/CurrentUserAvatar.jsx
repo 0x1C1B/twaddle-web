@@ -1,7 +1,7 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 import Avatar from '../atoms/Avatar';
-import {useCurrentUserAvatar} from '../../contexts/CurrentUserAvatarContext';
+import useCurrentUserAvatar from '../../hooks/useCurrentUserAvatar';
 
 /**
  * Avatar component for displaying a user's avatar with a fallback to a jdenticon.

@@ -11,7 +11,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as yup from 'yup';
-import {useTwaddleChat} from '../../../contexts/TwaddleChatContext';
+import useTwaddleChat from '../../../hooks/useTwaddleChat';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import UserAvatar from '../UserAvatar';

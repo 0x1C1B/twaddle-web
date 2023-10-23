@@ -1,9 +1,8 @@
-import React, {useRef, useState, useEffect, useContext, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
-import {useQueue} from '@uidotdev/usehooks';
 
-const TwaddleChatContext = React.createContext(null);
+export const TwaddleChatContext = React.createContext(null);
 
 /**
  * Provider for the twaddle chat socket instance.
@@ -122,44 +121,4 @@ export function TwaddleChatProvider({children}) {
 
 TwaddleChatProvider.propTypes = {
   children: PropTypes.node.isRequired,
-};
-
-/**
- * Access the twaddle chat socket context.
- *
- * @return {object} Returns the context properties
- */
-export const useTwaddleChat = () => {
-  const context = useContext(TwaddleChatContext);
-
-  if (!context) {
-    throw new Error('useTwaddleChat() may be used only in the context of a <TwaddleChatProvider> component.');
-  }
-
-  return context;
-};
-
-/**
- * Hook to listen to twaddle chat events.
- *
- * @param {string} event The event to listen to
- * @param {Function} listener The listener to add
- */
-export const useTwaddleEvent = (event, listener) => {
-  const events = useQueue();
-
-  const {socket} = useTwaddleChat();
-
-  useEffect(() => {
-    if (socket) {
-      socket.on(event, events.add);
-    }
-  }, [socket]);
-
-  useEffect(() => {
-    if (events.size > 0) {
-      listener(events.first);
-      events.remove();
-    }
-  }, [events.size]);
 };

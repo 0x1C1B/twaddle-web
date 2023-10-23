@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck} from '@fortawesome/free-solid-svg-icons';
-import {useTwaddleChat} from '../contexts/TwaddleChatContext';
+import useTwaddleChat from '../hooks/useTwaddleChat';
 import StackTemplate from '../components/templates/StackTemplate';
 import Link from '../components/atoms/Link';
 import authSlice from '../store/slices/auth';

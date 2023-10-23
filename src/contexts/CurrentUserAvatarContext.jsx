@@ -1,9 +1,9 @@
-import React, {createContext, useContext, useState, useEffect, useCallback} from 'react';
+import React, {createContext, useState, useEffect, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import {useNavigate} from 'react-router-dom';
 import {getCurrentUserAvatar} from '../api/users';
 
-const CurrentUserAvatarContext = createContext(null);
+export const CurrentUserAvatarContext = createContext(null);
 
 /**
  * Provider for the current user's avatar.
@@ -60,18 +60,3 @@ export function CurrentUserAvatarProvider({children}) {
 CurrentUserAvatarProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
-
-/**
- * Hook for accessing the current user's avatar context.
- *
- * @return {object} The current user's avatar context
- */
-export function useCurrentUserAvatar() {
-  const context = useContext(CurrentUserAvatarContext);
-
-  if (context === undefined) {
-    throw new Error('useCurrentUserAvatar() may be used only in the context of a <CurrentUserAvatarProvider>');
-  }
-
-  return context;
-}

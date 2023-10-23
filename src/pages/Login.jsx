@@ -3,7 +3,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
-import {useCurrentUserAvatar} from '../contexts/CurrentUserAvatarContext';
+import useCurrentUserAvatar from '../hooks/useCurrentUserAvatar';
 import {generateToken} from '../api/auth';
 import {getCurrentUser} from '../api/users';
 import authSlice from '../store/slices/auth';

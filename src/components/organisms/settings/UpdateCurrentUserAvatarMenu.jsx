@@ -5,7 +5,7 @@ import {faPen} from '@fortawesome/free-solid-svg-icons';
 import {usePopper} from 'react-popper';
 import {Menu, Transition} from '@headlessui/react';
 import Button from '../../atoms/Button';
-import {useCurrentUserAvatar} from '../../../contexts/CurrentUserAvatarContext';
+import useCurrentUserAvatar from '../../../hooks/useCurrentUserAvatar';
 import {deleteCurrentUserAvatar, updateCurrentUserAvatar} from '../../../api/users';
 
 /**

@@ -1,7 +1,8 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
-import {useTwaddleChat, useTwaddleEvent} from '../../../contexts/TwaddleChatContext';
+import useTwaddleChat from '../../../hooks/useTwaddleChat';
+import useTwaddleEvent from '../../../hooks/useTwaddleEvent';
 import ChatList from './ChatList';
 import ChatBox from './ChatBox';
 import {generateTicket} from '../../../api/auth';
