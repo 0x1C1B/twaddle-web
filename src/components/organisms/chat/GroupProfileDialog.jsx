@@ -1,5 +1,6 @@
 import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
+import {useSelector, useDispatch} from 'react-redux';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faX, faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {useNavigate} from 'react-router-dom';
@@ -7,6 +8,7 @@ import {Dialog, Transition} from '@headlessui/react';
 import GroupProfile from './GroupProfile';
 import GroupProfileSkeleton from './GroupProfileSkeleton';
 import {getGroupChatById} from '../../../api/chats';
+import chatsSlice from '../../../store/slices/chats';
 
 /**
  * Dialog for viewing a group's profile.
@@ -15,8 +17,10 @@ import {getGroupChatById} from '../../../api/chats';
  */
 export default function GroupProfileDialog({onClose, isOpen, chatId}) {
   const navigate = useNavigate();
+  const disptach = useDispatch();
 
-  const [group, setGroup] = useState(null);
+  const group = useSelector((state) => state.chats.chats.find((chat) => chat.id === chatId && chat.type === 'group'));
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,7 +30,7 @@ export default function GroupProfileDialog({onClose, isOpen, chatId}) {
 
     try {
       const groupRes = await getGroupChatById(id);
-      setGroup(groupRes.data);
+      disptach(chatsSlice.actions.setChat({type: 'group', chat: groupRes.data}));
     } catch (err) {
       if (err.response && err.response.data?.code === 'InvalidTokenError') {
         navigate('/login');

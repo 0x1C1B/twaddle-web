@@ -81,6 +81,39 @@ export function addParticipantToGroupChat(id, data) {
 }
 
 /**
+ * Removes a participant from a group chat.
+ *
+ * @param {string} chatId The chat id
+ * @param {string} userId The user id
+ * @return {Promise<any>} The request promise
+ */
+export function removeParticipantFromGroupChat(chatId, userId) {
+  return api.delete(`/chats/group/${chatId}/participants/${userId}`);
+}
+
+/**
+ * Appoints a participant of a group chat as admin.
+ *
+ * @param {string} chatId The chat id
+ * @param {string} userId The user id
+ * @return {Promise<any>} The request promise
+ */
+export function appointParticipantOfGroupChatAsAdmin(chatId, userId) {
+  return api.post(`/chats/group/${chatId}/participants/${userId}/admin`);
+}
+
+/**
+ * Removes a participant of a group chat as admin.
+ *
+ * @param {string} chatId The chat id
+ * @param {string} userId The user id
+ * @return {Promise<any>} The request promise
+ */
+export function removeParticipantOfGroupChatAsAdmin(chatId, userId) {
+  return api.delete(`/chats/group/${chatId}/participants/${userId}/admin`);
+}
+
+/**
  * Creates a chat.
  *
  * @param {object} data The chat data

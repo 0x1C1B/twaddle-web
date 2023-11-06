@@ -10,13 +10,13 @@ const chatsSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Adds a new chat to the state.
+     * Adds or updates a chat.
      *
      * @param {*} state The current state
      * @param {{type: ("private"|"group"), chat: object}} action The action object
      * @return {*} The altered state
      */
-    addChat: (state, action) => {
+    setChat: (state, action) => {
       const {type, chat: newChat} = action.payload;
 
       let chats;
@@ -39,6 +39,7 @@ const chatsSlice = createSlice({
             ...chats.slice(0, chatIndex),
             {
               ...chats[chatIndex],
+              name: newChat.name,
               participants: newChat.participants,
             },
             ...chats.slice(chatIndex + 1),

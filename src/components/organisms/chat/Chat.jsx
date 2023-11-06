@@ -50,7 +50,7 @@ export default function Chat() {
           const chatRes = await getChatById(newMessage.to, 'private');
 
           dispatch(
-            chatsSlice.actions.addChat({
+            chatsSlice.actions.setChat({
               type: 'private',
               chat: {
                 ...chatRes.data,
@@ -83,7 +83,7 @@ export default function Chat() {
           const chatRes = await getChatById(newMessage.to, 'group');
 
           dispatch(
-            chatsSlice.actions.addChat({
+            chatsSlice.actions.setChat({
               type: 'group',
               chat: chatRes.data,
             }),

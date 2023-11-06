@@ -21,9 +21,9 @@ export default function GroupProfile({group, onChange}) {
   const [showChangeName, setShowChangeName] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <div
-        className={`flex flex-col items-center ${
+        className={`flex flex-col items-center py-4 ${
           group.participants.find((participant) => participant.id === principal.id)?.isAdmin ? 'space-y-6' : 'space-y-2'
         }`}
       >
@@ -90,14 +90,14 @@ export default function GroupProfile({group, onChange}) {
             .filter((participant) => participant.id === principal.id)
             .map((participant) => (
               <li key={participant.id}>
-                <GroupMemberEntry user={participant} />
+                <GroupMemberEntry group={group} user={participant} onChange={onChange} />
               </li>
             ))}
           {group.participants
             .filter((participant) => participant.id !== principal.id)
             .map((participant) => (
               <li key={participant.id}>
-                <GroupMemberEntry user={participant} />
+                <GroupMemberEntry group={group} user={participant} onChange={onChange} />
               </li>
             ))}
         </ul>
