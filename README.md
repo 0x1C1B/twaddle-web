@@ -11,7 +11,6 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Getting started](#getting-started)
 - [License](#license)
   - [Forbidden](#forbidden)
 
@@ -26,7 +25,7 @@ This is the first party web client of the Twaddle messenger.
 
 ## License
 
-Copyright (c) 2023 0x1C1B
+Copyright (c) 2023 Constantin Müller
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
