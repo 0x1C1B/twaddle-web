@@ -38,6 +38,10 @@ export default function GroupMemberEntryMenu({group, user, onChange}) {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
+
+      if (!err.response && !err.request) {
+        console.error(err);
+      }
     }
   }, []);
 
@@ -49,6 +53,10 @@ export default function GroupMemberEntryMenu({group, user, onChange}) {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
+
+      if (!err.response && !err.request) {
+        console.error(err);
+      }
     }
   }, []);
 
@@ -59,6 +67,10 @@ export default function GroupMemberEntryMenu({group, user, onChange}) {
     } catch (err) {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
+      }
+
+      if (!err.response && !err.request) {
+        console.error(err);
       }
     }
   }, [group, user, onChange]);

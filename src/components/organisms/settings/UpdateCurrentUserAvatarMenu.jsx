@@ -49,6 +49,10 @@ export default function UpdateCurrentUserAvatarMenu() {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         }
+
+        if (!err.response && !err.request) {
+          console.error(err);
+        }
       }
     },
     [updateAvatar],

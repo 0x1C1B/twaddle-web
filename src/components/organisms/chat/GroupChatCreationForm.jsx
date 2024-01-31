@@ -44,7 +44,7 @@ export default function GroupChatCreationForm({onNewChat}) {
         );
 
         dispatch(
-          chatsSlice.actions.addChat({
+          chatsSlice.actions.setChat({
             chat: chatRes.data,
             type: 'group',
           }),
@@ -58,6 +58,10 @@ export default function GroupChatCreationForm({onNewChat}) {
           setError('No user with this username was found.');
         } else {
           setError('An unexpected error occurred, please retry.');
+        }
+
+        if (!err.response && !err.request) {
+          console.error(err);
         }
       } finally {
         setLoading(false);

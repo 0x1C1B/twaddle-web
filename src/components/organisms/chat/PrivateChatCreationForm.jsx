@@ -62,7 +62,7 @@ export default function PrivateChatCreationForm({onNewChat}) {
         );
 
         dispatch(
-          chatsSlice.actions.addChat({
+          chatsSlice.actions.setChat({
             type: 'private',
             chat: {
               ...chatRes.data,
@@ -81,6 +81,10 @@ export default function PrivateChatCreationForm({onNewChat}) {
           setError('No user with this username was found.');
         } else {
           setError('An unexpected error occurred, please retry.');
+        }
+
+        if (!err.response && !err.request) {
+          console.error(err);
         }
       } finally {
         setLoading(false);

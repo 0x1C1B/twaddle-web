@@ -127,6 +127,10 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         } else {
           setMessagesError('An unexpected error occurred, please retry!');
         }
+
+        if (!err.response && !err.request) {
+          console.error(err);
+        }
       } finally {
         setMessagesLoading(false);
       }
@@ -151,6 +155,10 @@ export default function ChatBox({selectedChat, onBackButtonClick}) {
         navigate('/login');
       } else {
         setStatusError('An unexpected error occurred, please retry!');
+      }
+
+      if (!err.response && !err.request) {
+        console.error(err);
       }
     } finally {
       setStatusLoading(false);

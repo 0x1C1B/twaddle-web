@@ -48,6 +48,10 @@ export default function UpdateGroupChatAvatarMenu({chatId, onChange}) {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
         }
+
+        if (!err.response && !err.request) {
+          console.error(err);
+        }
       }
     },
     [chatId, navigate],
@@ -60,6 +64,10 @@ export default function UpdateGroupChatAvatarMenu({chatId, onChange}) {
     } catch (err) {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
+      }
+
+      if (!err.response && !err.request) {
+        console.error(err);
       }
     }
   }, [chatId, navigate]);

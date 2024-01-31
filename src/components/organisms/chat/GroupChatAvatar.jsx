@@ -27,6 +27,10 @@ export default function GroupChatAvatar({chatId}) {
       } else if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
+
+      if (!err.response && !err.request) {
+        console.error(err);
+      }
     }
   }, []);
 

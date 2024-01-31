@@ -36,6 +36,10 @@ export default function Chat() {
       if (err.response && err.response.status === 401) {
         navigate('/logout');
       }
+
+      if (!err.response && !err.request) {
+        console.error(err);
+      }
     }
   }, [navigate]);
 
@@ -66,6 +70,10 @@ export default function Chat() {
       } catch (err) {
         if (err.response && err.response.status === 401) {
           navigate('/logout');
+        }
+
+        if (!err.response && !err.request) {
+          console.error(err);
         }
       }
     },
